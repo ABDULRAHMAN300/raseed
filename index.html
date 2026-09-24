@@ -1,0 +1,1007 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="رصيد">
+<meta name="theme-color" content="#1B1640">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<title>رصيد</title>
+<script src="vendor/chart.umd.js"></script>
+<script src="vendor/supabase.js"></script>
+<style>
+@font-face{font-family:"Noto Kufi Arabic";font-weight:400;font-display:swap;src:url(fonts/kufi-ar-400.woff2) format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+0870-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200E,U+2010-2011,U+204F,U+2E41}
+@font-face{font-family:"Noto Kufi Arabic";font-weight:400;font-display:swap;src:url(fonts/kufi-la-400.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Noto Kufi Arabic";font-weight:600;font-display:swap;src:url(fonts/kufi-ar-600.woff2) format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+0870-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200E,U+2010-2011,U+204F,U+2E41}
+@font-face{font-family:"Noto Kufi Arabic";font-weight:600;font-display:swap;src:url(fonts/kufi-la-600.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Noto Kufi Arabic";font-weight:700;font-display:swap;src:url(fonts/kufi-ar-700.woff2) format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+0870-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200E,U+2010-2011,U+204F,U+2E41}
+@font-face{font-family:"Noto Kufi Arabic";font-weight:700;font-display:swap;src:url(fonts/kufi-la-700.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Noto Kufi Arabic";font-weight:800;font-display:swap;src:url(fonts/kufi-ar-800.woff2) format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+0870-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200E,U+2010-2011,U+204F,U+2E41}
+@font-face{font-family:"Noto Kufi Arabic";font-weight:800;font-display:swap;src:url(fonts/kufi-la-800.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+:root{
+  --bg:#F3F4FA; --card:#FFFFFF; --soft:#EEF0F8; --line:#E3E6F2;
+  --text:#191634; --muted:#6B6A86;
+  --brand:#5B3DF5; --brand2:#9B35E8; --brand3:#E0457B;
+  --hero1:#1B1640; --hero2:#3A1F8C; --hero3:#7A2A9E;
+  --inc:#0FB57E; --inc-bg:#E3F8EF;
+  --exp:#F0435F; --exp-bg:#FDE7EB;
+  --up:#F29B0C; --up-bg:#FFF3DC;
+  --info:#1C8FE6; --info-bg:#E2F1FD;
+  --shadow:0 6px 24px rgba(40,30,110,.08);
+  --r:20px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0F0D1F; --card:#1A1733; --soft:#242043; --line:#2E2A52;
+    --text:#F1EFFF; --muted:#A5A2C6;
+    --inc-bg:#0F3A2C; --exp-bg:#44172A; --up-bg:#43310E; --info-bg:#0E2E4A;
+    --shadow:0 6px 24px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Kufi Arabic",system-ui,sans-serif;font-size:15px;line-height:1.6}
+body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+button,input,select,textarea{font-family:inherit;font-size:15px;color:inherit}
+.num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
+.hidden{display:none!important}
+
+/* header / hero */
+.hero{background:linear-gradient(135deg,var(--hero1) 0%,var(--hero2) 55%,var(--hero3) 100%);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 64px;border-radius:0 0 30px 30px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(224,69,123,.55),transparent 70%);top:-90px;left:-70px}
+.hero::after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(28,143,230,.45),transparent 70%);bottom:-110px;right:-40px}
+.topbar{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px}
+.logo{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#FFB23F,#E0457B);display:grid;place-items:center;font-size:18px;box-shadow:0 4px 14px rgba(224,69,123,.5)}
+.iconbtn{width:40px;height:40px;border-radius:13px;border:0;background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;font-size:18px;cursor:pointer;backdrop-filter:blur(6px)}
+.sync{display:flex;align-items:center;gap:6px;font-size:12px;background:rgba(255,255,255,.14);padding:5px 10px;border-radius:99px}
+.dot{width:8px;height:8px;border-radius:50%;background:#9AA}
+.dot.ok{background:#3EE39F}.dot.syncing{background:#FFC34A;animation:pulse 1s infinite}.dot.offline{background:#FF6B81}
+@keyframes pulse{50%{opacity:.35}}
+.monthnav{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px;position:relative;z-index:1}
+.monthnav button{border:0;background:rgba(255,255,255,.14);color:#fff;width:34px;height:34px;border-radius:11px;font-size:16px;cursor:pointer}
+.monthnav .m{font-weight:700;min-width:130px;text-align:center}
+.balance{text-align:center;margin-top:10px;position:relative;z-index:1}
+.balance small{opacity:.75;font-size:13px}
+.balance .big{font-size:34px;font-weight:800;letter-spacing:.3px}
+.balance .sub{font-size:12.5px;opacity:.85}
+
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+.float{margin-top:-46px;position:relative;z-index:2}
+.float>h2.sec:first-child{margin-top:0;padding:10px 14px;background:var(--card);border-radius:16px;box-shadow:var(--shadow)}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:13px 14px;position:relative;overflow:hidden}
+.kpi .lbl{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.kpi .val{font-size:19px;font-weight:800;margin-top:2px}
+.kpi .chip{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;font-size:13px}
+.kpi.inc .chip{background:var(--inc-bg);color:var(--inc)} .kpi.inc .val{color:var(--inc)}
+.kpi.exp .chip{background:var(--exp-bg);color:var(--exp)} .kpi.exp .val{color:var(--exp)}
+.kpi.up .chip{background:var(--up-bg);color:var(--up)}
+.kpi.rate .chip{background:var(--info-bg);color:var(--info)}
+.ring{height:5px;background:var(--soft);border-radius:9px;margin-top:8px;overflow:hidden}
+.ring i{display:block;height:100%;border-radius:9px}
+
+h2.sec{font-size:16px;font-weight:800;margin:20px 2px 10px;display:flex;align-items:center;justify-content:space-between}
+h2.sec a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;cursor:pointer}
+@media (prefers-color-scheme: dark){h2.sec a{color:#B7A6FF}}
+
+.list{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.ico{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:20px;flex-shrink:0}
+.row .mid{flex:1;min-width:0}
+.row .t{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .s{font-size:12.5px;color:var(--muted)}
+.row .amt{font-weight:800;text-align:left;white-space:nowrap}
+.amt.inc{color:var(--inc)}.amt.exp{color:var(--exp)}
+.tag{font-size:11px;padding:2px 8px;border-radius:99px;font-weight:600;display:inline-block}
+.tag.up{background:var(--up-bg);color:var(--up)}.tag.late{background:var(--exp-bg);color:var(--exp)}.tag.done{background:var(--inc-bg);color:var(--inc)}.tag.muted{background:var(--soft);color:var(--muted)}
+.daylbl{font-size:12.5px;color:var(--muted);font-weight:700;padding:12px 4px 6px}
+.acts{display:flex;gap:6px;margin-top:6px}
+.mini{border:0;border-radius:10px;padding:5px 11px;font-size:12.5px;font-weight:700;cursor:pointer}
+.mini.ok{background:var(--inc-bg);color:var(--inc)}.mini.skip{background:var(--soft);color:var(--muted)}
+
+.tip{display:flex;gap:12px;padding:13px 14px;border-radius:18px;margin-bottom:10px;background:var(--card);box-shadow:var(--shadow);border-inline-start:5px solid var(--info)}
+.tip .ti{font-size:22px;line-height:1.2}
+.tip b{display:block;font-size:14.5px}
+.tip p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.tip.good{border-color:var(--inc)}.tip.warn{border-color:var(--up)}.tip.bad{border-color:var(--exp)}.tip.info{border-color:var(--info)}
+
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chipb{border:0;background:var(--card);box-shadow:var(--shadow);padding:7px 14px;border-radius:99px;font-weight:600;font-size:13px;white-space:nowrap;cursor:pointer;color:var(--muted)}
+.chipb.on{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff}
+.search{width:100%;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:11px 14px;margin-bottom:10px}
+
+.bar{height:10px;background:var(--soft);border-radius:9px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;border-radius:9px;transition:width .4s}
+.bline{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-top:5px}
+
+.empty{text-align:center;color:var(--muted);padding:26px 12px;font-size:14px}
+.empty .e{font-size:38px}
+
+/* tabbar */
+.tabbar{position:fixed;bottom:0;left:0;right:0;background:var(--card);box-shadow:0 -6px 24px rgba(40,30,110,.1);display:flex;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:20;border-radius:24px 24px 0 0}
+.tab{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;flex:1;padding:4px 0}
+.tab .ti{font-size:20px;filter:grayscale(1);opacity:.6}
+.tab.on{color:var(--brand)} .tab.on .ti{filter:none;opacity:1}
+@media (prefers-color-scheme: dark){.tab.on{color:#B7A6FF}}
+.fab{position:fixed;bottom:calc(84px + env(safe-area-inset-bottom));left:18px;width:58px;height:58px;border-radius:20px;border:0;background:linear-gradient(135deg,var(--brand),var(--brand3));color:#fff;font-size:30px;box-shadow:0 10px 26px rgba(91,61,245,.45);z-index:21;cursor:pointer}
+
+/* sheet */
+.back{position:fixed;inset:0;background:rgba(15,10,40,.5);z-index:40;display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.sheet{background:var(--card);width:100%;max-width:560px;border-radius:28px 28px 0 0;padding:10px 18px calc(20px + env(safe-area-inset-bottom));max-height:92vh;overflow-y:auto;animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px);opacity:.6}}
+.grab{width:44px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 10px}
+.sheet h3{margin:4px 0 14px;font-size:18px;font-weight:800}
+.f{margin-bottom:12px}
+.f label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin-bottom:5px}
+.f input,.f select,.f textarea{width:100%;border:1.5px solid var(--line);background:var(--bg);border-radius:14px;padding:12px 14px;outline:none}
+.f input:focus,.f select:focus{border-color:var(--brand)}
+.amountin{font-size:26px!important;font-weight:800;text-align:center;direction:ltr}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:flex;background:var(--soft);border-radius:14px;padding:4px;margin-bottom:14px}
+.seg button{flex:1;border:0;background:none;padding:9px;border-radius:11px;font-weight:700;cursor:pointer;color:var(--muted)}
+.seg button.on.exp{background:var(--exp);color:#fff}.seg button.on.inc{background:var(--inc);color:#fff}.seg button.on.n{background:var(--brand);color:#fff}
+.catgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.catb{border:2px solid transparent;background:var(--soft);border-radius:14px;padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;cursor:pointer;line-height:1.3;text-align:center}
+.catb .e{font-size:20px}
+.catb.on{border-color:var(--brand);background:var(--card)}
+.btn{width:100%;border:0;border-radius:16px;padding:14px;font-weight:800;font-size:16px;cursor:pointer;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 8px 20px rgba(91,61,245,.3)}
+.btn.ghost{background:var(--soft);color:var(--text);box-shadow:none}
+.btn.danger{background:var(--exp-bg);color:var(--exp);box-shadow:none}
+.btns{display:grid;gap:10px;margin-top:6px}
+.note{font-size:12.5px;color:var(--muted);background:var(--soft);border-radius:12px;padding:10px 12px;margin:8px 0}
+.note.warn{background:var(--up-bg);color:#8A5600}
+@media (prefers-color-scheme: dark){.note.warn{color:#FFD58A}}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.sw{width:30px;height:30px;border-radius:10px;border:3px solid transparent;cursor:pointer}
+.sw.on{border-color:var(--text)}
+
+/* auth */
+.auth{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:24px 20px;background:linear-gradient(160deg,var(--hero1),var(--hero2) 60%,var(--hero3))}
+.auth .box{background:var(--card);border-radius:26px;padding:24px 20px;max-width:420px;width:100%;margin:0 auto;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.auth .logo{width:60px;height:60px;border-radius:20px;font-size:30px;margin:0 auto 10px}
+.auth h1{text-align:center;margin:0;font-size:24px}
+.auth p.c{text-align:center;color:var(--muted);margin:4px 0 18px;font-size:13.5px}
+.err{color:var(--exp);font-size:13px;min-height:18px;margin:4px 0}
+.chk{display:flex;align-items:center;gap:8px;font-size:13.5px;margin:6px 0 12px}
+.chk input{width:20px;height:20px;accent-color:var(--brand)}
+.lock{display:flex;align-items:center;gap:6px;justify-content:center;font-size:12px;color:var(--muted);margin-top:14px}
+
+.toast{position:fixed;top:calc(16px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:#191634;color:#fff;padding:10px 18px;border-radius:14px;z-index:60;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:fade .2s}
+canvas{max-width:100%}
+.legend{display:grid;gap:8px;margin-top:12px}
+.lg{display:flex;align-items:center;gap:8px;font-size:13px}
+.lg i{width:12px;height:12px;border-radius:4px;flex-shrink:0}
+.lg .n{flex:1}
+.goalhead{display:flex;align-items:center;gap:12px}
+.pct{font-weight:800;font-size:13px}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<section id="authView" class="auth hidden">
+  <div class="box">
+    <div class="logo">💸</div>
+    <h1>رصيد</h1>
+    <p class="c" id="authSub">سجّل الدخول لمزامنة بياناتك المشفّرة</p>
+    <div id="authForm"></div>
+  </div>
+</section>
+
+<!-- APP -->
+<section id="appView" class="hidden">
+  <header class="hero">
+    <div class="topbar">
+      <div class="brand"><div class="logo">💸</div>رصيد</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="sync" id="syncBadge"><span class="dot" id="syncDot"></span><span id="syncTxt">—</span></div>
+        <button class="iconbtn" id="btnSettings" aria-label="الإعدادات">⚙️</button>
+      </div>
+    </div>
+    <div class="monthnav">
+      <button id="mPrev" aria-label="الشهر السابق">›</button>
+      <div class="m" id="mLabel"></div>
+      <button id="mNext" aria-label="الشهر التالي">‹</button>
+    </div>
+    <div class="balance">
+      <small id="balLbl">صافي الشهر</small>
+      <div class="big"><span class="num" id="balVal">0.000</span> <span style="font-size:16px">د.ك</span></div>
+      <div class="sub" id="balSub"></div>
+    </div>
+  </header>
+  <main class="wrap float" id="main"></main>
+  <button class="fab" id="fab" aria-label="إضافة عملية">+</button>
+  <nav class="tabbar">
+    <button class="tab on" data-v="home"><span class="ti">🏠</span>الرئيسية</button>
+    <button class="tab" data-v="tx"><span class="ti">🧾</span>العمليات</button>
+    <button class="tab" data-v="rec"><span class="ti">🔁</span>المتكررة</button>
+    <button class="tab" data-v="plan"><span class="ti">🎯</span>التخطيط</button>
+    <button class="tab" data-v="reports"><span class="ti">📊</span>التقارير</button>
+  </nav>
+</section>
+
+<div id="sheetHost"></div>
+
+<script>
+/* ============ CONFIG ============ */
+const CONFIG = {
+  SUPABASE_URL: 'https://dwsyctxhfbuzpcjilmwq.supabase.co',
+  SUPABASE_KEY: 'sb_publishable_xDrnFMfYxuqI008QnSZ8yA_JoKKMqzg'
+};
+const HAS_CLOUD = CONFIG.SUPABASE_URL.startsWith('https://') && !!window.supabase;
+
+/* ============ UTIL ============ */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const parseD = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const todayS = () => ymd(new Date());
+const addDays = (s, n) => { const d = parseD(s); d.setDate(d.getDate() + n); return ymd(d); };
+const mk = s => s.slice(0, 7);
+const shiftMonth = (m, n) => { const [y, mm] = m.split('-').map(Number); const d = new Date(y, mm - 1 + n, 1); return d.getFullYear() + '-' + pad(d.getMonth() + 1); };
+const MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const DAYS = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const mLabel = m => { const [y, mm] = m.split('-').map(Number); return MONTHS[mm - 1] + ' ' + y; };
+const dLabel = s => { const d = parseD(s); return DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()]; };
+const dShort = s => { const d = parseD(s); return d.getDate() + ' ' + MONTHS[d.getMonth()]; };
+const r3 = n => Math.round(n * 1000) / 1000;
+const fmt = n => r3(n).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+const money = n => '<span class="num">' + fmt(n) + '</span> د.ك';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const normNum = s => parseFloat(String(s).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[٫,]/g, '.'));
+const daysInMonth = m => { const [y, mm] = m.split('-').map(Number); return new Date(y, mm, 0).getDate(); };
+function toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2200); }
+const ls = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} }
+};
+
+/* ============ CRYPTO (AES-256-GCM, PBKDF2) ============ */
+const te = new TextEncoder(), td = new TextDecoder();
+function b64(buf) { const b = new Uint8Array(buf); let s = ''; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); }
+function unb64(s) { const bin = atob(s); const b = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i); return b; }
+async function deriveKey(pass, saltB64) {
+  const base = await crypto.subtle.importKey('raw', te.encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: unb64(saltB64), iterations: 310000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptObj(key, obj) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, te.encode(JSON.stringify(obj)));
+  return { iv: b64(iv), data: b64(ct) };
+}
+async function decryptObj(key, iv, data) {
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(iv) }, key, unb64(data));
+  return JSON.parse(td.decode(pt));
+}
+const newSalt = () => b64(crypto.getRandomValues(new Uint8Array(16)));
+/* IndexedDB: stores the non-extractable CryptoKey so this device can stay unlocked */
+function idb() { return new Promise((res, rej) => { const r = indexedDB.open("raseed", 1); r.onupgradeneeded = () => r.result.createObjectStore('k'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
+async function idbGet(k) { try { const db = await idb(); return await new Promise(res => { const q = db.transaction('k').objectStore('k').get(k); q.onsuccess = () => res(q.result || null); q.onerror = () => res(null); }); } catch { return null; } }
+async function idbSet(k, v) { try { const db = await idb(); await new Promise(res => { const tx = db.transaction('k', 'readwrite'); tx.objectStore('k').put(v, k); tx.oncomplete = res; tx.onerror = res; }); } catch {} }
+async function idbDel(k) { try { const db = await idb(); await new Promise(res => { const tx = db.transaction('k', 'readwrite'); tx.objectStore('k').delete(k); tx.oncomplete = res; tx.onerror = res; }); } catch {} }
+
+/* ============ DATA MODEL ============ */
+const COLS = ['categories', 'tx', 'rec', 'budgets', 'goals', 'goalMoves'];
+const PALETTE = ['#F0435F','#1C8FE6','#F29B0C','#0FB57E','#8B3DF5','#E0457B','#00A8B5','#FF7A29','#3D5AFE','#7CB518','#C2185B','#6D4C41','#009688','#FFB300','#5E35B1','#D81B60','#43A047','#0277BD','#AD1457','#546E7A'];
+function defaultCats() {
+  const E = [['c_housing','سكن وإيجار','🏠'],['c_food','بقالة وطعام','🛒'],['c_dining','مطاعم ومقاهي','☕'],['c_transport','مواصلات ووقود','⛽'],['c_bills','فواتير واتصالات','💡'],['c_subs','اشتراكات','📺'],['c_shopping','تسوق','🛍️'],['c_health','صحة','🩺'],['c_edu','تعليم وتطوير','📚'],['c_family','عائلة وهدايا','🎁'],['c_fun','ترفيه','🎮'],['c_travel','سفر','✈️'],['c_loans','أقساط وقروض','🏦'],['c_other_e','مصروفات أخرى','📦']];
+  const I = [['c_salary','راتب','💼'],['c_lessons','حصص خارجية','🧪'],['c_bonus','مكافآت','🏅'],['c_sales','بيع','🏷️'],['c_invest','استثمار','📈'],['c_other_i','دخل آخر','➕']];
+  let i = 0;
+  return [...E.map(([id, name, icon]) => ({ id, name, icon, kind: 'expense', color: PALETTE[i++ % 20], updatedAt: 1 })),
+          ...I.map(([id, name, icon]) => ({ id, name, icon, kind: 'income', color: PALETTE[i++ % 20], updatedAt: 1 }))];
+}
+function defaultState() { return { v: 1, categories: defaultCats(), tx: [], rec: [], budgets: [], goals: [], goalMoves: [], settings: { updatedAt: 0 } }; }
+let state = defaultState();
+const live = c => state[c].filter(x => !x.deleted);
+const cat = id => state.categories.find(c => c.id === id) || { name: 'غير مصنّف', icon: '❔', color: '#999', kind: 'expense' };
+function upsert(col, obj) {
+  obj.updatedAt = Date.now();
+  const i = state[col].findIndex(x => x.id === obj.id);
+  if (i >= 0) state[col][i] = obj; else state[col].push(obj);
+  changed();
+}
+function removeItem(col, id) {
+  const o = state[col].find(x => x.id === id); if (!o) return;
+  o.deleted = true; o.updatedAt = Date.now(); changed();
+}
+function merge(a, b) {
+  if (!a) return b; if (!b) return a;
+  const out = { v: 1 };
+  for (const c of COLS) {
+    const m = new Map();
+    for (const x of (a[c] || [])) m.set(x.id, x);
+    for (const x of (b[c] || [])) { const e = m.get(x.id); if (!e || (x.updatedAt || 0) > (e.updatedAt || 0)) m.set(x.id, x); }
+    out[c] = [...m.values()];
+  }
+  out.settings = ((a.settings || {}).updatedAt || 0) >= ((b.settings || {}).updatedAt || 0) ? (a.settings || { updatedAt: 0 }) : b.settings;
+  return out;
+}
+const sig = s => COLS.map(c => (s[c] || []).map(x => x.id + ':' + (x.updatedAt || 0)).sort().join(',')).join('|') + '|' + ((s.settings || {}).updatedAt || 0);
+
+/* ============ SESSION / SYNC ============ */
+let SB = null, USER = null, KEY = null, SALT = null, baseVersion = 0;
+let pushTimer = null, pushing = false, dirty = false;
+const cacheKey = () => 'nf_cache_' + USER.id;
+function setSync(s) {
+  const dot = $('#syncDot'), txt = $('#syncTxt'); if (!dot) return;
+  dot.className = 'dot ' + (s === 'ok' ? 'ok' : s === 'syncing' ? 'syncing' : s === 'offline' ? 'offline' : '');
+  txt.textContent = { ok: 'متزامن', syncing: 'مزامنة…', offline: 'غير متصل', local: 'على الجهاز' }[s] || s;
+}
+async function saveLocal() {
+  if (!KEY) return;
+  const p = await encryptObj(KEY, state);
+  ls.set(cacheKey(), { salt: SALT, iv: p.iv, data: p.data, version: baseVersion });
+}
+function changed() { saveLocal(); render(); schedulePush(); }
+function schedulePush() { if (!SB) return; dirty = true; clearTimeout(pushTimer); pushTimer = setTimeout(pushNow, 1200); }
+async function fetchRemote() {
+  if (!SB) return null;
+  const { data, error } = await SB.from('fin_vault').select('user_id,salt,iv,data,version').eq('user_id', USER.id).maybeSingle();
+  if (error) throw error; return data;
+}
+async function pushNow(opts = {}) {
+  if (!SB || !KEY) return;
+  if (pushing) { dirty = true; return; }
+  pushing = true; dirty = false; setSync('syncing');
+  try {
+    let done = false;
+    for (let attempt = 0; attempt < 5 && !done; attempt++) {
+      const remote = await fetchRemote();
+      if (remote && remote.version !== baseVersion && !opts.newSalt) {
+        if (remote.salt !== SALT) throw new Error('SALT_CHANGED');
+        const r = await decryptObj(KEY, remote.iv, remote.data);
+        state = merge(state, r); baseVersion = remote.version; render();
+      }
+      const p = await encryptObj(KEY, state);
+      if (!remote) {
+        const { error } = await SB.from('fin_vault').insert({ user_id: USER.id, salt: SALT, iv: p.iv, data: p.data, version: 1 });
+        if (error) { if (error.code === '23505') continue; throw error; }
+        baseVersion = 1; done = true;
+      } else {
+        const expected = opts.newSalt ? remote.version : baseVersion;
+        const row = { iv: p.iv, data: p.data, version: expected + 1, updated_at: new Date().toISOString() };
+        if (opts.newSalt) row.salt = SALT;
+        const { data, error } = await SB.from('fin_vault').update(row).eq('user_id', USER.id).eq('version', expected).select('version');
+        if (error) throw error;
+        if (!data || !data.length) continue;
+        baseVersion = data[0].version; done = true;
+      }
+    }
+    await saveLocal();
+    setSync(done ? 'ok' : 'offline');
+  } catch (e) {
+    console.warn(e);
+    if (e.message === 'SALT_CHANGED') { toast('تم تغيير كلمة سر التشفير من جهاز آخر'); await lockApp(true); }
+    else setSync('offline');
+  } finally { pushing = false; if (dirty) schedulePush(); }
+}
+async function pullNow() {
+  if (!SB || !KEY || pushing) return;
+  try {
+    const remote = await fetchRemote();
+    if (!remote) return pushNow();
+    if (remote.version === baseVersion) { setSync('ok'); return; }
+    if (remote.salt !== SALT) { await lockApp(true); return; }
+    const r = await decryptObj(KEY, remote.iv, remote.data);
+    const merged = merge(state, r); baseVersion = remote.version;
+    const needPush = sig(merged) !== sig(r);
+    state = merged; await saveLocal(); render();
+    if (needPush) pushNow(); else setSync('ok');
+  } catch (e) { setSync('offline'); }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') pullNow(); });
+window.addEventListener('online', () => pullNow());
+
+/* ============ AUTH & UNLOCK ============ */
+async function boot() {
+  if (HAS_CLOUD) {
+    SB = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY, { auth: { persistSession: true, storageKey: 'nf_auth' } });
+    const { data } = await SB.auth.getSession();
+    if (data && data.session) { USER = data.session.user; return afterLogin(); }
+    return showLogin();
+  }
+  USER = { id: 'local', email: 'هذا الجهاز' };
+  afterLogin();
+}
+function showAuth(sub, html) {
+  $('#appView').classList.add('hidden'); $('#authView').classList.remove('hidden');
+  $('#authSub').textContent = sub; $('#authForm').innerHTML = html;
+}
+function showLogin(mode = 'in') {
+  showAuth(mode === 'in' ? 'سجّل الدخول لمزامنة بياناتك المشفّرة' : 'أنشئ حسابًا للمزامنة بين أجهزتك',
+    `<div class="f"><label>البريد الإلكتروني</label><input id="aEmail" type="email" autocomplete="email" dir="ltr"></div>
+     <div class="f"><label>كلمة مرور الحساب</label><input id="aPass" type="password" autocomplete="${mode === 'in' ? 'current-password' : 'new-password'}" dir="ltr"></div>
+     <div class="err" id="aErr"></div>
+     <div class="btns"><button class="btn" id="aGo">${mode === 'in' ? 'دخول' : 'إنشاء حساب'}</button>
+     <button class="btn ghost" id="aSwitch">${mode === 'in' ? 'ليس لديك حساب؟ أنشئ حسابًا' : 'لديك حساب؟ سجّل الدخول'}</button></div>
+     <div class="note">يمكنك استخدام نفس حساب تطبيق «مهام التقويم التربوي».</div>`);
+  $('#aSwitch').onclick = () => showLogin(mode === 'in' ? 'up' : 'in');
+  $('#aGo').onclick = async () => {
+    const email = $('#aEmail').value.trim(), password = $('#aPass').value;
+    $('#aErr').textContent = '';
+    if (!email || password.length < 6) { $('#aErr').textContent = 'أدخل البريد وكلمة مرور (6 أحرف على الأقل)'; return; }
+    $('#aGo').disabled = true;
+    const r = mode === 'in' ? await SB.auth.signInWithPassword({ email, password }) : await SB.auth.signUp({ email, password });
+    $('#aGo').disabled = false;
+    if (r.error) { $('#aErr').textContent = r.error.message.includes('Invalid') ? 'البريد أو كلمة المرور غير صحيحة' : r.error.message; return; }
+    if (!r.data.session) { $('#aErr').textContent = 'تم إنشاء الحساب — أكّد بريدك ثم سجّل الدخول'; return; }
+    USER = r.data.session.user; afterLogin();
+  };
+}
+async function afterLogin() {
+  const cache = ls.get(cacheKey());
+  let remote = null;
+  try { remote = await fetchRemote(); } catch (e) { remote = undefined; } // undefined = offline
+  const salt = (remote && remote.salt) || (cache && cache.salt) || null;
+  const rem = await idbGet('key_' + USER.id);
+  if (rem && salt && rem.salt === salt) {
+    if (await unlockWith(rem.key, salt, remote, cache)) return;
+    await idbDel('key_' + USER.id);
+  }
+  showPass(salt ? 'unlock' : 'create', salt, remote, cache);
+}
+async function unlockWith(key, salt, remote, cache) {
+  let local = null, rem = null;
+  try {
+    if (cache && cache.salt === salt) local = await decryptObj(key, cache.iv, cache.data);
+    if (remote) rem = await decryptObj(key, remote.iv, remote.data);
+  } catch { return false; }
+  KEY = key; SALT = salt;
+  baseVersion = remote ? remote.version : (cache && cache.salt === salt ? cache.version || 0 : 0);
+  state = merge(merge(defaultState(), local), rem);
+  for (const c of COLS) state[c] = state[c] || [];
+  enterApp();
+  await saveLocal();
+  if (SB) {
+    if (remote === null) pushNow();
+    else if (remote === undefined) setSync('offline');
+    else if (sig(state) !== sig(rem)) pushNow(); else setSync('ok');
+  } else setSync('local');
+  return true;
+}
+function showPass(mode, salt, remote, cache) {
+  const create = mode === 'create';
+  showAuth(create ? 'أنشئ كلمة سر التشفير' : 'أدخل كلمة سر التشفير لفتح بياناتك',
+    `${create ? `<div class="note warn">🔐 هذه الكلمة تشفّر بياناتك على جهازك قبل رفعها، ولا تُرسل لأي خادم. <b>إن نسيتها لا يمكن استرجاع البيانات أبدًا</b> — احفظها في مكان آمن. اجعلها مختلفة عن كلمة مرور الحساب.</div>` : ''}
+     <div class="f"><label>كلمة سر التشفير</label><input id="pP1" type="password" autocomplete="new-password" dir="ltr"></div>
+     ${create ? `<div class="f"><label>تأكيدها</label><input id="pP2" type="password" autocomplete="new-password" dir="ltr"></div>` : ''}
+     <label class="chk"><input type="checkbox" id="pRem" checked> تذكّر على هذا الجهاز</label>
+     <div class="err" id="pErr"></div>
+     <div class="btns"><button class="btn" id="pGo">${create ? 'إنشاء وبدء الاستخدام' : 'فتح'}</button>
+     ${SB ? '<button class="btn ghost" id="pOut">تسجيل الخروج</button>' : ''}</div>
+     <div class="lock">🔒 تشفير AES-256 من طرف الجهاز</div>`);
+  if ($('#pOut')) $('#pOut').onclick = logout;
+  $('#pGo').onclick = async () => {
+    const p1 = $('#pP1').value; $('#pErr').textContent = '';
+    if (create) {
+      if (p1.length < 8) { $('#pErr').textContent = '8 أحرف على الأقل'; return; }
+      if (p1 !== $('#pP2').value) { $('#pErr').textContent = 'التأكيد غير مطابق'; return; }
+    }
+    $('#pGo').disabled = true; $('#pGo').textContent = 'جارٍ…';
+    const s = salt || newSalt();
+    const key = await deriveKey(p1, s);
+    const ok = await unlockWith(key, s, remote, create ? null : cache);
+    $('#pGo').disabled = false; $('#pGo').textContent = create ? 'إنشاء وبدء الاستخدام' : 'فتح';
+    if (!ok) { $('#pErr').textContent = 'كلمة سر التشفير غير صحيحة'; return; }
+    if ($('#pRem') && $('#pRem').checked) await idbSet('key_' + USER.id, { key, salt: s });
+  };
+}
+async function lockApp(forget) {
+  if (forget) await idbDel('key_' + USER.id);
+  KEY = null; state = defaultState(); closeSheet();
+  afterLogin();
+}
+async function logout() {
+  await idbDel('key_' + USER.id); ls.del(cacheKey());
+  if (SB) await SB.auth.signOut();
+  KEY = null; USER = null; state = defaultState(); closeSheet();
+  location.reload();
+}
+
+/* ============ CALCULATIONS ============ */
+let VIEW = 'home', VM = mk(todayS()), TXF = 'all', TXQ = '';
+const txAll = () => live('tx').filter(t => !t.skipped);
+const isInc = t => t.type === 'income';
+function monthActual(m) {
+  const t = todayS(); let income = 0, expense = 0; const byCat = {};
+  for (const x of txAll()) { if (mk(x.date) !== m || x.date > t) continue;
+    if (isInc(x)) income += x.amount; else expense += x.amount;
+    byCat[x.catId] = (byCat[x.catId] || 0) + x.amount; }
+  return { income: r3(income), expense: r3(expense), net: r3(income - expense), byCat };
+}
+function occurrences(r, from, to) {
+  const out = []; if (r.paused || !r.start) return out;
+  const end = r.end && r.end < to ? r.end : to; const every = Math.max(1, r.every || 1);
+  if (r.freq === 'weekly') {
+    let d = r.start; if (d < from) { const diff = Math.floor((parseD(from) - parseD(d)) / 86400000); const k = Math.floor(diff / (7 * every)); d = addDays(d, k * 7 * every); }
+    for (let i = 0; i < 400 && d <= end; i++) { if (d >= from) out.push(d); d = addDays(d, 7 * every); }
+  } else {
+    const sd = parseD(r.start); const step = r.freq === 'yearly' ? 12 * every : every;
+    for (let i = 0; i < 600; i++) {
+      const y = sd.getFullYear(), m0 = sd.getMonth() + i * step; const dt = new Date(y, m0, 1);
+      const dim = new Date(dt.getFullYear(), dt.getMonth() + 1, 0).getDate();
+      const s = ymd(new Date(dt.getFullYear(), dt.getMonth(), Math.min(sd.getDate(), dim)));
+      if (s > end) break; if (s >= from) out.push(s);
+    }
+  }
+  return out;
+}
+function doneSet() { const s = new Set(); for (const t of live('tx')) if (t.recId) s.add(t.recId + '@' + t.recDate); return s; }
+function upcoming(days = 30, fromOverride) {
+  const t = todayS(), to = addDays(t, days), ds = doneSet(), out = [];
+  for (const r of live('rec')) {
+    const from = fromOverride || (r.start > addDays(t, -60) ? r.start : addDays(t, -60));
+    for (const d of occurrences(r, from, to)) if (!ds.has(r.id + '@' + d)) out.push({ kind: 'rec', r, date: d, type: r.type, amount: r.amount, catId: r.catId, name: r.name, overdue: d < t });
+  }
+  for (const x of txAll()) if (x.date > t && x.date <= to) out.push({ kind: 'tx', x, date: x.date, type: x.type, amount: x.amount, catId: x.catId, name: x.note || cat(x.catId).name, overdue: false });
+  return out.sort((a, b) => a.date.localeCompare(b.date));
+}
+function projection(m) {
+  const a = monthActual(m); const t = todayS();
+  const cur = mk(t);
+  let upI = 0, upE = 0;
+  if (m >= cur) {
+    const start = m === cur ? addDays(t, 1) : m + '-01'; const end = m + '-' + pad(daysInMonth(m));
+    const ds = doneSet();
+    for (const r of live('rec')) for (const d of occurrences(r, m + '-01', end)) {
+      if (ds.has(r.id + '@' + d)) continue;
+      if (r.type === 'income') upI += r.amount; else upE += r.amount; }
+    for (const x of txAll()) if (x.date >= start && x.date <= end) { if (isInc(x)) upI += x.amount; else upE += x.amount; }
+  }
+  return { ...a, upI: r3(upI), upE: r3(upE), pIncome: r3(a.income + upI), pExpense: r3(a.expense + upE), pNet: r3(a.income + upI - a.expense - upE) };
+}
+const monthlyEq = r => { const e = Math.max(1, r.every || 1); return r.freq === 'weekly' ? r.amount * 52 / 12 / e : r.freq === 'yearly' ? r.amount / 12 / e : r.amount / e; };
+function goalSaved(g) { return r3(live('goalMoves').filter(x => x.goalId === g.id).reduce((s, x) => s + x.amount, 0)); }
+function monthsBetween(a, b) { const [y1, m1] = a.split('-').map(Number), [y2, m2] = b.split('-').map(Number); return (y2 - y1) * 12 + (m2 - m1); }
+
+/* ============ SUGGESTIONS ENGINE ============ */
+function suggestions() {
+  const out = [], t = todayS(), m = mk(t), day = parseD(t).getDate(), dim = daysInMonth(m);
+  const prev = [1, 2, 3].map(i => shiftMonth(m, -i)).map(pm => ({ m: pm, ...monthActual(pm) })).filter(x => x.income > 0 || x.expense > 0);
+  const avg = f => prev.length ? prev.reduce((s, x) => s + f(x), 0) / prev.length : 0;
+  const p = projection(m);
+  const L = { bad: 0, warn: 1, info: 2, good: 3 };
+  const add = (level, icon, title, text) => out.push({ level, icon, title, text });
+
+  if (!live('tx').length && !live('rec').length) {
+    add('info', '👋', 'ابدأ بتسجيل عملياتك', 'أضف راتبك ومصروفاتك الثابتة (إيجار، اشتراكات، أقساط) في «المتكررة»، وستظهر هنا اقتراحات مبنية على أرقامك.');
+    return out;
+  }
+  // 1) savings rate (projected)
+  if (p.pIncome > 0) {
+    const rate = (p.pIncome - p.pExpense) / p.pIncome;
+    if (rate < 0) add('bad', '🚨', 'المصروف المتوقع يتجاوز الدخل', `بحسب العمليات والمتكررة، نهاية ${mLabel(m)} تتجه لعجز ${fmt(-p.pNet)} د.ك. راجع المصروفات القادمة أو أجّل غير الضروري.`);
+    else if (rate < 0.1) add('warn', '📉', `نسبة الادخار المتوقعة ${Math.round(rate * 100)}%`, `المتبقي المتوقع ${fmt(p.pNet)} د.ك. قاعدة شائعة تستهدف ادخار 20% تقريبًا من الدخل (${fmt(p.pIncome * 0.2)} د.ك هذا الشهر).`);
+    else if (rate >= 0.2) add('good', '🌟', `نسبة ادخار ممتازة: ${Math.round(rate * 100)}%`, `المتوقع أن يتبقى ${fmt(p.pNet)} د.ك. فكّر في تحويل جزء منه مباشرة إلى أحد أهدافك.`);
+  }
+  // 2) budgets
+  const a = monthActual(m);
+  for (const b of live('budgets')) {
+    const spent = a.byCat[b.catId] || 0; const c = cat(b.catId); if (!b.limit) continue;
+    const pct = spent / b.limit;
+    if (pct >= 1) add('bad', '⛔', `تجاوزت ميزانية ${c.name}`, `صرفت ${fmt(spent)} من ${fmt(b.limit)} د.ك (${Math.round(pct * 100)}%).`);
+    else if (pct >= 0.8) add('warn', '⚠️', `اقتربت من حد ${c.name}`, `المتبقي ${fmt(b.limit - spent)} د.ك لـ ${dim - day} يومًا — أي نحو ${fmt((b.limit - spent) / Math.max(1, dim - day))} د.ك يوميًا.`);
+  }
+  // 3) category spikes vs 3-month average
+  if (prev.length) {
+    for (const c of live('categories').filter(c => c.kind === 'expense')) {
+      const cur = a.byCat[c.id] || 0; const av = avg(x => x.byCat[c.id] || 0);
+      if (av > 0 && cur > av * 1.15 && cur - av >= 5) add('warn', c.icon, `${c.name}: أعلى من معدلك`, `صرفت هذا الشهر ${fmt(cur)} د.ك مقابل متوسط ${fmt(av)} د.ك في الأشهر السابقة (+${Math.round((cur / av - 1) * 100)}%).`);
+    }
+  }
+  // 4) subscriptions
+  const subs = live('rec').filter(r => r.type === 'expense' && r.catId === 'c_subs' && !r.paused);
+  if (subs.length >= 2) { const tot = subs.reduce((s, r) => s + monthlyEq(r), 0); add('info', '📺', `${subs.length} اشتراكات بـ ${fmt(tot)} د.ك شهريًا`, `أي ${fmt(tot * 12)} د.ك سنويًا. إلغاء اشتراك واحد غير مستخدم يوفّر مبلغًا ثابتًا كل شهر.`); }
+  // 5) income concentration & private lessons
+  const incPrev = prev.reduce((s, x) => s + x.income, 0);
+  if (incPrev > 0) {
+    const sal = prev.reduce((s, x) => s + (x.byCat['c_salary'] || 0), 0);
+    const les = prev.reduce((s, x) => s + (x.byCat['c_lessons'] || 0), 0);
+    const lesTx = txAll().filter(x => x.catId === 'c_lessons' && x.date <= t);
+    const perLesson = lesTx.length ? lesTx.reduce((s, x) => s + x.amount, 0) / lesTx.length : 0;
+    if (sal / incPrev > 0.85) add('info', '🧩', `${Math.round(sal / incPrev * 100)}% من دخلك من الراتب`, perLesson > 0 ? `تنويع الدخل يقلل المخاطر. متوسط عملية «حصص خارجية» لديك ${fmt(perLesson)} د.ك؛ إضافة واحدة أسبوعيًا تضيف تقريبًا ${fmt(perLesson * 52 / 12)} د.ك شهريًا.` : 'تنويع مصادر الدخل (حصص خارجية، مكافآت، مشاريع جانبية) يقلل الاعتماد على مصدر واحد.');
+    const lesAvg = les / prev.length; const lesCur = a.byCat['c_lessons'] || 0;
+    if (lesAvg > 0 && day >= 20 && lesCur < lesAvg * 0.8) add('warn', '🧪', 'دخل الحصص الخارجية أقل من معدله', `${fmt(lesCur)} د.ك حتى الآن مقابل متوسط ${fmt(lesAvg)} د.ك شهريًا.`);
+    if (lesAvg > 0 && lesCur > lesAvg * 1.2) add('good', '🧪', 'دخل الحصص الخارجية في ارتفاع', `${fmt(lesCur)} د.ك هذا الشهر مقابل متوسط ${fmt(lesAvg)} د.ك. هذا الفائض مناسب لتسريع أحد أهدافك.`);
+  }
+  // 6) goals feasibility
+  const surplus = prev.length ? avg(x => x.net) : p.pNet;
+  for (const g of live('goals')) {
+    const saved = goalSaved(g), left = g.target - saved; if (left <= 0 || !g.date) continue;
+    const months = Math.max(1, monthsBetween(m, mk(g.date)) + (g.date.slice(8) >= pad(day) ? 0 : 0));
+    const need = left / months;
+    if (surplus > 0 && need > surplus) add('warn', '🎯', `هدف «${g.name}» يحتاج ${fmt(need)} د.ك شهريًا`, `متوسط فائضك ${fmt(surplus)} د.ك. مدّد الموعد أو خفّض مصروفًا متغيرًا ليصبح الهدف واقعيًا.`);
+    else if (surplus > 0) add('good', '🎯', `هدف «${g.name}» ممكن`, `يحتاج ${fmt(need)} د.ك شهريًا لمدة ${months} شهر، وهو ضمن متوسط فائضك (${fmt(surplus)} د.ك).`);
+  }
+  // 7) upcoming load
+  const up14 = upcoming(14).filter(x => x.type === 'expense');
+  const upSum = up14.reduce((s, x) => s + x.amount, 0);
+  if (upSum > 0) { const late = up14.filter(x => x.overdue).length; add(late ? 'warn' : 'info', '📅', `${up14.length} مصروف قادم خلال 14 يومًا`, `المجموع ${fmt(upSum)} د.ك${late ? ` — منها ${late} متأخرة لم تُسجَّل بعد` : ''}.`); }
+  // 8) dining share & top category
+  const expAll = prev.reduce((s, x) => s + x.expense, 0) + a.expense;
+  if (expAll > 0) {
+    const din = prev.reduce((s, x) => s + (x.byCat['c_dining'] || 0), 0) + (a.byCat['c_dining'] || 0);
+    if (din / expAll > 0.15) add('info', '☕', `المطاعم والمقاهي ${Math.round(din / expAll * 100)}% من مصروفك`, `خفضها بمقدار الربع يوفر تقريبًا ${fmt(din / (prev.length + 1) * 0.25 * 12)} د.ك سنويًا.`);
+    const totals = {}; for (const x of [...prev, a]) for (const [k, v] of Object.entries(x.byCat)) if (cat(k).kind === 'expense') totals[k] = (totals[k] || 0) + v;
+    const top = Object.entries(totals).sort((x, y) => y[1] - x[1])[0];
+    if (top && !['c_housing', 'c_loans'].includes(top[0])) { const perM = top[1] / (prev.length + 1); add('info', cat(top[0]).icon, `أكبر بند متغير: ${cat(top[0]).name}`, `متوسطه ${fmt(perM)} د.ك شهريًا. توفير 10% منه فقط = ${fmt(perM * 0.1 * 12)} د.ك سنويًا.`); }
+  }
+  return out.sort((x, y) => L[x.level] - L[y.level]);
+}
+
+/* ============ RENDER ============ */
+const charts = {};
+function killCharts() { for (const k in charts) { try { charts[k].destroy(); } catch {} delete charts[k]; } }
+function render() {
+  if (!KEY) return;
+  const p = projection(VM);
+  $('#mLabel').textContent = mLabel(VM);
+  $('#balVal').textContent = fmt(p.net);
+  $('#balVal').style.color = p.net < 0 ? '#FFB3C0' : '#fff';
+  const isCur = VM === mk(todayS()), isFut = VM > mk(todayS());
+  $('#balLbl').textContent = isFut ? 'الصافي المتوقع' : 'صافي الشهر حتى الآن';
+  if (isFut) $('#balVal').textContent = fmt(p.pNet);
+  $('#balSub').innerHTML = (isCur || isFut) && (p.upI || p.upE) ? `المتوقع نهاية الشهر: <span class="num">${fmt(p.pNet)}</span> د.ك` : '';
+  $$('.tab').forEach(b => b.classList.toggle('on', b.dataset.v === VIEW));
+  killCharts();
+  const main = $('#main');
+  main.innerHTML = ({ home: vHome, tx: vTx, rec: vRec, plan: vPlan, reports: vReports })[VIEW](p);
+  bindView();
+}
+function kpis(p) {
+  const rate = p.pIncome > 0 ? Math.max(-99, Math.round((p.pIncome - p.pExpense) / p.pIncome * 100)) : null;
+  return `<div class="kpis">
+   <div class="kpi inc"><div class="lbl"><span class="chip">↓</span>الدخل</div><div class="val">${money(p.income)}</div>${p.upI ? `<div class="s" style="font-size:11.5px;color:var(--muted)">+ <span class="num">${fmt(p.upI)}</span> متوقع</div>` : ''}</div>
+   <div class="kpi exp"><div class="lbl"><span class="chip">↑</span>المصروف</div><div class="val">${money(p.expense)}</div>${p.upE ? `<div class="s" style="font-size:11.5px;color:var(--muted)">+ <span class="num">${fmt(p.upE)}</span> قادم</div>` : ''}</div>
+   <div class="kpi up"><div class="lbl"><span class="chip">⏳</span>القادم (30 يومًا)</div><div class="val" style="font-size:16px">${upcoming(30).length} عملية</div></div>
+   <div class="kpi rate"><div class="lbl"><span class="chip">%</span>نسبة الادخار المتوقعة</div><div class="val" style="color:var(--info)">${rate === null ? '—' : `<span class="num">${rate}%</span>`}</div>
+     <div class="ring"><i style="width:${Math.max(0, Math.min(100, rate || 0))}%;background:linear-gradient(90deg,var(--info),var(--inc))"></i></div></div>
+  </div>`;
+}
+function rowTx(x) {
+  const c = cat(x.catId), fut = x.date > todayS();
+  return `<div class="row" data-edit-tx="${x.id}"><div class="ico" style="background:${c.color}22">${c.icon}</div>
+   <div class="mid"><div class="t">${esc(x.note || c.name)}</div><div class="s">${esc(c.name)}${x.recId ? ' · 🔁' : ''} ${fut ? '<span class="tag up">قادمة</span>' : ''}</div></div>
+   <div class="amt ${isInc(x) ? 'inc' : 'exp'}"><span class="num">${isInc(x) ? '+' : '−'}${fmt(x.amount)}</span></div></div>`;
+}
+function rowUp(u) {
+  const c = cat(u.catId);
+  return `<div class="row" ${u.kind === 'tx' ? `data-edit-tx="${u.x.id}"` : ''}><div class="ico" style="background:${c.color}22">${c.icon}</div>
+   <div class="mid"><div class="t">${esc(u.name)}</div>
+   <div class="s">${dShort(u.date)} ${u.overdue ? '<span class="tag late">متأخرة</span>' : '<span class="tag up">قادمة</span>'}</div>
+   ${u.kind === 'rec' ? `<div class="acts"><button class="mini ok" data-pay="${u.r.id}@${u.date}">✓ ${u.type === 'income' ? 'استلمت' : 'دفعت'}</button><button class="mini skip" data-skip="${u.r.id}@${u.date}">تخطٍّ</button></div>` : ''}</div>
+   <div class="amt ${u.type === 'income' ? 'inc' : 'exp'}"><span class="num">${u.type === 'income' ? '+' : '−'}${fmt(u.amount)}</span></div></div>`;
+}
+const tipHTML = s => `<div class="tip ${s.level}"><div class="ti">${s.icon}</div><div><b>${esc(s.title)}</b><p>${esc(s.text)}</p></div></div>`;
+const emptyHTML = (e, t) => `<div class="empty"><div class="e">${e}</div>${t}</div>`;
+
+function vHome(p) {
+  const up = upcoming(14).slice(0, 5);
+  const sug = suggestions();
+  const recent = txAll().filter(x => x.date <= todayS()).sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt).slice(0, 5);
+  return kpis(p) +
+   `<h2 class="sec">💡 اقتراحات لك <a data-go="reports">كل التحليل</a></h2>` + sug.slice(0, 3).map(tipHTML).join('') +
+   `<h2 class="sec">⏳ القادم خلال 14 يومًا <a data-go="rec">المتكررة</a></h2>` +
+   (up.length ? `<div class="list">${up.map(rowUp).join('')}</div>` : `<div class="list">${emptyHTML('🗓️', 'لا توجد عمليات قادمة')}</div>`) +
+   `<h2 class="sec">🧾 آخر العمليات <a data-go="tx">الكل</a></h2>` +
+   (recent.length ? `<div class="list">${recent.map(rowTx).join('')}</div>` : `<div class="list">${emptyHTML('✨', 'اضغط + لإضافة أول عملية')}</div>`);
+}
+function vTx() {
+  const t = todayS();
+  let list = live('tx').filter(x => mk(x.date) === VM);
+  if (TXF === 'expense') list = list.filter(x => x.type === 'expense' && !x.skipped);
+  if (TXF === 'income') list = list.filter(x => x.type === 'income' && !x.skipped);
+  if (TXF === 'up') list = list.filter(x => x.date > t);
+  list = list.filter(x => !x.skipped);
+  if (TXQ) { const q = TXQ.toLowerCase(); list = list.filter(x => (x.note || '').toLowerCase().includes(q) || cat(x.catId).name.includes(q)); }
+  list.sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt);
+  const groups = {}; for (const x of list) (groups[x.date] = groups[x.date] || []).push(x);
+  const f = (k, l) => `<button class="chipb ${TXF === k ? 'on' : ''}" data-f="${k}">${l}</button>`;
+  return `<div class="card" style="padding:12px">
+     <input class="search" id="txq" placeholder="🔍 بحث في الملاحظات أو الفئات" value="${esc(TXQ)}" style="margin:0">
+   </div>
+   <div class="chips">${f('all', 'الكل')}${f('expense', 'المصروفات')}${f('income', 'الدخل')}${f('up', 'القادمة')}</div>` +
+   (list.length ? Object.entries(groups).map(([d, xs]) => {
+     const net = xs.reduce((s, x) => s + (isInc(x) ? x.amount : -x.amount), 0);
+     return `<div class="daylbl" style="display:flex;justify-content:space-between"><span>${dLabel(d)}</span><span class="num">${net >= 0 ? '+' : '−'}${fmt(Math.abs(net))}</span></div><div class="list">${xs.map(rowTx).join('')}</div>`;
+   }).join('') : `<div class="list">${emptyHTML('🔎', 'لا توجد عمليات في ' + mLabel(VM))}</div>`);
+}
+const FREQ = { monthly: 'شهري', weekly: 'أسبوعي', yearly: 'سنوي' };
+function freqText(r) { const e = r.every || 1; return e > 1 ? `كل ${e} ${r.freq === 'weekly' ? 'أسابيع' : r.freq === 'yearly' ? 'سنوات' : 'أشهر'}` : FREQ[r.freq]; }
+function vRec() {
+  const recs = live('rec');
+  const inc = recs.filter(r => r.type === 'income'), exp = recs.filter(r => r.type === 'expense');
+  const mI = inc.filter(r => !r.paused).reduce((s, r) => s + monthlyEq(r), 0), mE = exp.filter(r => !r.paused).reduce((s, r) => s + monthlyEq(r), 0);
+  const ds = doneSet();
+  const row = r => { const c = cat(r.catId); const next = occurrences(r, todayS(), addDays(todayS(), 400)).find(d => !ds.has(r.id + '@' + d));
+    return `<div class="row" data-edit-rec="${r.id}"><div class="ico" style="background:${c.color}22">${c.icon}</div>
+     <div class="mid"><div class="t">${esc(r.name)}</div><div class="s">${freqText(r)} · ${r.paused ? '<span class="tag muted">موقوف</span>' : next ? 'القادم ' + dShort(next) : 'انتهى'}</div></div>
+     <div class="amt ${r.type === 'income' ? 'inc' : 'exp'}"><span class="num">${fmt(r.amount)}</span></div></div>`; };
+  const up = upcoming(30);
+  return `<div class="kpis"><div class="kpi inc"><div class="lbl"><span class="chip">↓</span>دخل ثابت شهريًا</div><div class="val">${money(mI)}</div></div>
+    <div class="kpi exp"><div class="lbl"><span class="chip">↑</span>التزامات شهرية</div><div class="val">${money(mE)}</div></div></div>
+    <button class="btn" style="margin-top:14px" id="addRec">＋ إضافة دخل أو مصروف متكرر</button>
+    <h2 class="sec">📅 المستحق خلال 30 يومًا</h2>${up.length ? `<div class="list">${up.map(rowUp).join('')}</div>` : `<div class="list">${emptyHTML('✅', 'لا شيء مستحق')}</div>`}
+    <h2 class="sec">💼 الدخل المتكرر</h2>${inc.length ? `<div class="list">${inc.map(row).join('')}</div>` : `<div class="list">${emptyHTML('💼', 'أضف راتبك هنا ليُحتسب تلقائيًا كل شهر')}</div>`}
+    <h2 class="sec">🧾 المصروفات المتكررة</h2>${exp.length ? `<div class="list">${exp.map(row).join('')}</div>` : `<div class="list">${emptyHTML('🏠', 'إيجار، اشتراكات، أقساط…')}</div>`}`;
+}
+function vPlan() {
+  const a = monthActual(VM);
+  const budgets = live('budgets').filter(b => !cat(b.catId).deleted);
+  const bHTML = budgets.map(b => { const c = cat(b.catId), sp = a.byCat[b.catId] || 0, pct = b.limit ? sp / b.limit : 0;
+    const col = pct >= 1 ? 'var(--exp)' : pct >= 0.8 ? 'var(--up)' : c.color;
+    return `<div class="card" data-edit-bud="${b.id}" style="cursor:pointer"><div class="goalhead"><div class="ico" style="background:${c.color}22">${c.icon}</div>
+      <div style="flex:1"><b>${esc(c.name)}</b><div class="s" style="font-size:12.5px;color:var(--muted)">${money(sp)} من ${money(b.limit)}</div></div>
+      <div class="pct" style="color:${col}"><span class="num">${Math.round(pct * 100)}%</span></div></div>
+      <div class="bar"><i style="width:${Math.min(100, pct * 100)}%;background:${col}"></i></div>
+      <div class="bline"><span>${pct >= 1 ? 'تجاوز بـ ' + fmt(sp - b.limit) : 'متبقٍ ' + fmt(b.limit - sp)} د.ك</span></div></div>`; }).join('');
+  const tb = budgets.reduce((s, b) => s + b.limit, 0), ts = budgets.reduce((s, b) => s + (a.byCat[b.catId] || 0), 0);
+  const gHTML = live('goals').map(g => { const sv = goalSaved(g), pct = g.target ? sv / g.target : 0; const mleft = g.date ? Math.max(1, monthsBetween(mk(todayS()), mk(g.date))) : null;
+    return `<div class="card"><div class="goalhead" data-edit-goal="${g.id}" style="cursor:pointer"><div class="ico" style="background:${g.color}22">${esc(g.icon || '🎯')}</div>
+      <div style="flex:1"><b>${esc(g.name)}</b><div class="s" style="font-size:12.5px;color:var(--muted)">${money(sv)} من ${money(g.target)}${g.date ? ' · بحلول ' + dShort(g.date) + ' ' + g.date.slice(0, 4) : ''}</div></div>
+      <div class="pct" style="color:${g.color}"><span class="num">${Math.round(pct * 100)}%</span></div></div>
+      <div class="bar"><i style="width:${Math.min(100, pct * 100)}%;background:linear-gradient(90deg,${g.color},${g.color}AA)"></i></div>
+      <div class="bline"><span>${sv >= g.target ? '🎉 تحقق الهدف' : mleft ? 'مطلوب شهريًا: ' + fmt((g.target - sv) / mleft) + ' د.ك' : 'متبقٍ ' + fmt(g.target - sv) + ' د.ك'}</span>
+      <span><button class="mini ok" data-dep="${g.id}">＋ إيداع</button> <button class="mini skip" data-wd="${g.id}">سحب</button></span></div></div>`; }).join('');
+  return `<h2 class="sec" style="margin-top:4px">📊 ميزانيات ${mLabel(VM)} <a id="addBud">＋ ميزانية</a></h2>
+    ${budgets.length ? `<div class="card" style="background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff"><div style="font-size:13px;opacity:.85">إجمالي الميزانيات</div><div style="font-size:20px;font-weight:800">${money(ts)} / ${money(tb)}</div><div class="bar" style="background:rgba(255,255,255,.25)"><i style="width:${tb ? Math.min(100, ts / tb * 100) : 0}%;background:#fff"></i></div></div>` + bHTML : `<div class="list">${emptyHTML('📊', 'حدّد سقفًا شهريًا لكل فئة لتتابع صرفك')}</div>`}
+    <h2 class="sec">🎯 أهداف الادخار <a id="addGoal">＋ هدف</a></h2>
+    ${gHTML || `<div class="list">${emptyHTML('🎯', 'أضف هدفًا (سفر، جهاز، طوارئ…)')}</div>`}`;
+}
+function vReports() {
+  const a = monthActual(VM);
+  const expCats = Object.entries(a.byCat).filter(([k]) => cat(k).kind === 'expense').sort((x, y) => y[1] - x[1]);
+  const incCats = Object.entries(a.byCat).filter(([k]) => cat(k).kind === 'income').sort((x, y) => y[1] - x[1]);
+  const leg = (arr, tot) => `<div class="legend">${arr.map(([k, v]) => `<div class="lg"><i style="background:${cat(k).color}"></i><span class="n">${cat(k).icon} ${esc(cat(k).name)}</span><span class="num">${fmt(v)}</span><span style="color:var(--muted);font-size:12px;min-width:38px;text-align:left">${Math.round(v / tot * 100)}%</span></div>`).join('')}</div>`;
+  return `<div class="card"><b>الدخل مقابل المصروف — آخر 6 أشهر</b><div style="height:230px;margin-top:10px"><canvas id="chBar"></canvas></div></div>
+    <div class="card"><b>توزيع المصروف — ${mLabel(VM)}</b>${expCats.length ? `<div style="height:210px;margin-top:10px"><canvas id="chExp"></canvas></div>${leg(expCats, a.expense)}` : emptyHTML('🍩', 'لا مصروفات مسجّلة')}</div>
+    <div class="card"><b>مصادر الدخل — ${mLabel(VM)}</b>${incCats.length ? `<div style="height:190px;margin-top:10px"><canvas id="chInc"></canvas></div>${leg(incCats, a.income)}` : emptyHTML('💼', 'لا دخل مسجّل')}</div>
+    <h2 class="sec">💡 كل الاقتراحات</h2>${suggestions().map(tipHTML).join('')}
+    <div class="note">الاقتراحات قواعد حسابية تُحسب على جهازك من بياناتك فقط؛ هي تقديرات وليست استشارة مالية.</div>`;
+}
+function drawReports() {
+  if (!window.Chart) return;
+  const dark = matchMedia('(prefers-color-scheme: dark)').matches; const tc = dark ? '#A5A2C6' : '#6B6A86', gc = dark ? '#2E2A52' : '#E3E6F2';
+  Chart.defaults.font.family = 'Noto Kufi Arabic'; Chart.defaults.color = tc;
+  const ms = [5, 4, 3, 2, 1, 0].map(i => shiftMonth(VM, -i)); const d = ms.map(monthActual);
+  const bar = $('#chBar');
+  if (bar) charts.bar = new Chart(bar, { type: 'bar', data: { labels: ms.map(m => MONTHS[+m.slice(5) - 1]), datasets: [
+    { label: 'الدخل', data: d.map(x => x.income), backgroundColor: '#0FB57E', borderRadius: 7 },
+    { label: 'المصروف', data: d.map(x => x.expense), backgroundColor: '#F0435F', borderRadius: 7 }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', rtl: true } }, scales: { x: { reverse: true, grid: { display: false } }, y: { grid: { color: gc }, ticks: { callback: v => v.toLocaleString('en-US') } } } } });
+  const a = monthActual(VM);
+  const dn = (id, kind) => { const el = $(id); if (!el) return; const e = Object.entries(a.byCat).filter(([k]) => cat(k).kind === kind).sort((x, y) => y[1] - x[1]);
+    charts[id] = new Chart(el, { type: 'doughnut', data: { labels: e.map(([k]) => cat(k).name), datasets: [{ data: e.map(x => x[1]), backgroundColor: e.map(([k]) => cat(k).color), borderWidth: 3, borderColor: dark ? '#1A1733' : '#fff' }] },
+      options: { maintainAspectRatio: false, cutout: '64%', plugins: { legend: { display: false } } } }); };
+  dn('#chExp', 'expense'); dn('#chInc', 'income');
+}
+function bindView() {
+  $$('[data-go]').forEach(b => b.onclick = () => { VIEW = b.dataset.go; render(); scrollTo(0, 0); });
+  $$('[data-edit-tx]').forEach(b => b.onclick = e => { if (e.target.closest('.mini')) return; txForm(state.tx.find(x => x.id === b.dataset.editTx)); });
+  $$('[data-edit-rec]').forEach(b => b.onclick = () => recForm(state.rec.find(x => x.id === b.dataset.editRec)));
+  $$('[data-edit-bud]').forEach(b => b.onclick = () => budForm(state.budgets.find(x => x.id === b.dataset.editBud)));
+  $$('[data-edit-goal]').forEach(b => b.onclick = () => goalForm(state.goals.find(x => x.id === b.dataset.editGoal)));
+  $$('[data-pay]').forEach(b => b.onclick = e => { e.stopPropagation(); const [id, d] = b.dataset.pay.split('@'); const r = state.rec.find(x => x.id === id);
+    txForm(null, { type: r.type, amount: r.amount, catId: r.catId, note: r.name, date: d <= todayS() ? d : todayS(), recId: r.id, recDate: d }); });
+  $$('[data-skip]').forEach(b => b.onclick = e => { e.stopPropagation(); const [id, d] = b.dataset.skip.split('@'); const r = state.rec.find(x => x.id === id);
+    upsert('tx', { id: uid(), type: r.type, amount: 0, catId: r.catId, date: d, recId: id, recDate: d, skipped: true, note: 'تخطٍّ: ' + r.name }); toast('تم التخطي'); });
+  $$('[data-dep]').forEach(b => b.onclick = () => moveForm(b.dataset.dep, 1));
+  $$('[data-wd]').forEach(b => b.onclick = () => moveForm(b.dataset.wd, -1));
+  $$('[data-f]').forEach(b => b.onclick = () => { TXF = b.dataset.f; render(); });
+  const q = $('#txq'); if (q) { q.oninput = () => { TXQ = q.value; clearTimeout(q._t); q._t = setTimeout(() => { render(); const n = $('#txq'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 350); }; }
+  if ($('#addRec')) $('#addRec').onclick = () => recForm();
+  if ($('#addBud')) $('#addBud').onclick = () => budForm();
+  if ($('#addGoal')) $('#addGoal').onclick = () => goalForm();
+  if (VIEW === 'reports') drawReports();
+}
+
+/* ============ SHEETS / FORMS ============ */
+function openSheet(html) {
+  $('#sheetHost').innerHTML = `<div class="back" id="back"><div class="sheet" role="dialog"><div class="grab"></div>${html}</div></div>`;
+  $('#back').onclick = e => { if (e.target.id === 'back') closeSheet(); };
+}
+function closeSheet() { $('#sheetHost').innerHTML = ''; }
+function catPicker(kind, sel) {
+  return `<div class="catgrid">${live('categories').filter(c => c.kind === kind).map(c => `<button type="button" class="catb ${c.id === sel ? 'on' : ''}" data-cat="${c.id}"><span class="e">${c.icon}</span>${esc(c.name)}</button>`).join('')}
+   <button type="button" class="catb" data-catnew="${kind}" style="border:2px dashed var(--line);background:none"><span class="e">＋</span>فئة جديدة</button>
+   <button type="button" class="catb" data-catmanage="1" style="border:2px dashed var(--line);background:none"><span class="e">✏️</span>تعديل الفئات</button></div>`;
+}
+function bindCatPicker(onPick) {
+  $$('[data-cat]').forEach(b => b.onclick = () => { $$('[data-cat]').forEach(x => x.classList.remove('on')); b.classList.add('on'); onPick(b.dataset.cat); });
+  $$('[data-catnew]').forEach(b => b.onclick = () => catForm(null, b.dataset.catnew));
+  $$('[data-catmanage]').forEach(b => b.onclick = () => catsSheet());
+}
+function readAmount(id) { const v = normNum($(id).value); return isFinite(v) && v > 0 ? r3(v) : null; }
+
+function txForm(x, preset) {
+  const isNew = !x; x = x ? { ...x } : { id: uid(), type: 'expense', amount: '', catId: null, date: todayS(), note: '', ...(preset || {}) };
+  let type = x.type, catId = x.catId || (type === 'income' ? 'c_salary' : 'c_food');
+  const draw = () => {
+    openSheet(`<h3>${isNew ? 'عملية جديدة' : 'تعديل العملية'}</h3>
+      <div class="seg"><button class="${type === 'expense' ? 'on exp' : ''}" data-t="expense">مصروف</button><button class="${type === 'income' ? 'on inc' : ''}" data-t="income">دخل</button></div>
+      <div class="f"><input id="fAmt" class="amountin" inputmode="decimal" placeholder="0.000" value="${x.amount === '' ? '' : x.amount}"></div>
+      <div class="f"><label>${type === 'income' ? 'نوع الدخل' : 'الفئة'}</label>${catPicker(type, catId)}</div>
+      <div class="grid2"><div class="f"><label>التاريخ</label><input id="fDate" type="date" value="${x.date}"></div>
+      <div class="f"><label>الحالة</label><input disabled value="${x.date > todayS() ? 'قادمة' : 'تمت'}" id="fState"></div></div>
+      <div class="f"><label>ملاحظة</label><input id="fNote" value="${esc(x.note)}" placeholder="اختياري"></div>
+      <div class="btns"><button class="btn" id="fSave">حفظ</button>${!isNew ? '<button class="btn danger" id="fDel">حذف</button>' : ''}</div>`);
+    $$('[data-t]').forEach(b => b.onclick = () => { x.amount = $('#fAmt').value; x.date = $('#fDate').value; x.note = $('#fNote').value; type = b.dataset.t; catId = type === 'income' ? 'c_salary' : 'c_food'; draw(); });
+    bindCatPicker(c => catId = c);
+    $('#fDate').onchange = () => $('#fState').value = $('#fDate').value > todayS() ? 'قادمة' : 'تمت';
+    $('#fSave').onclick = () => { const amt = readAmount('#fAmt'); if (!amt) { toast('أدخل مبلغًا صحيحًا'); return; } if (!$('#fDate').value) { toast('اختر التاريخ'); return; }
+      upsert('tx', { ...x, type, amount: amt, catId, date: $('#fDate').value, note: $('#fNote').value.trim() }); closeSheet(); toast('تم الحفظ'); };
+    if ($('#fDel')) $('#fDel').onclick = () => { removeItem('tx', x.id); closeSheet(); toast('تم الحذف'); };
+    if (isNew) setTimeout(() => $('#fAmt').focus(), 250);
+  };
+  draw();
+}
+function recForm(r) {
+  const isNew = !r; r = r ? { ...r } : { id: uid(), type: 'expense', name: '', amount: '', catId: 'c_housing', freq: 'monthly', every: 1, start: todayS(), end: '', paused: false };
+  let type = r.type, catId = r.catId;
+  const draw = () => {
+    openSheet(`<h3>${isNew ? 'عنصر متكرر جديد' : 'تعديل المتكرر'}</h3>
+      <div class="seg"><button class="${type === 'expense' ? 'on exp' : ''}" data-t="expense">مصروف</button><button class="${type === 'income' ? 'on inc' : ''}" data-t="income">دخل</button></div>
+      <div class="grid2"><div class="f"><label>الاسم</label><input id="rName" value="${esc(r.name)}" placeholder="${type === 'income' ? 'الراتب' : 'الإيجار'}"></div>
+      <div class="f"><label>المبلغ</label><input id="rAmt" inputmode="decimal" dir="ltr" value="${r.amount}" placeholder="0.000"></div></div>
+      <div class="f"><label>الفئة</label>${catPicker(type, catId)}</div>
+      <div class="grid2"><div class="f"><label>التكرار</label><select id="rFreq">${Object.entries(FREQ).map(([k, v]) => `<option value="${k}" ${r.freq === k ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+      <div class="f"><label>كل (عدد)</label><input id="rEvery" type="number" min="1" value="${r.every || 1}"></div></div>
+      <div class="grid2"><div class="f"><label>أول موعد</label><input id="rStart" type="date" value="${r.start}"></div>
+      <div class="f"><label>ينتهي (اختياري)</label><input id="rEnd" type="date" value="${r.end || ''}"></div></div>
+      <label class="chk"><input type="checkbox" id="rPause" ${r.paused ? 'checked' : ''}> إيقاف مؤقت</label>
+      <div class="note">المواعيد تظهر كـ«قادمة»، وعند الضغط على «دفعت/استلمت» تُسجَّل كعملية تمت.</div>
+      <div class="btns"><button class="btn" id="rSave">حفظ</button>${!isNew ? '<button class="btn danger" id="rDel">حذف</button>' : ''}</div>`);
+    $$('[data-t]').forEach(b => b.onclick = () => { r.name = $('#rName').value; r.amount = $('#rAmt').value; type = b.dataset.t; catId = type === 'income' ? 'c_salary' : 'c_housing'; draw(); });
+    bindCatPicker(c => catId = c);
+    $('#rSave').onclick = () => { const amt = readAmount('#rAmt'); const name = $('#rName').value.trim() || cat(catId).name;
+      if (!amt) { toast('أدخل مبلغًا صحيحًا'); return; } if (!$('#rStart').value) { toast('حدد أول موعد'); return; }
+      upsert('rec', { ...r, type, name, amount: amt, catId, freq: $('#rFreq').value, every: Math.max(1, parseInt($('#rEvery').value) || 1), start: $('#rStart').value, end: $('#rEnd').value, paused: $('#rPause').checked });
+      closeSheet(); toast('تم الحفظ'); };
+    if ($('#rDel')) $('#rDel').onclick = () => { removeItem('rec', r.id); closeSheet(); toast('تم الحذف (العمليات المسجّلة تبقى)'); };
+  };
+  draw();
+}
+function budForm(b) {
+  const isNew = !b; b = b ? { ...b } : { id: uid(), catId: null, limit: '' };
+  const used = new Set(live('budgets').map(x => x.catId));
+  let catId = b.catId || (live('categories').find(c => c.kind === 'expense' && !used.has(c.id)) || {}).id;
+  openSheet(`<h3>${isNew ? 'ميزانية شهرية' : 'تعديل الميزانية'}</h3>
+    <div class="f"><label>الفئة</label>${catPicker('expense', catId)}</div>
+    <div class="f"><label>الحد الشهري (د.ك)</label><input id="bLim" class="amountin" inputmode="decimal" value="${b.limit}" placeholder="0.000"></div>
+    <div class="btns"><button class="btn" id="bSave">حفظ</button>${!isNew ? '<button class="btn danger" id="bDel">حذف</button>' : ''}</div>`);
+  bindCatPicker(c => catId = c);
+  $('#bSave').onclick = () => { const lim = readAmount('#bLim'); if (!lim || !catId) { toast('اختر فئة وأدخل حدًا'); return; }
+    const dup = live('budgets').find(x => x.catId === catId && x.id !== b.id); if (dup) { toast('لهذه الفئة ميزانية بالفعل'); return; }
+    upsert('budgets', { ...b, catId, limit: lim }); closeSheet(); };
+  if ($('#bDel')) $('#bDel').onclick = () => { removeItem('budgets', b.id); closeSheet(); };
+}
+const GOAL_ICONS = ['🎯','✈️','🚗','🏠','💻','📱','🛟','🎓','💍','🕋','🏖️','💰'];
+function goalForm(g) {
+  const isNew = !g; g = g ? { ...g } : { id: uid(), name: '', target: '', date: '', icon: '🎯', color: PALETTE[live('goals').length * 3 % 20] };
+  let icon = g.icon, color = g.color;
+  openSheet(`<h3>${isNew ? 'هدف ادخار جديد' : 'تعديل الهدف'}</h3>
+    <div class="f"><label>الاسم</label><input id="gName" value="${esc(g.name)}" placeholder="مثل: صندوق الطوارئ"></div>
+    <div class="grid2"><div class="f"><label>المبلغ المستهدف</label><input id="gT" inputmode="decimal" dir="ltr" value="${g.target}" placeholder="0.000"></div>
+    <div class="f"><label>الموعد (اختياري)</label><input id="gD" type="date" value="${g.date || ''}"></div></div>
+    <div class="f"><label>الأيقونة</label><div class="swatches">${GOAL_ICONS.map(i => `<button type="button" class="catb ${i === icon ? 'on' : ''}" data-gi="${i}" style="width:44px;padding:6px"><span class="e">${i}</span></button>`).join('')}</div></div>
+    <div class="f"><label>اللون</label><div class="swatches">${PALETTE.slice(0, 12).map(c => `<button type="button" class="sw ${c === color ? 'on' : ''}" data-gc="${c}" style="background:${c}"></button>`).join('')}</div></div>
+    <div class="btns"><button class="btn" id="gSave">حفظ</button>${!isNew ? '<button class="btn danger" id="gDel">حذف الهدف</button>' : ''}</div>`);
+  $$('[data-gi]').forEach(b => b.onclick = () => { $$('[data-gi]').forEach(x => x.classList.remove('on')); b.classList.add('on'); icon = b.dataset.gi; });
+  $$('[data-gc]').forEach(b => b.onclick = () => { $$('[data-gc]').forEach(x => x.classList.remove('on')); b.classList.add('on'); color = b.dataset.gc; });
+  $('#gSave').onclick = () => { const t = readAmount('#gT'); const name = $('#gName').value.trim(); if (!t || !name) { toast('أدخل الاسم والمبلغ'); return; }
+    upsert('goals', { ...g, name, target: t, date: $('#gD').value, icon, color }); closeSheet(); };
+  if ($('#gDel')) $('#gDel').onclick = () => { removeItem('goals', g.id); live('goalMoves').filter(m => m.goalId === g.id).forEach(m => { m.deleted = true; m.updatedAt = Date.now(); }); changed(); closeSheet(); };
+}
+function moveForm(goalId, sign) {
+  const g = state.goals.find(x => x.id === goalId);
+  openSheet(`<h3>${sign > 0 ? 'إيداع في' : 'سحب من'} «${esc(g.name)}»</h3>
+    <div class="f"><input id="mvA" class="amountin" inputmode="decimal" placeholder="0.000"></div>
+    <div class="f"><label>التاريخ</label><input id="mvD" type="date" value="${todayS()}"></div>
+    <div class="note">التحويل للأهداف يُتتبَّع منفصلًا ولا يُحتسب مصروفًا.</div>
+    <button class="btn" id="mvS">${sign > 0 ? 'إيداع' : 'سحب'}</button>`);
+  setTimeout(() => $('#mvA').focus(), 250);
+  $('#mvS').onclick = () => { const a = readAmount('#mvA'); if (!a) { toast('أدخل مبلغًا'); return; }
+    upsert('goalMoves', { id: uid(), goalId, amount: sign * a, date: $('#mvD').value }); closeSheet(); toast(sign > 0 ? 'تم الإيداع' : 'تم السحب'); };
+}
+
+/* ============ SETTINGS ============ */
+function settingsSheet() {
+  openSheet(`<h3>⚙️ الإعدادات</h3>
+    <div class="card" style="box-shadow:none;background:var(--soft)"><div style="font-size:13px;color:var(--muted)">الحساب</div><b dir="ltr" style="display:block;text-align:right">${esc(USER.email || '')}</b>
+      <div style="font-size:12.5px;color:var(--muted);margin-top:4px">🔒 البيانات مشفّرة على جهازك (AES-256-GCM) قبل أي رفع، والخادم يخزّن نصًا مشفّرًا فقط.</div></div>
+    <div class="btns">
+      ${SB ? '<button class="btn ghost" id="sSync">🔄 مزامنة الآن</button>' : ''}
+      <button class="btn ghost" id="sCats">🗂️ الفئات وأنواع الدخل (إضافة / تسمية / تعديل)</button>
+      <button class="btn ghost" id="sPass">🔑 تغيير كلمة سر التشفير</button>
+      <button class="btn ghost" id="sCsv">📄 تصدير العمليات CSV (غير مشفّر)</button>
+      <button class="btn ghost" id="sJson">💾 نسخة احتياطية مشفّرة</button>
+      <button class="btn ghost" id="sLock">🔒 قفل التطبيق (نسيان المفتاح على هذا الجهاز)</button>
+      ${SB ? '<button class="btn danger" id="sOut">تسجيل الخروج</button>' : ''}
+    </div>`);
+  if ($('#sSync')) $('#sSync').onclick = () => { closeSheet(); pullNow().then(() => pushNow()); };
+  $('#sCats').onclick = catsSheet;
+  $('#sPass').onclick = passSheet;
+  $('#sCsv').onclick = () => {
+    const rows = [['التاريخ', 'النوع', 'الفئة', 'المبلغ', 'ملاحظة', 'الحالة']];
+    for (const x of txAll().sort((a, b) => a.date.localeCompare(b.date))) rows.push([x.date, isInc(x) ? 'دخل' : 'مصروف', cat(x.catId).name, fmt(x.amount), x.note || '', x.date > todayS() ? 'قادمة' : 'تمت']);
+    download('raseed-' + todayS() + '.csv', '﻿' + rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n'), 'text/csv');
+  };
+  $('#sJson').onclick = async () => { const p = await encryptObj(KEY, state); download('raseed-backup-' + todayS() + '.json', JSON.stringify({ app: "raseed", salt: SALT, ...p }), 'application/json'); toast('النسخة تُفتح بنفس كلمة سر التشفير'); };
+  $('#sLock').onclick = () => lockApp(true);
+  if ($('#sOut')) $('#sOut').onclick = logout;
+}
+function download(name, content, type) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([content], { type })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+function catsSheet() {
+  const row = c => `<div class="row" data-ec="${c.id}"><div class="ico" style="background:${c.color}22">${c.icon}</div><div class="mid"><div class="t">${esc(c.name)}</div></div><span class="sw" style="background:${c.color};width:18px;height:18px"></span></div>`;
+  openSheet(`<h3>🗂️ الفئات وأنواع الدخل</h3><div class="note">اضغط أي فئة لتغيير اسمها أو رمزها أو لونها. الأسماء كلها قابلة للتعديل.</div>
+    <h2 class="sec" style="margin-top:0">المصروفات</h2><div class="list">${live('categories').filter(c => c.kind === 'expense').map(row).join('')}</div>
+    <h2 class="sec">أنواع الدخل</h2><div class="list">${live('categories').filter(c => c.kind === 'income').map(row).join('')}</div>
+    <div class="btns" style="margin-top:14px"><button class="btn" id="cNew">＋ فئة جديدة</button></div>`);
+  $$('[data-ec]').forEach(b => b.onclick = () => catForm(state.categories.find(c => c.id === b.dataset.ec)));
+  $('#cNew').onclick = () => catForm();
+}
+const CAT_ICONS = ['🏷️','🏠','🛒','☕','⛽','💡','📺','🛍️','🩺','📚','🎁','🎮','✈️','🏦','📦','💼','🧪','🏅','📈','➕','👶','🐾','💇','🧾','📱','🚗','🕌','🤝','💊','🏋️','🎓','🧰'];
+function catForm(c, kindPreset) {
+  const isNew = !c; c = c ? { ...c } : { id: 'c_' + uid().slice(0, 8), name: '', icon: '🏷️', kind: kindPreset || 'expense', color: PALETTE[state.categories.length % 20] };
+  let color = c.color, kind = c.kind;
+  openSheet(`<h3>${isNew ? 'فئة جديدة' : 'تعديل الفئة'}</h3>
+    ${isNew ? `<div class="seg"><button class="${kind === 'expense' ? 'on exp' : ''}" data-k="expense">مصروف</button><button class="${kind === 'income' ? 'on inc' : ''}" data-k="income">دخل</button></div>` : ''}
+    <div class="grid2" style="grid-template-columns:80px 1fr"><div class="f"><label>رمز</label><input id="cI" value="${esc(c.icon)}" style="text-align:center;font-size:20px"></div>
+    <div class="f"><label>الاسم</label><input id="cN" value="${esc(c.name)}"></div></div>
+    <div class="f"><label>اختر رمزًا أو اكتب أي رمز</label><div class="swatches">${CAT_ICONS.map(i => `<button type="button" class="catb" data-ci="${i}" style="width:40px;padding:5px"><span class="e">${i}</span></button>`).join('')}</div></div>
+    <div class="f"><label>اللون</label><div class="swatches">${PALETTE.map(x => `<button type="button" class="sw ${x === color ? 'on' : ''}" data-cc="${x}" style="background:${x}"></button>`).join('')}</div></div>
+    <div class="btns"><button class="btn" id="cS">حفظ</button>${!isNew ? '<button class="btn danger" id="cD">حذف الفئة</button>' : ''}<button class="btn ghost" id="cB">رجوع</button></div>`);
+  $$('[data-k]').forEach(b => b.onclick = () => { kind = b.dataset.k; $$('[data-k]').forEach(x => x.className = x.dataset.k === kind ? 'on ' + (kind === 'income' ? 'inc' : 'exp') : ''); });
+  $$('[data-cc]').forEach(b => b.onclick = () => { $$('[data-cc]').forEach(x => x.classList.remove('on')); b.classList.add('on'); color = b.dataset.cc; });
+  $$('[data-ci]').forEach(b => b.onclick = () => { $('#cI').value = b.dataset.ci; });
+  $('#cS').onclick = () => { const name = $('#cN').value.trim(); if (!name) { toast('أدخل الاسم'); return; } upsert('categories', { ...c, name, icon: $('#cI').value.trim() || '🏷️', color, kind }); catsSheet(); };
+  if ($('#cD')) $('#cD').onclick = () => { if (live('categories').filter(x => x.kind === c.kind).length <= 1) { toast('يجب إبقاء فئة واحدة على الأقل'); return; } removeItem('categories', c.id); catsSheet(); };
+  $('#cB').onclick = catsSheet;
+}
+function passSheet() {
+  openSheet(`<h3>🔑 تغيير كلمة سر التشفير</h3>
+    <div class="note warn">ستُعاد تعمية كل البيانات بالكلمة الجديدة، وستطلب الأجهزة الأخرى الكلمة الجديدة عند فتحها.</div>
+    <div class="f"><label>الكلمة الحالية</label><input id="cp0" type="password" dir="ltr"></div>
+    <div class="f"><label>الكلمة الجديدة (8+)</label><input id="cp1" type="password" dir="ltr"></div>
+    <div class="f"><label>تأكيدها</label><input id="cp2" type="password" dir="ltr"></div>
+    <div class="err" id="cpE"></div><button class="btn" id="cpS">تغيير</button>`);
+  $('#cpS').onclick = async () => {
+    const e = $('#cpE'); e.textContent = '';
+    const k0 = await deriveKey($('#cp0').value, SALT);
+    try { const p = await encryptObj(KEY, { t: 1 }); await decryptObj(k0, p.iv, p.data); } catch { e.textContent = 'الكلمة الحالية غير صحيحة'; return; }
+    if ($('#cp1').value.length < 8) { e.textContent = '8 أحرف على الأقل'; return; }
+    if ($('#cp1').value !== $('#cp2').value) { e.textContent = 'التأكيد غير مطابق'; return; }
+    $('#cpS').disabled = true;
+    if (SB) { try { const remote = await fetchRemote(); if (remote && remote.version !== baseVersion && remote.salt === SALT) { state = merge(state, await decryptObj(KEY, remote.iv, remote.data)); baseVersion = remote.version; } } catch { e.textContent = 'تحتاج اتصالًا بالإنترنت لتغيير الكلمة'; $('#cpS').disabled = false; return; } }
+    SALT = newSalt(); KEY = await deriveKey($('#cp1').value, SALT);
+    await idbDel('key_' + USER.id); await idbSet('key_' + USER.id, { key: KEY, salt: SALT });
+    await saveLocal(); if (SB) await pushNow({ newSalt: true });
+    closeSheet(); toast('تم تغيير كلمة سر التشفير');
+  };
+}
+
+/* ============ APP SHELL ============ */
+function enterApp() {
+  $('#authView').classList.add('hidden'); $('#appView').classList.remove('hidden');
+  render();
+}
+$$('.tab').forEach(b => b.onclick = () => { VIEW = b.dataset.v; render(); scrollTo(0, 0); });
+$('#mPrev').onclick = () => { VM = shiftMonth(VM, -1); render(); };
+$('#mNext').onclick = () => { VM = shiftMonth(VM, 1); render(); };
+$('#fab').onclick = () => txForm(null, VM !== mk(todayS()) ? { date: VM + '-01' } : null);
+$('#btnSettings').onclick = settingsSheet;
+if (!window.isSecureContext || !crypto.subtle) document.body.innerHTML = '<p style="padding:30px;text-align:center">يجب فتح التطبيق عبر https</p>';
+else boot();
+</script>
+</body>
+</html>
