@@ -2,7 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="رصيد">
@@ -45,6 +46,14 @@
 html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Kufi Arabic",system-ui,sans-serif;font-size:15px;line-height:1.6}
 body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
 button,input,select,textarea{font-family:inherit;font-size:15px;color:inherit}
+/* iPhone: 16px+ on fields stops Safari auto-zoom on focus */
+input,select,textarea{font-size:16px!important;max-width:100%}
+input.amountin{font-size:26px!important}
+input[type=date]{-webkit-appearance:none;appearance:none;min-width:0;display:block;min-height:48px;text-align:right}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden}
+body{overflow-x:hidden;touch-action:manipulation;overscroll-behavior-y:none}
+.grid2>*{min-width:0}
+.updbar{position:fixed;left:12px;right:12px;top:calc(10px + env(safe-area-inset-top));z-index:70;background:linear-gradient(135deg,var(--brand),var(--brand3));color:#fff;border-radius:16px;padding:12px 14px;font-weight:700;font-size:14px;display:flex;align-items:center;gap:10px;box-shadow:0 12px 30px rgba(91,61,245,.4)}
 .num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
 .hidden{display:none!important}
 
@@ -238,7 +247,7 @@ canvas{max-width:100%}
       <div class="sub" id="balSub"></div>
     </div>
   </header>
-  <main class="wrap float" id="main"></main>
+  <main class="wrap float" id="main" style="padding-bottom:72px"></main>
   <button class="fab" id="fab" aria-label="إضافة عملية" data-i="plus" data-s="28" style="display:grid;place-items:center"></button>
   <nav class="tabbar">
     <button class="tab on" data-v="home"><span class="ti" data-i="house"></span>الرئيسية</button>
@@ -1089,12 +1098,33 @@ function passSheet() {
   };
 }
 
+/* ============ AUTO UPDATE ============ */
+const APP_VERSION = '2026.09.25-4';
+let updChecking = false;
+async function checkUpdate() {
+  if (updChecking || location.protocol !== 'https:') return; updChecking = true;
+  try {
+    const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) return;
+    const { v } = await r.json();
+    const last = ls.get('rs_upd_try') || {};
+    if (v && v !== APP_VERSION && !(last.v === v && Date.now() - last.t < 15 * 60000)) {
+      ls.set('rs_upd_try', { v, t: Date.now() });
+      const bar = document.createElement('div'); bar.className = 'updbar'; bar.innerHTML = I('refresh-cw', 18) + '<span>يتم تحديث التطبيق إلى أحدث نسخة…</span>';
+      document.body.appendChild(bar);
+      await Promise.all(['./', 'index.html'].map(u => fetch(u, { cache: 'reload' }).catch(() => {})));
+      setTimeout(() => location.reload(), 600);
+    }
+  } catch {} finally { updChecking = false; }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkUpdate(); });
+
 /* ============ APP SHELL ============ */
 function enterApp() {
   $('#authView').classList.add('hidden'); $('#appView').classList.remove('hidden');
   restorePeriod(); render();
 }
-hydrateIcons();
+hydrateIcons(); checkUpdate();
 $$('.tab').forEach(b => b.onclick = () => { VIEW = b.dataset.v; render(); scrollTo(0, 0); });
 $('#mPrev').onclick = () => { shiftPeriod(-1); render(); };
 $('#mNext').onclick = () => { shiftPeriod(1); render(); };
