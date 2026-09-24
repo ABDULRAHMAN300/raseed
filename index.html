@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="رصيد">
 <meta name="theme-color" content="#1B1640">
-<link rel="apple-touch-icon" href="icon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
 <title>رصيد</title>
 <script src="vendor/chart.umd.js"></script>
@@ -76,7 +76,7 @@ button,input,select,textarea{font-family:inherit;font-size:15px;color:inherit}
 .kpi{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:13px 14px;position:relative;overflow:hidden}
 .kpi .lbl{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
 .kpi .val{font-size:19px;font-weight:800;margin-top:2px}
-.kpi .chip{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;font-size:13px}
+.kpi .chip{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:13px}
 .kpi.inc .chip{background:var(--inc-bg);color:var(--inc)} .kpi.inc .val{color:var(--inc)}
 .kpi.exp .chip{background:var(--exp-bg);color:var(--exp)} .kpi.exp .val{color:var(--exp)}
 .kpi.up .chip{background:var(--up-bg);color:var(--up)}
@@ -84,7 +84,8 @@ button,input,select,textarea{font-family:inherit;font-size:15px;color:inherit}
 .ring{height:5px;background:var(--soft);border-radius:9px;margin-top:8px;overflow:hidden}
 .ring i{display:block;height:100%;border-radius:9px}
 
-h2.sec{font-size:16px;font-weight:800;margin:20px 2px 10px;display:flex;align-items:center;justify-content:space-between}
+h2.sec{font-size:16px;font-weight:800;margin:20px 2px 10px;display:flex;align-items:center;justify-content:flex-start}
+h2.sec a{margin-inline-start:auto}
 h2.sec a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;cursor:pointer}
 @media (prefers-color-scheme: dark){h2.sec a{color:#B7A6FF}}
 
@@ -93,6 +94,24 @@ h2.sec a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;
 .row:last-child{border-bottom:0}
 .ico{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:20px;flex-shrink:0}
 .row .mid{flex:1;min-width:0}
+.svgi{display:block;flex-shrink:0}
+.ico.g{color:#fff;border-radius:14px;position:relative;overflow:hidden}
+.ico.g::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.28),transparent 45%);pointer-events:none}
+.ico.g .svgi{position:relative;z-index:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.18))}
+.hi{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:9px;vertical-align:middle;margin-inline-end:6px}
+.inl{display:inline-block;vertical-align:-2px}
+.inl .svgi{display:inline-block}
+.btn .svgi,.mini .svgi{display:inline-block;vertical-align:-4px;margin-inline-end:6px}
+.btn.ghost{display:flex;align-items:center;justify-content:flex-start;gap:4px;text-align:start;font-weight:700;font-size:15px}
+.searchw{position:relative}.searchw .svgi{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.searchw input{padding-right:42px!important}
+.iconpick{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:6px}
+.iconpick button{border:2px solid transparent;background:none;padding:3px;border-radius:16px;cursor:pointer;display:grid;place-items:center}
+.iconpick button.on{border-color:var(--text)}
+.iconpick .ico{width:40px;height:40px}
+.grplbl{font-size:12px;color:var(--muted);font-weight:700;margin:10px 2px 6px}
+.catb .ic{height:34px;display:grid;place-items:center}
+.lock .svgi{display:inline-block}
 .row .t{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row .s{font-size:12.5px;color:var(--muted)}
 .row .amt{font-weight:800;text-align:left;white-space:nowrap}
@@ -121,13 +140,14 @@ h2.sec a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;
 .bline{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-top:5px}
 
 .empty{text-align:center;color:var(--muted);padding:26px 12px;font-size:14px}
-.empty .e{font-size:38px}
+.empty .e{font-size:38px;display:grid;place-items:center;margin-bottom:6px}
+.empty .e .ic{width:64px;height:64px;border-radius:22px;display:grid;place-items:center;background:var(--soft);color:var(--brand)}
 
 /* tabbar */
 .tabbar{position:fixed;bottom:0;left:0;right:0;background:var(--card);box-shadow:0 -6px 24px rgba(40,30,110,.1);display:flex;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:20;border-radius:24px 24px 0 0}
 .tab{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;flex:1;padding:4px 0}
-.tab .ti{font-size:20px;filter:grayscale(1);opacity:.6}
-.tab.on{color:var(--brand)} .tab.on .ti{filter:none;opacity:1}
+.tab .ti{width:44px;height:30px;border-radius:12px;display:grid;place-items:center;transition:.2s}
+.tab.on{color:var(--brand)} .tab.on .ti{background:linear-gradient(135deg,var(--brand),var(--brand3));color:#fff;box-shadow:0 6px 14px rgba(91,61,245,.35)}
 @media (prefers-color-scheme: dark){.tab.on{color:#B7A6FF}}
 .fab{position:fixed;bottom:calc(84px + env(safe-area-inset-bottom));left:18px;width:58px;height:58px;border-radius:20px;border:0;background:linear-gradient(135deg,var(--brand),var(--brand3));color:#fff;font-size:30px;box-shadow:0 10px 26px rgba(91,61,245,.45);z-index:21;cursor:pointer}
 
@@ -150,6 +170,7 @@ h2.sec a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;
 .catgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .catb{border:2px solid transparent;background:var(--soft);border-radius:14px;padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;cursor:pointer;line-height:1.3;text-align:center}
 .catb .e{font-size:20px}
+.catb .ico{width:34px;height:34px;border-radius:11px}
 .catb.on{border-color:var(--brand);background:var(--card)}
 .btn{width:100%;border:0;border-radius:16px;padding:14px;font-weight:800;font-size:16px;cursor:pointer;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 8px 20px rgba(91,61,245,.3)}
 .btn.ghost{background:var(--soft);color:var(--text);box-shadow:none}
@@ -188,7 +209,7 @@ canvas{max-width:100%}
 <!-- AUTH -->
 <section id="authView" class="auth hidden">
   <div class="box">
-    <div class="logo">💸</div>
+    <div class="logo" data-i="wallet" data-s="20"></div>
     <h1>رصيد</h1>
     <p class="c" id="authSub">سجّل الدخول لمزامنة بياناتك المشفّرة</p>
     <div id="authForm"></div>
@@ -199,17 +220,18 @@ canvas{max-width:100%}
 <section id="appView" class="hidden">
   <header class="hero">
     <div class="topbar">
-      <div class="brand"><div class="logo">💸</div>رصيد</div>
+      <div class="brand"><div class="logo" data-i="wallet" data-s="20"></div>رصيد</div>
       <div style="display:flex;gap:8px;align-items:center">
         <div class="sync" id="syncBadge"><span class="dot" id="syncDot"></span><span id="syncTxt">—</span></div>
-        <button class="iconbtn" id="btnSettings" aria-label="الإعدادات">⚙️</button>
+        <button class="iconbtn" id="btnSettings" aria-label="الإعدادات" data-i="settings"></button>
       </div>
     </div>
     <div class="monthnav">
-      <button id="mPrev" aria-label="الشهر السابق">›</button>
-      <div class="m" id="mLabel"></div>
-      <button id="mNext" aria-label="الشهر التالي">‹</button>
+      <button id="mPrev" aria-label="المدة السابقة" data-i="chevron-right" data-s="18" style="display:grid;place-items:center"></button>
+      <button class="m" id="mLabel" style="width:auto;height:auto;background:rgba(255,255,255,.14);padding:6px 14px;font-family:inherit;font-weight:700;font-size:15px;border-radius:12px"></button>
+      <button id="mNext" aria-label="المدة التالية" data-i="chevron-left" data-s="18" style="display:grid;place-items:center"></button>
     </div>
+    <div style="text-align:center;font-size:11.5px;opacity:.7;margin-top:4px;position:relative;z-index:1" id="mDays"></div>
     <div class="balance">
       <small id="balLbl">صافي الشهر</small>
       <div class="big"><span class="num" id="balVal">0.000</span> <span style="font-size:16px">د.ك</span></div>
@@ -217,13 +239,13 @@ canvas{max-width:100%}
     </div>
   </header>
   <main class="wrap float" id="main"></main>
-  <button class="fab" id="fab" aria-label="إضافة عملية">+</button>
+  <button class="fab" id="fab" aria-label="إضافة عملية" data-i="plus" data-s="28" style="display:grid;place-items:center"></button>
   <nav class="tabbar">
-    <button class="tab on" data-v="home"><span class="ti">🏠</span>الرئيسية</button>
-    <button class="tab" data-v="tx"><span class="ti">🧾</span>العمليات</button>
-    <button class="tab" data-v="rec"><span class="ti">🔁</span>المتكررة</button>
-    <button class="tab" data-v="plan"><span class="ti">🎯</span>التخطيط</button>
-    <button class="tab" data-v="reports"><span class="ti">📊</span>التقارير</button>
+    <button class="tab on" data-v="home"><span class="ti" data-i="house"></span>الرئيسية</button>
+    <button class="tab" data-v="tx"><span class="ti" data-i="receipt"></span>العمليات</button>
+    <button class="tab" data-v="rec"><span class="ti" data-i="repeat"></span>المتكررة</button>
+    <button class="tab" data-v="plan"><span class="ti" data-i="target"></span>التخطيط</button>
+    <button class="tab" data-v="reports"><span class="ti" data-i="chart-pie"></span>التقارير</button>
   </nav>
 </section>
 
@@ -236,6 +258,23 @@ const CONFIG = {
   SUPABASE_KEY: 'sb_publishable_xDrnFMfYxuqI008QnSZ8yA_JoKKMqzg'
 };
 const HAS_CLOUD = CONFIG.SUPABASE_URL.startsWith('https://') && !!window.supabase;
+
+const ICONS = {"house":"<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\"/> <path d=\"M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/>","building-2":"<path d=\"M10 12h4\"/> <path d=\"M10 8h4\"/> <path d=\"M14 21v-3a2 2 0 0 0-4 0v3\"/> <path d=\"M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2\"/> <path d=\"M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16\"/>","key-round":"<path d=\"M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z\"/> <circle cx=\"16.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/>","sofa":"<path d=\"M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3\"/> <path d=\"M2 16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z\"/> <path d=\"M4 18v2\"/> <path d=\"M20 18v2\"/> <path d=\"M12 4v9\"/>","lamp":"<path d=\"M12 12v6\"/> <path d=\"M4.077 10.615A1 1 0 0 0 5 12h14a1 1 0 0 0 .923-1.385l-3.077-7.384A2 2 0 0 0 15 2H9a2 2 0 0 0-1.846 1.23Z\"/> <path d=\"M8 20a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1z\"/>","wrench":"<path d=\"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z\"/>","hammer":"<path d=\"m15 12-9.373 9.373a1 1 0 0 1-3.001-3L12 9\"/> <path d=\"m18 15 4-4\"/> <path d=\"m21.5 11.5-1.914-1.914A2 2 0 0 1 19 8.172v-.344a2 2 0 0 0-.586-1.414l-1.657-1.657A6 6 0 0 0 12.516 3H9l1.243 1.243A6 6 0 0 1 12 8.485V10l2 2h1.172a2 2 0 0 1 1.414.586L18.5 14.5\"/>","paint-roller":"<rect width=\"16\" height=\"6\" x=\"2\" y=\"2\" rx=\"2\"/> <path d=\"M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2\"/> <rect width=\"4\" height=\"6\" x=\"8\" y=\"16\" rx=\"1\"/>","shopping-cart":"<path d=\"m2.05 2.05 1.099-.028a1 1 0 0 1 1.008.815l2.69 14.347A1 1 0 0 0 7.83 18H18\"/> <path d=\"M4.563 5h16.435a1 1 0 0 1 .981 1.204l-1.026 6.226A2 2 0 0 1 18.962 14H6.25\"/> <circle cx=\"18\" cy=\"20\" r=\"2\"/> <circle cx=\"8\" cy=\"20\" r=\"2\"/>","shopping-basket":"<path d=\"m15 11-1 9\"/> <path d=\"m19 11-4-7\"/> <path d=\"M2 11h20\"/> <path d=\"m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4\"/> <path d=\"M4.5 15.5h15\"/> <path d=\"m5 11 4-7\"/> <path d=\"m9 11 1 9\"/>","apple":"<path d=\"M12 6.528V3a1 1 0 0 1 1-1h0\"/> <path d=\"M18.237 21A15 15 0 0 0 22 11a6 6 0 0 0-10-4.472A6 6 0 0 0 2 11a15.1 15.1 0 0 0 3.763 10 3 3 0 0 0 3.648.648 5.5 5.5 0 0 1 5.178 0A3 3 0 0 0 18.237 21\"/>","carrot":"<path d=\"M15 16a1 1 0 0 0-7-7q-4 4-5.987 12.385a.5.5 0 0 0 .602.602Q11 20 15 16l-3-3\"/> <path d=\"M15 9q4 4 7 0-3-4-7 0 4-4 0-7-4 3 0 7\"/> <path d=\"m8 15-2.58-2.58\"/>","beef":"<path d=\"M16.4 13.7A6.5 6.5 0 1 0 6.28 6.6c-1.1 3.13-.78 3.9-3.18 6.08A3 3 0 0 0 5 18c4 0 8.4-1.8 11.4-4.3\"/> <path d=\"m18.5 6 1.754 3.5a6.48 6.48 0 0 1-1.854 8.2C15.4 20.2 11 22 7 22a3 3 0 0 1-2.68-1.66L2.4 16.5\"/> <circle cx=\"12.5\" cy=\"8.5\" r=\"2.5\"/>","milk":"<path d=\"M8 2h8\"/> <path d=\"M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.789a4 4 0 0 0-.672-2.219l-.656-.984A4 4 0 0 1 15 4.788V2\"/> <path d=\"M7 15a6.472 6.472 0 0 1 5 0 6.47 6.47 0 0 0 5 0\"/>","coffee":"<path d=\"M10 2v2\"/> <path d=\"M14 2v2\"/> <path d=\"M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1\"/> <path d=\"M6 2v2\"/>","utensils":"<path d=\"M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2\"/> <path d=\"M7 2v20\"/> <path d=\"M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7\"/>","pizza":"<path d=\"m12 14-1 1\"/> <path d=\"m13.75 18.25-1.25 1.42\"/> <path d=\"M17.775 5.654a15.68 15.68 0 0 0-12.121 12.12\"/> <path d=\"M18.8 9.3a1 1 0 0 0 2.1 7.7\"/> <path d=\"M21.964 20.732a1 1 0 0 1-1.232 1.232l-18-5a1 1 0 0 1-.695-1.232A19.68 19.68 0 0 1 15.732 2.037a1 1 0 0 1 1.232.695z\"/>","sandwich":"<path d=\"m2.37 11.223 8.372-6.777a2 2 0 0 1 2.516 0l8.371 6.777\"/> <path d=\"M21 15a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-5.25\"/> <path d=\"M3 15a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h9\"/> <path d=\"m6.67 15 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2\"/> <rect width=\"20\" height=\"4\" x=\"2\" y=\"11\" rx=\"1\"/>","cup-soda":"<path d=\"m6 8 1.75 12.28a2 2 0 0 0 2 1.72h4.54a2 2 0 0 0 2-1.72L18 8\"/> <path d=\"M5 8h14\"/> <path d=\"M7 15a6.47 6.47 0 0 1 5 0 6.47 6.47 0 0 0 5 0\"/> <path d=\"m12 8 1-6h2\"/>","croissant":"<path d=\"M10.2 18H4.774a1.5 1.5 0 0 1-1.352-.97 11 11 0 0 1 .132-6.487\"/> <path d=\"M18 10.2V4.774a1.5 1.5 0 0 0-.97-1.352 11 11 0 0 0-6.486.132\"/> <path d=\"M18 5a4 3 0 0 1 4 3 2 2 0 0 1-2 2 10 10 0 0 0-5.139 1.42\"/> <path d=\"M5 18a3 4 0 0 0 3 4 2 2 0 0 0 2-2 10 10 0 0 1 1.42-5.14\"/> <path d=\"M8.709 2.554a10 10 0 0 0-6.155 6.155 1.5 1.5 0 0 0 .676 1.626l9.807 5.42a2 2 0 0 0 2.718-2.718l-5.42-9.807a1.5 1.5 0 0 0-1.626-.676\"/>","ice-cream-cone":"<path d=\"m7 11 4.08 10.35a1 1 0 0 0 1.84 0L17 11\"/> <path d=\"M17 7A5 5 0 0 0 7 7\"/> <path d=\"M17 7a2 2 0 0 1 0 4H7a2 2 0 0 1 0-4\"/>","fuel":"<path d=\"M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 4 0v-6.998a2 2 0 0 0-.59-1.42L18 5\"/> <path d=\"M14 21V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v16\"/> <path d=\"M2 21h13\"/> <path d=\"M3 9h11\"/>","car":"<path d=\"M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2\"/> <circle cx=\"7\" cy=\"17\" r=\"2\"/> <path d=\"M9 17h6\"/> <circle cx=\"17\" cy=\"17\" r=\"2\"/>","bus":"<path d=\"M8 6v6\"/> <path d=\"M15 6v6\"/> <path d=\"M2 12h19.6\"/> <path d=\"M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3\"/> <circle cx=\"7\" cy=\"18\" r=\"2\"/> <path d=\"M9 18h5\"/> <circle cx=\"16\" cy=\"18\" r=\"2\"/>","bike":"<circle cx=\"18.5\" cy=\"17.5\" r=\"3.5\"/> <circle cx=\"5.5\" cy=\"17.5\" r=\"3.5\"/> <circle cx=\"15\" cy=\"5\" r=\"1\"/> <path d=\"M12 17.5V14l-3-3 4-3 2 3h2\"/>","train-front":"<path d=\"M8 3.1V7a4 4 0 0 0 8 0V3.1\"/> <path d=\"m9 15-1-1\"/> <path d=\"m15 15 1-1\"/> <path d=\"M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z\"/> <path d=\"m8 19-2 3\"/> <path d=\"m16 19 2 3\"/>","plane":"<path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z\"/>","parking-meter":"<path d=\"M11 15h2\"/> <path d=\"M12 12v3\"/> <path d=\"M12 19v3\"/> <path d=\"M15.282 19a1 1 0 0 0 .948-.68l2.37-6.988a7 7 0 1 0-13.2 0l2.37 6.988a1 1 0 0 0 .948.68z\"/> <path d=\"M9 9a3 3 0 1 1 6 0\"/>","zap":"<path d=\"M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z\"/>","droplet":"<path d=\"M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z\"/>","flame":"<path d=\"M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4\"/>","wifi":"<path d=\"M12 20h.01\"/> <path d=\"M2 8.82a15 15 0 0 1 20 0\"/> <path d=\"M5 12.859a10 10 0 0 1 14 0\"/> <path d=\"M8.5 16.429a5 5 0 0 1 7 0\"/>","smartphone":"<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\" ry=\"2\"/> <path d=\"M12 18h.01\"/>","phone":"<path d=\"M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384\"/>","receipt":"<path d=\"M12 17V7\"/> <path d=\"M16 8h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8\"/> <path d=\"M4 3a1 1 0 0 1 1-1 1.3 1.3 0 0 1 .7.2l.933.6a1.3 1.3 0 0 0 1.4 0l.934-.6a1.3 1.3 0 0 1 1.4 0l.933.6a1.3 1.3 0 0 0 1.4 0l.933-.6a1.3 1.3 0 0 1 1.4 0l.934.6a1.3 1.3 0 0 0 1.4 0l.933-.6A1.3 1.3 0 0 1 19 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1 1.3 1.3 0 0 1-.7-.2l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.934.6a1.3 1.3 0 0 1-1.4 0l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-1.4 0l-.934-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-.7.2 1 1 0 0 1-1-1z\"/>","tv":"<path d=\"m17 2-5 5-5-5\"/> <rect width=\"20\" height=\"15\" x=\"2\" y=\"7\" rx=\"2\"/>","clapperboard":"<path d=\"m12.296 3.464 3.02 3.956\"/> <path d=\"M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z\"/> <path d=\"M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/> <path d=\"m6.18 5.276 3.1 3.899\"/>","music":"<path d=\"M9 18V5l12-2v13\"/> <circle cx=\"6\" cy=\"18\" r=\"3\"/> <circle cx=\"18\" cy=\"16\" r=\"3\"/>","gamepad-2":"<line x1=\"6\" x2=\"10\" y1=\"11\" y2=\"11\"/> <line x1=\"8\" x2=\"8\" y1=\"9\" y2=\"13\"/> <line x1=\"15\" x2=\"15.01\" y1=\"12\" y2=\"12\"/> <line x1=\"18\" x2=\"18.01\" y1=\"10\" y2=\"10\"/> <path d=\"M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z\"/>","headphones":"<path d=\"M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3\"/>","cloud":"<path d=\"M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z\"/>","play":"<path d=\"M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z\"/>","ticket":"<path d=\"M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z\"/> <path d=\"M13 5v2\"/> <path d=\"M13 17v2\"/> <path d=\"M13 11v2\"/>","shopping-bag":"<path d=\"M16 10a4 4 0 0 1-8 0\"/> <path d=\"M3.103 6.034h17.794\"/> <path d=\"M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z\"/>","shirt":"<path d=\"M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z\"/>","gem":"<path d=\"M10.5 3 8 9l4 13 4-13-2.5-6\"/> <path d=\"M17 3a2 2 0 0 1 1.6.8l3 4a2 2 0 0 1 .013 2.382l-7.99 10.986a2 2 0 0 1-3.247 0l-7.99-10.986A2 2 0 0 1 2.4 7.8l2.998-3.997A2 2 0 0 1 7 3z\"/> <path d=\"M2 9h20\"/>","watch":"<path d=\"M12 10v2.2l1.6 1\"/> <path d=\"m16.13 7.66-.81-4.05a2 2 0 0 0-2-1.61h-2.68a2 2 0 0 0-2 1.61l-.78 4.05\"/> <path d=\"m7.88 16.36.8 4a2 2 0 0 0 2 1.61h2.72a2 2 0 0 0 2-1.61l.81-4.05\"/> <circle cx=\"12\" cy=\"12\" r=\"6\"/>","glasses":"<circle cx=\"6\" cy=\"15\" r=\"4\"/> <circle cx=\"18\" cy=\"15\" r=\"4\"/> <path d=\"M14 15a2 2 0 0 0-2-2 2 2 0 0 0-2 2\"/> <path d=\"M2.5 13 5 7c.7-1.3 1.4-2 3-2\"/> <path d=\"M21.5 13 19 7c-.7-1.3-1.5-2-3-2\"/>","scissors":"<circle cx=\"6\" cy=\"6\" r=\"3\"/> <path d=\"M8.12 8.12 12 12\"/> <path d=\"M20 4 8.12 15.88\"/> <circle cx=\"6\" cy=\"18\" r=\"3\"/> <path d=\"M14.8 14.8 20 20\"/>","sparkles":"<path d=\"M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z\"/> <path d=\"M20 2v4\"/> <path d=\"M22 4h-4\"/> <circle cx=\"4\" cy=\"20\" r=\"2\"/>","store":"<path d=\"M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5\"/> <path d=\"M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244\"/> <path d=\"M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05\"/>","laptop":"<path d=\"M18 5a2 2 0 0 1 2 2v8.526a2 2 0 0 0 .212.897l1.068 2.127a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45l1.068-2.127A2 2 0 0 0 4 15.526V7a2 2 0 0 1 2-2z\"/> <path d=\"M20.054 15.987H3.946\"/>","monitor":"<rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\"/> <line x1=\"8\" x2=\"16\" y1=\"21\" y2=\"21\"/> <line x1=\"12\" x2=\"12\" y1=\"17\" y2=\"21\"/>","stethoscope":"<path d=\"M11 2v2\"/> <path d=\"M5 2v2\"/> <path d=\"M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1\"/> <path d=\"M8 15a6 6 0 0 0 12 0v-3\"/> <circle cx=\"20\" cy=\"10\" r=\"2\"/>","pill":"<path d=\"m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z\"/> <path d=\"m8.5 8.5 7 7\"/>","heart-pulse":"<path d=\"M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5\"/> <path d=\"M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27\"/>","hospital":"<path d=\"M12 7v4\"/> <path d=\"M14 21v-3a2 2 0 0 0-4 0v3\"/> <path d=\"M14 9h-4\"/> <path d=\"M18 11h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2\"/> <path d=\"M18 21V5a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16\"/>","dumbbell":"<path d=\"M17.596 12.768a2 2 0 1 0 2.829-2.829l-1.768-1.767a2 2 0 0 0 2.828-2.829l-2.828-2.828a2 2 0 0 0-2.829 2.828l-1.767-1.768a2 2 0 1 0-2.829 2.829z\"/> <path d=\"m2.5 21.5 1.4-1.4\"/> <path d=\"m20.1 3.9 1.4-1.4\"/> <path d=\"M5.343 21.485a2 2 0 1 0 2.829-2.828l1.767 1.768a2 2 0 1 0 2.829-2.829l-6.364-6.364a2 2 0 1 0-2.829 2.829l1.768 1.767a2 2 0 0 0-2.828 2.829z\"/> <path d=\"m9.6 14.4 4.8-4.8\"/>","activity":"<path d=\"M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2\"/>","book-open":"<path d=\"M12 5v16\"/> <path d=\"M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z\"/>","graduation-cap":"<path d=\"M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z\"/> <path d=\"M22 10v6\"/> <path d=\"M6 12.5V16a6 3 0 0 0 12 0v-3.5\"/>","pencil":"<path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\"/> <path d=\"m15 5 4 4\"/>","library":"<path d=\"m16 6 4 14\"/> <path d=\"M12 6v14\"/> <path d=\"M8 8v12\"/> <path d=\"M4 4v16\"/>","notebook-pen":"<path d=\"M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4\"/> <path d=\"M2 6h4\"/> <path d=\"M2 10h4\"/> <path d=\"M2 14h4\"/> <path d=\"M2 18h4\"/> <path d=\"M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/>","school":"<path d=\"M14 21v-3a2 2 0 0 0-4 0v3\"/> <path d=\"M18 4.933V21\"/> <path d=\"m4 6 7.106-3.79a2 2 0 0 1 1.788 0L20 6\"/> <path d=\"m6 11-3.52 2.147a1 1 0 0 0-.48.854V19a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a1 1 0 0 0-.48-.853L18 11\"/> <path d=\"M6 4.933V21\"/> <circle cx=\"12\" cy=\"9\" r=\"2\"/>","flask-conical":"<path d=\"M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2\"/> <path d=\"M6.453 15h11.094\"/> <path d=\"M8.5 2h7\"/>","gift":"<path d=\"M12 7v14\"/> <path d=\"M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8\"/> <path d=\"M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5\"/> <rect x=\"3\" y=\"7\" width=\"18\" height=\"4\" rx=\"1\"/>","baby":"<path d=\"M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5\"/> <path d=\"M15 12h.01\"/> <path d=\"M19.38 6.813A9 9 0 0 1 20.8 10.2a2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1\"/> <path d=\"M9 12h.01\"/>","users":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/> <path d=\"M16 3.128a4 4 0 0 1 0 7.744\"/> <path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/> <circle cx=\"9\" cy=\"7\" r=\"4\"/>","heart":"<path d=\"M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5\"/>","hand-heart":"<path d=\"M11 14h2a2 2 0 0 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16\"/> <path d=\"m14.45 13.39 5.05-4.694C20.196 8 21 6.85 21 5.75a2.75 2.75 0 0 0-4.797-1.837.276.276 0 0 1-.406 0A2.75 2.75 0 0 0 11 5.75c0 1.2.802 2.248 1.5 2.946L16 11.95\"/> <path d=\"m2 15 6 6\"/> <path d=\"m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a1 1 0 0 0-2.75-2.91\"/>","dog":"<path d=\"M11.25 16.25h1.5L12 17z\"/> <path d=\"M16 14v.5\"/> <path d=\"M4.42 11.247A13.152 13.152 0 0 0 4 14.556C4 18.728 7.582 21 12 21s8-2.272 8-6.444a11.702 11.702 0 0 0-.493-3.309\"/> <path d=\"M8 14v.5\"/> <path d=\"M8.5 8.5c-.384 1.05-1.083 2.028-2.344 2.5-1.931.722-3.576-.297-3.656-1-.113-.994 1.177-6.53 4-7 1.923-.321 3.651.845 3.651 2.235A7.497 7.497 0 0 1 14 5.277c0-1.39 1.844-2.598 3.767-2.277 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.855-1.45-2.239-2.5\"/>","cat":"<path d=\"M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58-.42 7-.42 7 .57 1.07 1 2.24 1 3.44C21 17.9 16.97 21 12 21s-9-3-9-7.56c0-1.25.5-2.4 1-3.44 0 0-1.89-6.42-.5-7 1.39-.58 4.72.23 6.5 2.23A9.04 9.04 0 0 1 12 5Z\"/> <path d=\"M8 14v.5\"/> <path d=\"M16 14v.5\"/> <path d=\"M11.25 16.25h1.5L12 17l-.75-.75Z\"/>","calendar-heart":"<path d=\"M12.127 21H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v5.125\"/> <path d=\"M14.62 17.8A2.25 2.25 0 1118 14.836a2.25 2.25 0 113.38 2.966l-2.626 2.856a.998.998 0 01-1.507 0z\"/> <path d=\"M16 2v3\"/> <path d=\"M3 9h18\"/> <path d=\"M8 2v3\"/>","luggage":"<path d=\"M6 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2\"/> <path d=\"M8 18V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v14\"/> <path d=\"M10 20h4\"/> <circle cx=\"16\" cy=\"20\" r=\"2\"/> <circle cx=\"8\" cy=\"20\" r=\"2\"/>","map-pin":"<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"/> <circle cx=\"12\" cy=\"10\" r=\"3\"/>","tent":"<path d=\"M3.5 21 14 3\"/> <path d=\"M20.5 21 10 3\"/> <path d=\"M15.5 21 12 15l-3.5 6\"/> <path d=\"M2 21h20\"/>","tree-palm":"<path d=\"M13 8c0-2.76-2.46-5-5.5-5S2 5.24 2 8h2l1-1 1 1h4\"/> <path d=\"M13 7.14A5.82 5.82 0 0 1 16.5 6c3.04 0 5.5 2.24 5.5 5h-3l-1-1-1 1h-3\"/> <path d=\"M5.89 9.71c-2.15 2.15-2.3 5.47-.35 7.43l4.24-4.25.7-.7.71-.71 2.12-2.12c-1.95-1.96-5.27-1.8-7.42.35\"/> <path d=\"M11 15.5c.5 2.5-.17 4.5-1 6.5h4c2-5.5-.5-12-1-14\"/>","umbrella":"<path d=\"M12 13v7a2 2 0 0 0 4 0\"/> <path d=\"M12 2v2\"/> <path d=\"M20.992 13a1 1 0 0 0 .97-1.274 10.284 10.284 0 0 0-19.923 0A1 1 0 0 0 3 13z\"/>","moon-star":"<path d=\"M18 5h4\"/> <path d=\"M20 3v4\"/> <path d=\"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401\"/>","wallet":"<path d=\"M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1\"/> <path d=\"M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4\"/>","banknote":"<rect width=\"20\" height=\"12\" x=\"2\" y=\"6\" rx=\"2\"/> <circle cx=\"12\" cy=\"12\" r=\"2\"/> <path d=\"M6 12h.01M18 12h.01\"/>","coins":"<path d=\"M13.744 17.736a6 6 0 1 1-7.48-7.48\"/> <path d=\"M15 6h1v4\"/> <path d=\"m6.134 14.768.866-.5 2 3.464\"/> <circle cx=\"16\" cy=\"8\" r=\"6\"/>","hand-coins":"<path d=\"M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17\"/> <path d=\"m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9\"/> <path d=\"m2 16 6 6\"/> <circle cx=\"16\" cy=\"9\" r=\"2.9\"/> <circle cx=\"6\" cy=\"5\" r=\"3\"/>","piggy-bank":"<path d=\"M11 17h3v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a3.16 3.16 0 0 0 2-2h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a5 5 0 0 0-2-4V3a4 4 0 0 0-3.2 1.6l-.3.4H11a6 6 0 0 0-6 6v1a5 5 0 0 0 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1z\"/> <path d=\"M16 10h.01\"/> <path d=\"M2 8v1a2 2 0 0 0 2 2h1\"/>","credit-card":"<rect width=\"20\" height=\"14\" x=\"2\" y=\"5\" rx=\"2\"/> <line x1=\"2\" x2=\"22\" y1=\"10\" y2=\"10\"/> <path d=\"M6 14h2\"/>","landmark":"<path d=\"M10 18v-7\"/> <path d=\"M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z\"/> <path d=\"M14 18v-7\"/> <path d=\"M18 18v-7\"/> <path d=\"M3 22h18\"/> <path d=\"M6 18v-7\"/>","briefcase-business":"<path d=\"M12 12h.01\"/> <path d=\"M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2\"/> <path d=\"M22 13a18.15 18.15 0 0 1-20 0\"/> <rect width=\"20\" height=\"14\" x=\"2\" y=\"6\" rx=\"2\"/>","badge-dollar-sign":"<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\"/> <path d=\"M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8\"/> <path d=\"M12 18V6\"/>","chart-line":"<path d=\"M3 3v16a2 2 0 0 0 2 2h16\"/> <path d=\"m19 9-5 5-4-4-3 3\"/>","trending-up":"<path d=\"M16 7h6v6\"/> <path d=\"m22 7-8.5 8.5-5-5L2 17\"/>","award":"<path d=\"m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526\"/> <circle cx=\"12\" cy=\"8\" r=\"6\"/>","medal":"<path d=\"M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15\"/> <path d=\"M11 12 5.12 2.2\"/> <path d=\"m13 12 5.88-9.8\"/> <path d=\"M8 7h8\"/> <circle cx=\"12\" cy=\"17\" r=\"5\"/> <path d=\"M12 18v-2h-.5\"/>","trophy":"<path d=\"M10 14.66V17a1 1 0 0 1-1 1 2 2 0 0 0-2 2v2\"/> <path d=\"M14 14.66V17a1 1 0 0 0 1 1 2 2 0 0 1 2 2v2\"/> <path d=\"M17.916 10H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3\"/> <path d=\"M4 22h16\"/> <path d=\"M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z\"/> <path d=\"M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3\"/>","tag":"<path d=\"M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z\"/> <circle cx=\"7.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/>","package":"<path d=\"M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z\"/> <path d=\"M12 22V12\"/> <polyline points=\"3.29 7 12 12 20.71 7\"/> <path d=\"m7.5 4.27 9 5.15\"/>","circle-plus":"<circle cx=\"12\" cy=\"12\" r=\"10\"/> <path d=\"M8 12h8\"/> <path d=\"M12 8v8\"/>","shield-check":"<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/> <path d=\"m9 12 2 2 4-4\"/>","target":"<circle cx=\"12\" cy=\"12\" r=\"10\"/> <circle cx=\"12\" cy=\"12\" r=\"6\"/> <circle cx=\"12\" cy=\"12\" r=\"2\"/>","star":"<path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/>","repeat":"<path d=\"m17 2 4 4-4 4\"/> <path d=\"M3 11v-1a4 4 0 0 1 4-4h14\"/> <path d=\"m7 22-4-4 4-4\"/> <path d=\"M21 13v1a4 4 0 0 1-4 4H3\"/>","chart-pie":"<path d=\"M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z\"/> <path d=\"M21.21 15.89A10 10 0 1 1 8 2.83\"/>","settings":"<path d=\"M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915\"/> <circle cx=\"12\" cy=\"12\" r=\"3\"/>","calendar-range":"<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"/> <path d=\"M16 2v3\"/> <path d=\"M3 9h18\"/> <path d=\"M8 2v3\"/> <path d=\"M17 13h-6\"/> <path d=\"M13 17H7\"/> <path d=\"M7 13h.01\"/> <path d=\"M17 17h.01\"/>","chevron-left":"<path d=\"m15 18-6-6 6-6\"/>","chevron-right":"<path d=\"m9 18 6-6-6-6\"/>","plus":"<path d=\"M5 12h14\"/> <path d=\"M12 5v14\"/>","lock":"<rect width=\"18\" height=\"11\" x=\"3\" y=\"11\" rx=\"2\" ry=\"2\"/> <path d=\"M7 11V7a5 5 0 0 1 10 0v4\"/>","refresh-cw":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\"/> <path d=\"M21 3v5h-5\"/> <path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\"/> <path d=\"M8 16H3v5\"/>","log-out":"<path d=\"m16 17 5-5-5-5\"/> <path d=\"M21 12H9\"/> <path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\"/>","file-down":"<path d=\"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z\"/> <path d=\"M14 2v5a1 1 0 0 0 1 1h5\"/> <path d=\"M12 18v-6\"/> <path d=\"m9 15 3 3 3-3\"/>","folder-cog":"<path d=\"M10.3 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.98a2 2 0 0 1 1.69.9l.66 1.2A2 2 0 0 0 12 6h8a2 2 0 0 1 2 2v3.3\"/> <path d=\"m14.305 19.53.923-.382\"/> <path d=\"m15.228 16.852-.923-.383\"/> <path d=\"m16.852 15.228-.383-.923\"/> <path d=\"m16.852 20.772-.383.924\"/> <path d=\"m19.148 15.228.383-.923\"/> <path d=\"m19.53 21.696-.382-.924\"/> <path d=\"m20.772 16.852.924-.383\"/> <path d=\"m20.772 19.148.924.383\"/> <circle cx=\"18\" cy=\"18\" r=\"3\"/>","hourglass":"<path d=\"M5 22h14\"/> <path d=\"M5 2h14\"/> <path d=\"M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22\"/> <path d=\"M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2\"/>","arrow-down-left":"<path d=\"M17 7 7 17\"/> <path d=\"M17 17H7V7\"/>","arrow-up-right":"<path d=\"M7 7h10v10\"/> <path d=\"M7 17 17 7\"/>","percent":"<line x1=\"19\" x2=\"5\" y1=\"5\" y2=\"19\"/> <circle cx=\"6.5\" cy=\"6.5\" r=\"2.5\"/> <circle cx=\"17.5\" cy=\"17.5\" r=\"2.5\"/>","lightbulb":"<path d=\"M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5\"/> <path d=\"M9 18h6\"/> <path d=\"M10 22h4\"/>","trash-2":"<path d=\"M10 11v6\"/> <path d=\"M14 11v6\"/> <path d=\"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6\"/> <path d=\"M3 6h18\"/> <path d=\"M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\"/>","search":"<path d=\"m21 21-4.34-4.34\"/> <circle cx=\"11\" cy=\"11\" r=\"8\"/>","sparkle":"<path d=\"M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z\"/>","x":"<path d=\"M18 6 6 18\"/> <path d=\"m6 6 12 12\"/>","triangle-alert":"<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\"/> <path d=\"M12 9v4\"/> <path d=\"M12 17h.01\"/>","trending-down":"<path d=\"M16 17h6v-6\"/> <path d=\"m22 17-8.5-8.5-5 5L2 7\"/>","octagon-x":"<path d=\"m15 9-6 6\"/> <path d=\"M2.586 16.726A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2h6.624a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586z\"/> <path d=\"m9 9 6 6\"/>","circle-alert":"<circle cx=\"12\" cy=\"12\" r=\"10\"/> <line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\"/> <line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\"/>","puzzle":"<path d=\"M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z\"/>","hand":"<path d=\"M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2\"/> <path d=\"M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2\"/> <path d=\"M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8\"/> <path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"/>","info":"<circle cx=\"12\" cy=\"12\" r=\"10\"/> <path d=\"M12 16v-4\"/> <path d=\"M12 8h.01\"/>","list-checks":"<path d=\"M13 5h8\"/> <path d=\"M13 12h8\"/> <path d=\"M13 19h8\"/> <path d=\"m3 17 2 2 4-4\"/> <path d=\"m3 7 2 2 4-4\"/>","layout-grid":"<rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\"/> <rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1\"/> <rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\"/> <rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\"/>"};
+const ICON_GROUPS = [["منزل وسكن",["house","building-2","key-round","sofa","lamp","wrench","hammer","paint-roller"]],["طعام ومشروبات",["shopping-cart","shopping-basket","apple","carrot","beef","milk","coffee","utensils","pizza","sandwich","cup-soda","croissant","ice-cream-cone"]],["مواصلات",["fuel","car","bus","bike","train-front","plane","parking-meter"]],["فواتير واتصالات",["zap","droplet","flame","wifi","smartphone","phone","receipt"]],["ترفيه واشتراكات",["tv","clapperboard","music","gamepad-2","headphones","cloud","play","ticket"]],["تسوق",["shopping-bag","shirt","gem","watch","glasses","scissors","sparkles","store","laptop","monitor"]],["صحة ورياضة",["stethoscope","pill","heart-pulse","hospital","dumbbell","activity"]],["تعليم",["book-open","graduation-cap","pencil","library","notebook-pen","school","flask-conical"]],["عائلة ومناسبات",["gift","baby","users","heart","hand-heart","dog","cat","calendar-heart"]],["سفر",["luggage","map-pin","tent","tree-palm","umbrella","moon-star"]],["مال ودخل",["wallet","banknote","coins","hand-coins","piggy-bank","credit-card","landmark","briefcase-business","badge-dollar-sign","chart-line","trending-up","award","medal","trophy","tag","package","circle-plus","shield-check","target","star"]]];
+
+const EMOJI2I = {'🏠':'house','🛒':'shopping-cart','☕':'coffee','⛽':'fuel','💡':'zap','📺':'tv','🛍️':'shopping-bag','🩺':'stethoscope','📚':'book-open','🎁':'gift','🎮':'gamepad-2','✈️':'plane','🏦':'landmark','📦':'package','💼':'briefcase-business','🧪':'flask-conical','🏅':'medal','🏷️':'tag','📈':'trending-up','➕':'circle-plus','🎯':'target','🚗':'car','💻':'laptop','📱':'smartphone','🛟':'shield-check','🎓':'graduation-cap','💍':'gem','🕋':'moon-star','🏖️':'tree-palm','💰':'piggy-bank','👶':'baby','🐾':'dog','💇':'scissors','🧾':'receipt','🕌':'moon-star','🤝':'hand-heart','💊':'pill','🏋️':'dumbbell','🧰':'wrench','❔':'tag','👋':'hand','🚨':'triangle-alert','📉':'trending-down','🌟':'sparkles','⛔':'octagon-x','⚠️':'circle-alert','🧩':'puzzle','📅':'calendar-range','🗓️':'calendar-range','✨':'sparkles','🔎':'search','✅':'list-checks','🍩':'chart-pie','📊':'chart-pie'};
+const iKey = v => (v && ICONS[v]) ? v : (EMOJI2I[v] || null);
+const I = (name, size = 20, sw = 2) => `<svg class="svgi" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+function hexHsl(hex) { let r = parseInt(hex.slice(1, 3), 16) / 255, g = parseInt(hex.slice(3, 5), 16) / 255, b = parseInt(hex.slice(5, 7), 16) / 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b); let h = 0, s = 0, l = (mx + mn) / 2; if (mx !== mn) { const d = mx - mn; s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h *= 60; } return [h, s * 100, l * 100]; }
+function shade(hex) { if (!/^#[0-9a-f]{6}$/i.test(hex || '')) return hex; const [h, s, l] = hexHsl(hex); return `hsl(${Math.round((h + 28) % 360)} ${Math.round(Math.min(100, s + 8))}% ${Math.round(Math.min(72, l + 12))}%)`; }
+function tile(icon, color, size = 42) {
+  const k = iKey(icon); color = color || '#8B3DF5';
+  if (!k) return `<div class="ico" style="width:${size}px;height:${size}px;background:${color}22;font-size:${Math.round(size * .48)}px">${esc(icon)}</div>`;
+  return `<div class="ico g" style="width:${size}px;height:${size}px;background:linear-gradient(135deg,${shade(color)},${color});box-shadow:0 5px 12px ${color}45">${I(k, Math.round(size * .5), 2.1)}</div>`;
+}
+const mini = (icon, color, size = 15) => { const k = iKey(icon); return k ? `<span class="inl" style="color:${color}">${I(k, size, 2.2)}</span>` : esc(icon); };
+const hI = (name, color) => `<span class="hi" style="background:${color}1f;color:${color}">${I(name, 16, 2.3)}</span>`;
+function hydrateIcons(root = document) { root.querySelectorAll('[data-i]').forEach(e => { e.innerHTML = I(e.dataset.i, +(e.dataset.s || 20)); }); }
 
 /* ============ UTIL ============ */
 const $ = s => document.querySelector(s);
@@ -294,16 +333,16 @@ async function idbDel(k) { try { const db = await idb(); await new Promise(res =
 const COLS = ['categories', 'tx', 'rec', 'budgets', 'goals', 'goalMoves'];
 const PALETTE = ['#F0435F','#1C8FE6','#F29B0C','#0FB57E','#8B3DF5','#E0457B','#00A8B5','#FF7A29','#3D5AFE','#7CB518','#C2185B','#6D4C41','#009688','#FFB300','#5E35B1','#D81B60','#43A047','#0277BD','#AD1457','#546E7A'];
 function defaultCats() {
-  const E = [['c_housing','سكن وإيجار','🏠'],['c_food','بقالة وطعام','🛒'],['c_dining','مطاعم ومقاهي','☕'],['c_transport','مواصلات ووقود','⛽'],['c_bills','فواتير واتصالات','💡'],['c_subs','اشتراكات','📺'],['c_shopping','تسوق','🛍️'],['c_health','صحة','🩺'],['c_edu','تعليم وتطوير','📚'],['c_family','عائلة وهدايا','🎁'],['c_fun','ترفيه','🎮'],['c_travel','سفر','✈️'],['c_loans','أقساط وقروض','🏦'],['c_other_e','مصروفات أخرى','📦']];
-  const I = [['c_salary','راتب','💼'],['c_lessons','حصص خارجية','🧪'],['c_bonus','مكافآت','🏅'],['c_sales','بيع','🏷️'],['c_invest','استثمار','📈'],['c_other_i','دخل آخر','➕']];
+  const E = [['c_housing','سكن وإيجار','house'],['c_food','بقالة وطعام','shopping-cart'],['c_dining','مطاعم ومقاهي','coffee'],['c_transport','مواصلات ووقود','fuel'],['c_bills','فواتير واتصالات','zap'],['c_subs','اشتراكات','tv'],['c_shopping','تسوق','shopping-bag'],['c_health','صحة','stethoscope'],['c_edu','تعليم وتطوير','book-open'],['c_family','عائلة وهدايا','gift'],['c_fun','ترفيه','gamepad-2'],['c_travel','سفر','plane'],['c_loans','أقساط وقروض','landmark'],['c_other_e','مصروفات أخرى','package']];
+  const IN = [['c_salary','راتب','briefcase-business'],['c_lessons','حصص خارجية','flask-conical'],['c_bonus','مكافآت','medal'],['c_sales','بيع','tag'],['c_invest','استثمار','trending-up'],['c_other_i','دخل آخر','circle-plus']];
   let i = 0;
   return [...E.map(([id, name, icon]) => ({ id, name, icon, kind: 'expense', color: PALETTE[i++ % 20], updatedAt: 1 })),
-          ...I.map(([id, name, icon]) => ({ id, name, icon, kind: 'income', color: PALETTE[i++ % 20], updatedAt: 1 }))];
+          ...IN.map(([id, name, icon]) => ({ id, name, icon, kind: 'income', color: PALETTE[i++ % 20], updatedAt: 1 }))];
 }
 function defaultState() { return { v: 1, categories: defaultCats(), tx: [], rec: [], budgets: [], goals: [], goalMoves: [], settings: { updatedAt: 0 } }; }
 let state = defaultState();
 const live = c => state[c].filter(x => !x.deleted);
-const cat = id => state.categories.find(c => c.id === id) || { name: 'غير مصنّف', icon: '❔', color: '#999', kind: 'expense' };
+const cat = id => state.categories.find(c => c.id === id) || { name: 'غير مصنّف', icon: 'tag', color: '#999', kind: 'expense' };
 function upsert(col, obj) {
   obj.updatedAt = Date.now();
   const i = state[col].findIndex(x => x.id === obj.id);
@@ -472,14 +511,14 @@ async function unlockWith(key, salt, remote, cache) {
 function showPass(mode, salt, remote, cache) {
   const create = mode === 'create';
   showAuth(create ? 'أنشئ كلمة سر التشفير' : 'أدخل كلمة سر التشفير لفتح بياناتك',
-    `${create ? `<div class="note warn">🔐 هذه الكلمة تشفّر بياناتك على جهازك قبل رفعها، ولا تُرسل لأي خادم. <b>إن نسيتها لا يمكن استرجاع البيانات أبدًا</b> — احفظها في مكان آمن. اجعلها مختلفة عن كلمة مرور الحساب.</div>` : ''}
+    `${create ? `<div class="note warn">${mini('lock', 'currentColor', 13)} هذه الكلمة تشفّر بياناتك على جهازك قبل رفعها، ولا تُرسل لأي خادم. <b>إن نسيتها لا يمكن استرجاع البيانات أبدًا</b> — احفظها في مكان آمن. اجعلها مختلفة عن كلمة مرور الحساب.</div>` : ''}
      <div class="f"><label>كلمة سر التشفير</label><input id="pP1" type="password" autocomplete="new-password" dir="ltr"></div>
      ${create ? `<div class="f"><label>تأكيدها</label><input id="pP2" type="password" autocomplete="new-password" dir="ltr"></div>` : ''}
      <label class="chk"><input type="checkbox" id="pRem" checked> تذكّر على هذا الجهاز</label>
      <div class="err" id="pErr"></div>
      <div class="btns"><button class="btn" id="pGo">${create ? 'إنشاء وبدء الاستخدام' : 'فتح'}</button>
      ${SB ? '<button class="btn ghost" id="pOut">تسجيل الخروج</button>' : ''}</div>
-     <div class="lock">🔒 تشفير AES-256 من طرف الجهاز</div>`);
+     <div class="lock">${I('lock', 13)} تشفير AES-256 من طرف الجهاز</div>`);
   if ($('#pOut')) $('#pOut').onclick = logout;
   $('#pGo').onclick = async () => {
     const p1 = $('#pP1').value; $('#pErr').textContent = '';
@@ -509,12 +548,58 @@ async function logout() {
 }
 
 /* ============ CALCULATIONS ============ */
-let VIEW = 'home', VM = mk(todayS()), TXF = 'all', TXQ = '';
+let VIEW = 'home', TXF = 'all', TXQ = '';
+/* ---- period (custom date range) ---- */
+const monthRange = m => ({ from: m + '-01', to: m + '-' + pad(daysInMonth(m)) });
+const dayDiff = (a, b) => Math.round((parseD(b) - parseD(a)) / 86400000);
+let PER = { preset: 'month', ...monthRange(mk(todayS())) };
+const inPer = d => d >= PER.from && d <= PER.to;
+const perDays = () => dayDiff(PER.from, PER.to) + 1;
+const isWholeMonth = () => PER.from.slice(8) === '01' && PER.to === monthRange(mk(PER.from)).to;
+function perLabel() {
+  if (isWholeMonth()) return mLabel(mk(PER.from));
+  const f = parseD(PER.from), t = parseD(PER.to);
+  const fs = f.getDate() + ' ' + MONTHS[f.getMonth()] + (f.getFullYear() !== t.getFullYear() ? ' ' + f.getFullYear() : '');
+  return fs + ' – ' + t.getDate() + ' ' + MONTHS[t.getMonth()] + ' ' + t.getFullYear();
+}
+function lastSalaryDate() { const t = todayS(); const xs = txAll().filter(x => x.catId === 'c_salary' && x.date <= t).map(x => x.date).sort(); return xs.length ? xs[xs.length - 1] : null; }
+function presetRange(k) {
+  const t = todayS(), m = mk(t);
+  switch (k) {
+    case 'month': return monthRange(m);
+    case 'lastMonth': return monthRange(shiftMonth(m, -1));
+    case 'last7': return { from: addDays(t, -6), to: t };
+    case 'last30': return { from: addDays(t, -29), to: t };
+    case 'last90': return { from: addDays(t, -89), to: t };
+    case 'next30': return { from: t, to: addDays(t, 29) };
+    case 'year': return { from: t.slice(0, 4) + '-01-01', to: t.slice(0, 4) + '-12-31' };
+    case 'salary': {
+      const from = lastSalaryDate() || monthRange(m).from;
+      const nexts = live('rec').filter(r => r.catId === 'c_salary' && r.type === 'income').map(r => occurrences(r, addDays(from, 1), addDays(from, 70))[0]).filter(Boolean).sort();
+      const to = nexts.length ? addDays(nexts[0], -1) : addDays(ymd(new Date(parseD(from).getFullYear(), parseD(from).getMonth() + 1, parseD(from).getDate())), -1);
+      return { from, to };
+    }
+  }
+  return null;
+}
+function setPeriod(preset, from, to) {
+  const r = preset !== 'custom' ? presetRange(preset) : { from, to };
+  PER = { preset, ...r };
+  ls.set('rs_period', PER);
+}
+function shiftPeriod(dir) {
+  if (isWholeMonth()) { const m = shiftMonth(mk(PER.from), dir); PER = { preset: 'custom', ...monthRange(m) }; }
+  else { const n = perDays(); PER = { preset: 'custom', from: addDays(PER.from, dir * n), to: addDays(PER.to, dir * n) }; }
+  if (isWholeMonth() && mk(PER.from) === mk(todayS())) PER.preset = 'month';
+  ls.set('rs_period', PER);
+}
+function restorePeriod() { const s = ls.get('rs_period'); if (!s || !s.from) return; if (s.preset && s.preset !== 'custom') { const r = presetRange(s.preset); if (r) { PER = { preset: s.preset, ...r }; return; } } PER = { preset: 'custom', from: s.from, to: s.to }; }
 const txAll = () => live('tx').filter(t => !t.skipped);
 const isInc = t => t.type === 'income';
-function monthActual(m) {
+function monthActual(m) { const r = monthRange(m); return rangeActual(r.from, r.to); }
+function rangeActual(from, to) {
   const t = todayS(); let income = 0, expense = 0; const byCat = {};
-  for (const x of txAll()) { if (mk(x.date) !== m || x.date > t) continue;
+  for (const x of txAll()) { if (x.date < from || x.date > to || x.date > t) continue;
     if (isInc(x)) income += x.amount; else expense += x.amount;
     byCat[x.catId] = (byCat[x.catId] || 0) + x.amount; }
   return { income: r3(income), expense: r3(expense), net: r3(income - expense), byCat };
@@ -546,17 +631,18 @@ function upcoming(days = 30, fromOverride) {
   for (const x of txAll()) if (x.date > t && x.date <= to) out.push({ kind: 'tx', x, date: x.date, type: x.type, amount: x.amount, catId: x.catId, name: x.note || cat(x.catId).name, overdue: false });
   return out.sort((a, b) => a.date.localeCompare(b.date));
 }
-function projection(m) {
-  const a = monthActual(m); const t = todayS();
-  const cur = mk(t);
+function projection(m) { const r = monthRange(m); return projectionRange(r.from, r.to); }
+function projectionRange(from, to) {
+  const a = rangeActual(from, to); const t = todayS();
   let upI = 0, upE = 0;
-  if (m >= cur) {
-    const start = m === cur ? addDays(t, 1) : m + '-01'; const end = m + '-' + pad(daysInMonth(m));
+  if (to >= t) {
+    const start = from > t ? from : addDays(t, 1);
     const ds = doneSet();
-    for (const r of live('rec')) for (const d of occurrences(r, m + '-01', end)) {
+    const recFrom = from > monthRange(mk(t)).from ? from : monthRange(mk(t)).from; // older unpaid items are not projected
+    for (const r of live('rec')) for (const d of occurrences(r, recFrom, to)) {
       if (ds.has(r.id + '@' + d)) continue;
       if (r.type === 'income') upI += r.amount; else upE += r.amount; }
-    for (const x of txAll()) if (x.date >= start && x.date <= end) { if (isInc(x)) upI += x.amount; else upE += x.amount; }
+    for (const x of txAll()) if (x.date >= start && x.date <= to) { if (isInc(x)) upI += x.amount; else upE += x.amount; }
   }
   return { ...a, upI: r3(upI), upE: r3(upE), pIncome: r3(a.income + upI), pExpense: r3(a.expense + upE), pNet: r3(a.income + upI - a.expense - upE) };
 }
@@ -644,14 +730,16 @@ const charts = {};
 function killCharts() { for (const k in charts) { try { charts[k].destroy(); } catch {} delete charts[k]; } }
 function render() {
   if (!KEY) return;
-  const p = projection(VM);
-  $('#mLabel').textContent = mLabel(VM);
+  const p = projectionRange(PER.from, PER.to);
+  const t = todayS();
+  $('#mLabel').innerHTML = esc(perLabel()) + ' <span style="opacity:.7;font-size:12px">▾</span>';
+  $('#mDays').textContent = perDays() + ' يومًا';
   $('#balVal').textContent = fmt(p.net);
   $('#balVal').style.color = p.net < 0 ? '#FFB3C0' : '#fff';
-  const isCur = VM === mk(todayS()), isFut = VM > mk(todayS());
-  $('#balLbl').textContent = isFut ? 'الصافي المتوقع' : 'صافي الشهر حتى الآن';
+  const isPast = PER.to < t, isFut = PER.from > t;
+  $('#balLbl').textContent = isFut ? 'الصافي المتوقع للمدة' : isPast ? 'صافي المدة' : 'صافي المدة حتى الآن';
   if (isFut) $('#balVal').textContent = fmt(p.pNet);
-  $('#balSub').innerHTML = (isCur || isFut) && (p.upI || p.upE) ? `المتوقع نهاية الشهر: <span class="num">${fmt(p.pNet)}</span> د.ك` : '';
+  $('#balSub').innerHTML = !isPast && (p.upI || p.upE) ? `المتوقع نهاية المدة: <span class="num">${fmt(p.pNet)}</span> د.ك` : '';
   $$('.tab').forEach(b => b.classList.toggle('on', b.dataset.v === VIEW));
   killCharts();
   const main = $('#main');
@@ -661,44 +749,45 @@ function render() {
 function kpis(p) {
   const rate = p.pIncome > 0 ? Math.max(-99, Math.round((p.pIncome - p.pExpense) / p.pIncome * 100)) : null;
   return `<div class="kpis">
-   <div class="kpi inc"><div class="lbl"><span class="chip">↓</span>الدخل</div><div class="val">${money(p.income)}</div>${p.upI ? `<div class="s" style="font-size:11.5px;color:var(--muted)">+ <span class="num">${fmt(p.upI)}</span> متوقع</div>` : ''}</div>
-   <div class="kpi exp"><div class="lbl"><span class="chip">↑</span>المصروف</div><div class="val">${money(p.expense)}</div>${p.upE ? `<div class="s" style="font-size:11.5px;color:var(--muted)">+ <span class="num">${fmt(p.upE)}</span> قادم</div>` : ''}</div>
-   <div class="kpi up"><div class="lbl"><span class="chip">⏳</span>القادم (30 يومًا)</div><div class="val" style="font-size:16px">${upcoming(30).length} عملية</div></div>
-   <div class="kpi rate"><div class="lbl"><span class="chip">%</span>نسبة الادخار المتوقعة</div><div class="val" style="color:var(--info)">${rate === null ? '—' : `<span class="num">${rate}%</span>`}</div>
+   <div class="kpi inc"><div class="lbl"><span class="chip">${I('arrow-down-left', 16, 2.4)}</span>الدخل</div><div class="val">${money(p.income)}</div>${p.upI ? `<div class="s" style="font-size:11.5px;color:var(--muted)">+ <span class="num">${fmt(p.upI)}</span> متوقع</div>` : ''}</div>
+   <div class="kpi exp"><div class="lbl"><span class="chip">${I('arrow-up-right', 16, 2.4)}</span>المصروف</div><div class="val">${money(p.expense)}</div>${p.upE ? `<div class="s" style="font-size:11.5px;color:var(--muted)">+ <span class="num">${fmt(p.upE)}</span> قادم</div>` : ''}</div>
+   <div class="kpi up"><div class="lbl"><span class="chip">${I('hourglass', 15, 2.2)}</span>القادم (30 يومًا)</div><div class="val" style="font-size:16px">${upcoming(30).length} عملية</div></div>
+   <div class="kpi rate"><div class="lbl"><span class="chip">${I('percent', 15, 2.4)}</span>نسبة الادخار المتوقعة</div><div class="val" style="color:var(--info)">${rate === null ? '—' : `<span class="num">${rate}%</span>`}</div>
      <div class="ring"><i style="width:${Math.max(0, Math.min(100, rate || 0))}%;background:linear-gradient(90deg,var(--info),var(--inc))"></i></div></div>
   </div>`;
 }
 function rowTx(x) {
   const c = cat(x.catId), fut = x.date > todayS();
-  return `<div class="row" data-edit-tx="${x.id}"><div class="ico" style="background:${c.color}22">${c.icon}</div>
-   <div class="mid"><div class="t">${esc(x.note || c.name)}</div><div class="s">${esc(c.name)}${x.recId ? ' · 🔁' : ''} ${fut ? '<span class="tag up">قادمة</span>' : ''}</div></div>
+  return `<div class="row" data-edit-tx="${x.id}">${tile(c.icon, c.color)}
+   <div class="mid"><div class="t">${esc(x.note || c.name)}</div><div class="s">${esc(c.name)}${x.recId ? ' · ' + mini('repeat', 'var(--muted)', 12) : ''} ${fut ? '<span class="tag up">قادمة</span>' : ''}</div></div>
    <div class="amt ${isInc(x) ? 'inc' : 'exp'}"><span class="num">${isInc(x) ? '+' : '−'}${fmt(x.amount)}</span></div></div>`;
 }
 function rowUp(u) {
   const c = cat(u.catId);
-  return `<div class="row" ${u.kind === 'tx' ? `data-edit-tx="${u.x.id}"` : ''}><div class="ico" style="background:${c.color}22">${c.icon}</div>
+  return `<div class="row" ${u.kind === 'tx' ? `data-edit-tx="${u.x.id}"` : ''}>${tile(c.icon, c.color)}
    <div class="mid"><div class="t">${esc(u.name)}</div>
    <div class="s">${dShort(u.date)} ${u.overdue ? '<span class="tag late">متأخرة</span>' : '<span class="tag up">قادمة</span>'}</div>
    ${u.kind === 'rec' ? `<div class="acts"><button class="mini ok" data-pay="${u.r.id}@${u.date}">✓ ${u.type === 'income' ? 'استلمت' : 'دفعت'}</button><button class="mini skip" data-skip="${u.r.id}@${u.date}">تخطٍّ</button></div>` : ''}</div>
    <div class="amt ${u.type === 'income' ? 'inc' : 'exp'}"><span class="num">${u.type === 'income' ? '+' : '−'}${fmt(u.amount)}</span></div></div>`;
 }
-const tipHTML = s => `<div class="tip ${s.level}"><div class="ti">${s.icon}</div><div><b>${esc(s.title)}</b><p>${esc(s.text)}</p></div></div>`;
-const emptyHTML = (e, t) => `<div class="empty"><div class="e">${e}</div>${t}</div>`;
+const LVC = { bad: '#F0435F', warn: '#F29B0C', info: '#1C8FE6', good: '#0FB57E' };
+const tipHTML = s => `<div class="tip ${s.level}">${tile(s.icon, LVC[s.level], 38)}<div><b>${esc(s.title)}</b><p>${esc(s.text)}</p></div></div>`;
+const emptyHTML = (e, t) => `<div class="empty"><div class="e">${iKey(e) ? `<span class="ic">${I(iKey(e), 30, 1.8)}</span>` : e}</div>${t}</div>`;
 
 function vHome(p) {
   const up = upcoming(14).slice(0, 5);
   const sug = suggestions();
   const recent = txAll().filter(x => x.date <= todayS()).sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt).slice(0, 5);
   return kpis(p) +
-   `<h2 class="sec">💡 اقتراحات لك <a data-go="reports">كل التحليل</a></h2>` + sug.slice(0, 3).map(tipHTML).join('') +
-   `<h2 class="sec">⏳ القادم خلال 14 يومًا <a data-go="rec">المتكررة</a></h2>` +
+   `<h2 class="sec">${hI('lightbulb','#F29B0C')}اقتراحات لك <a data-go="reports">كل التحليل</a></h2>` + sug.slice(0, 3).map(tipHTML).join('') +
+   `<h2 class="sec">${hI('hourglass','#E0457B')}القادم خلال 14 يومًا <a data-go="rec">المتكررة</a></h2>` +
    (up.length ? `<div class="list">${up.map(rowUp).join('')}</div>` : `<div class="list">${emptyHTML('🗓️', 'لا توجد عمليات قادمة')}</div>`) +
-   `<h2 class="sec">🧾 آخر العمليات <a data-go="tx">الكل</a></h2>` +
+   `<h2 class="sec">${hI('receipt','#5B3DF5')}آخر العمليات <a data-go="tx">الكل</a></h2>` +
    (recent.length ? `<div class="list">${recent.map(rowTx).join('')}</div>` : `<div class="list">${emptyHTML('✨', 'اضغط + لإضافة أول عملية')}</div>`);
 }
 function vTx() {
   const t = todayS();
-  let list = live('tx').filter(x => mk(x.date) === VM);
+  let list = live('tx').filter(x => inPer(x.date));
   if (TXF === 'expense') list = list.filter(x => x.type === 'expense' && !x.skipped);
   if (TXF === 'income') list = list.filter(x => x.type === 'income' && !x.skipped);
   if (TXF === 'up') list = list.filter(x => x.date > t);
@@ -708,13 +797,13 @@ function vTx() {
   const groups = {}; for (const x of list) (groups[x.date] = groups[x.date] || []).push(x);
   const f = (k, l) => `<button class="chipb ${TXF === k ? 'on' : ''}" data-f="${k}">${l}</button>`;
   return `<div class="card" style="padding:12px">
-     <input class="search" id="txq" placeholder="🔍 بحث في الملاحظات أو الفئات" value="${esc(TXQ)}" style="margin:0">
+     <div class="searchw">${I('search', 18)}<input class="search" id="txq" placeholder="بحث في الملاحظات أو الفئات" value="${esc(TXQ)}" style="margin:0"></div>
    </div>
    <div class="chips">${f('all', 'الكل')}${f('expense', 'المصروفات')}${f('income', 'الدخل')}${f('up', 'القادمة')}</div>` +
    (list.length ? Object.entries(groups).map(([d, xs]) => {
      const net = xs.reduce((s, x) => s + (isInc(x) ? x.amount : -x.amount), 0);
      return `<div class="daylbl" style="display:flex;justify-content:space-between"><span>${dLabel(d)}</span><span class="num">${net >= 0 ? '+' : '−'}${fmt(Math.abs(net))}</span></div><div class="list">${xs.map(rowTx).join('')}</div>`;
-   }).join('') : `<div class="list">${emptyHTML('🔎', 'لا توجد عمليات في ' + mLabel(VM))}</div>`);
+   }).join('') : `<div class="list">${emptyHTML('🔎', 'لا توجد عمليات في هذه المدة')}</div>`);
 }
 const FREQ = { monthly: 'شهري', weekly: 'أسبوعي', yearly: 'سنوي' };
 function freqText(r) { const e = r.every || 1; return e > 1 ? `كل ${e} ${r.freq === 'weekly' ? 'أسابيع' : r.freq === 'yearly' ? 'سنوات' : 'أشهر'}` : FREQ[r.freq]; }
@@ -724,62 +813,68 @@ function vRec() {
   const mI = inc.filter(r => !r.paused).reduce((s, r) => s + monthlyEq(r), 0), mE = exp.filter(r => !r.paused).reduce((s, r) => s + monthlyEq(r), 0);
   const ds = doneSet();
   const row = r => { const c = cat(r.catId); const next = occurrences(r, todayS(), addDays(todayS(), 400)).find(d => !ds.has(r.id + '@' + d));
-    return `<div class="row" data-edit-rec="${r.id}"><div class="ico" style="background:${c.color}22">${c.icon}</div>
+    return `<div class="row" data-edit-rec="${r.id}">${tile(c.icon, c.color)}
      <div class="mid"><div class="t">${esc(r.name)}</div><div class="s">${freqText(r)} · ${r.paused ? '<span class="tag muted">موقوف</span>' : next ? 'القادم ' + dShort(next) : 'انتهى'}</div></div>
      <div class="amt ${r.type === 'income' ? 'inc' : 'exp'}"><span class="num">${fmt(r.amount)}</span></div></div>`; };
   const up = upcoming(30);
-  return `<div class="kpis"><div class="kpi inc"><div class="lbl"><span class="chip">↓</span>دخل ثابت شهريًا</div><div class="val">${money(mI)}</div></div>
-    <div class="kpi exp"><div class="lbl"><span class="chip">↑</span>التزامات شهرية</div><div class="val">${money(mE)}</div></div></div>
+  return `<div class="kpis"><div class="kpi inc"><div class="lbl"><span class="chip">${I('arrow-down-left', 16, 2.4)}</span>دخل ثابت شهريًا</div><div class="val">${money(mI)}</div></div>
+    <div class="kpi exp"><div class="lbl"><span class="chip">${I('arrow-up-right', 16, 2.4)}</span>التزامات شهرية</div><div class="val">${money(mE)}</div></div></div>
     <button class="btn" style="margin-top:14px" id="addRec">＋ إضافة دخل أو مصروف متكرر</button>
-    <h2 class="sec">📅 المستحق خلال 30 يومًا</h2>${up.length ? `<div class="list">${up.map(rowUp).join('')}</div>` : `<div class="list">${emptyHTML('✅', 'لا شيء مستحق')}</div>`}
-    <h2 class="sec">💼 الدخل المتكرر</h2>${inc.length ? `<div class="list">${inc.map(row).join('')}</div>` : `<div class="list">${emptyHTML('💼', 'أضف راتبك هنا ليُحتسب تلقائيًا كل شهر')}</div>`}
-    <h2 class="sec">🧾 المصروفات المتكررة</h2>${exp.length ? `<div class="list">${exp.map(row).join('')}</div>` : `<div class="list">${emptyHTML('🏠', 'إيجار، اشتراكات، أقساط…')}</div>`}`;
+    <h2 class="sec">${hI('calendar-range','#E0457B')}المستحق خلال 30 يومًا</h2>${up.length ? `<div class="list">${up.map(rowUp).join('')}</div>` : `<div class="list">${emptyHTML('✅', 'لا شيء مستحق')}</div>`}
+    <h2 class="sec">${hI('briefcase-business','#0FB57E')}الدخل المتكرر</h2>${inc.length ? `<div class="list">${inc.map(row).join('')}</div>` : `<div class="list">${emptyHTML('💼', 'أضف راتبك هنا ليُحتسب تلقائيًا كل شهر')}</div>`}
+    <h2 class="sec">${hI('receipt','#F0435F')}المصروفات المتكررة</h2>${exp.length ? `<div class="list">${exp.map(row).join('')}</div>` : `<div class="list">${emptyHTML('🏠', 'إيجار، اشتراكات، أقساط…')}</div>`}`;
 }
 function vPlan() {
-  const a = monthActual(VM);
+  const a = rangeActual(PER.from, PER.to);
+  const scale = isWholeMonth() ? 1 : perDays() / 30.4375;
   const budgets = live('budgets').filter(b => !cat(b.catId).deleted);
-  const bHTML = budgets.map(b => { const c = cat(b.catId), sp = a.byCat[b.catId] || 0, pct = b.limit ? sp / b.limit : 0;
+  const bHTML = budgets.map(b => { const c = cat(b.catId), sp = a.byCat[b.catId] || 0, lim = r3(b.limit * scale), pct = lim ? sp / lim : 0;
     const col = pct >= 1 ? 'var(--exp)' : pct >= 0.8 ? 'var(--up)' : c.color;
-    return `<div class="card" data-edit-bud="${b.id}" style="cursor:pointer"><div class="goalhead"><div class="ico" style="background:${c.color}22">${c.icon}</div>
-      <div style="flex:1"><b>${esc(c.name)}</b><div class="s" style="font-size:12.5px;color:var(--muted)">${money(sp)} من ${money(b.limit)}</div></div>
+    return `<div class="card" data-edit-bud="${b.id}" style="cursor:pointer"><div class="goalhead">${tile(c.icon, c.color)}
+      <div style="flex:1"><b>${esc(c.name)}</b><div class="s" style="font-size:12.5px;color:var(--muted)">${money(sp)} من ${money(lim)}</div></div>
       <div class="pct" style="color:${col}"><span class="num">${Math.round(pct * 100)}%</span></div></div>
       <div class="bar"><i style="width:${Math.min(100, pct * 100)}%;background:${col}"></i></div>
-      <div class="bline"><span>${pct >= 1 ? 'تجاوز بـ ' + fmt(sp - b.limit) : 'متبقٍ ' + fmt(b.limit - sp)} د.ك</span></div></div>`; }).join('');
-  const tb = budgets.reduce((s, b) => s + b.limit, 0), ts = budgets.reduce((s, b) => s + (a.byCat[b.catId] || 0), 0);
+      <div class="bline"><span>${pct >= 1 ? 'تجاوز بـ ' + fmt(sp - lim) : 'متبقٍ ' + fmt(lim - sp)} د.ك</span></div></div>`; }).join('');
+  const tb = budgets.reduce((s, b) => s + b.limit * scale, 0), ts = budgets.reduce((s, b) => s + (a.byCat[b.catId] || 0), 0);
   const gHTML = live('goals').map(g => { const sv = goalSaved(g), pct = g.target ? sv / g.target : 0; const mleft = g.date ? Math.max(1, monthsBetween(mk(todayS()), mk(g.date))) : null;
-    return `<div class="card"><div class="goalhead" data-edit-goal="${g.id}" style="cursor:pointer"><div class="ico" style="background:${g.color}22">${esc(g.icon || '🎯')}</div>
+    return `<div class="card"><div class="goalhead" data-edit-goal="${g.id}" style="cursor:pointer">${tile(g.icon || 'target', g.color)}
       <div style="flex:1"><b>${esc(g.name)}</b><div class="s" style="font-size:12.5px;color:var(--muted)">${money(sv)} من ${money(g.target)}${g.date ? ' · بحلول ' + dShort(g.date) + ' ' + g.date.slice(0, 4) : ''}</div></div>
       <div class="pct" style="color:${g.color}"><span class="num">${Math.round(pct * 100)}%</span></div></div>
       <div class="bar"><i style="width:${Math.min(100, pct * 100)}%;background:linear-gradient(90deg,${g.color},${g.color}AA)"></i></div>
-      <div class="bline"><span>${sv >= g.target ? '🎉 تحقق الهدف' : mleft ? 'مطلوب شهريًا: ' + fmt((g.target - sv) / mleft) + ' د.ك' : 'متبقٍ ' + fmt(g.target - sv) + ' د.ك'}</span>
+      <div class="bline"><span>${sv >= g.target ? mini('trophy', '#F29B0C') + ' تحقق الهدف' : mleft ? 'مطلوب شهريًا: ' + fmt((g.target - sv) / mleft) + ' د.ك' : 'متبقٍ ' + fmt(g.target - sv) + ' د.ك'}</span>
       <span><button class="mini ok" data-dep="${g.id}">＋ إيداع</button> <button class="mini skip" data-wd="${g.id}">سحب</button></span></div></div>`; }).join('');
-  return `<h2 class="sec" style="margin-top:4px">📊 ميزانيات ${mLabel(VM)} <a id="addBud">＋ ميزانية</a></h2>
+  return `<h2 class="sec" style="margin-top:4px">${hI('chart-pie','#5B3DF5')}الميزانيات <a id="addBud">＋ ميزانية</a></h2>
+    ${budgets.length && scale !== 1 ? `<div class="note">الحدود الشهرية مُعدّلة تلقائيًا حسب طول المدة (${perDays()} يومًا).</div>` : ''}
     ${budgets.length ? `<div class="card" style="background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff"><div style="font-size:13px;opacity:.85">إجمالي الميزانيات</div><div style="font-size:20px;font-weight:800">${money(ts)} / ${money(tb)}</div><div class="bar" style="background:rgba(255,255,255,.25)"><i style="width:${tb ? Math.min(100, ts / tb * 100) : 0}%;background:#fff"></i></div></div>` + bHTML : `<div class="list">${emptyHTML('📊', 'حدّد سقفًا شهريًا لكل فئة لتتابع صرفك')}</div>`}
-    <h2 class="sec">🎯 أهداف الادخار <a id="addGoal">＋ هدف</a></h2>
+    <h2 class="sec">${hI('target','#E0457B')}أهداف الادخار <a id="addGoal">＋ هدف</a></h2>
     ${gHTML || `<div class="list">${emptyHTML('🎯', 'أضف هدفًا (سفر، جهاز، طوارئ…)')}</div>`}`;
 }
 function vReports() {
-  const a = monthActual(VM);
+  const a = rangeActual(PER.from, PER.to);
+  const elapsed = Math.max(1, dayDiff(PER.from, PER.to < todayS() ? PER.to : todayS()) + 1);
+  const summary = PER.from > todayS() ? '' : `<div class="kpis" style="margin-bottom:14px">
+    <div class="kpi exp"><div class="lbl"><span class="chip">${I('arrow-up-right', 16, 2.4)}</span>متوسط الصرف اليومي</div><div class="val" style="font-size:17px">${money(a.expense / elapsed)}</div></div>
+    <div class="kpi inc"><div class="lbl"><span class="chip">${I('arrow-down-left', 16, 2.4)}</span>متوسط الدخل اليومي</div><div class="val" style="font-size:17px">${money(a.income / elapsed)}</div></div></div>`;
   const expCats = Object.entries(a.byCat).filter(([k]) => cat(k).kind === 'expense').sort((x, y) => y[1] - x[1]);
   const incCats = Object.entries(a.byCat).filter(([k]) => cat(k).kind === 'income').sort((x, y) => y[1] - x[1]);
-  const leg = (arr, tot) => `<div class="legend">${arr.map(([k, v]) => `<div class="lg"><i style="background:${cat(k).color}"></i><span class="n">${cat(k).icon} ${esc(cat(k).name)}</span><span class="num">${fmt(v)}</span><span style="color:var(--muted);font-size:12px;min-width:38px;text-align:left">${Math.round(v / tot * 100)}%</span></div>`).join('')}</div>`;
-  return `<div class="card"><b>الدخل مقابل المصروف — آخر 6 أشهر</b><div style="height:230px;margin-top:10px"><canvas id="chBar"></canvas></div></div>
-    <div class="card"><b>توزيع المصروف — ${mLabel(VM)}</b>${expCats.length ? `<div style="height:210px;margin-top:10px"><canvas id="chExp"></canvas></div>${leg(expCats, a.expense)}` : emptyHTML('🍩', 'لا مصروفات مسجّلة')}</div>
-    <div class="card"><b>مصادر الدخل — ${mLabel(VM)}</b>${incCats.length ? `<div style="height:190px;margin-top:10px"><canvas id="chInc"></canvas></div>${leg(incCats, a.income)}` : emptyHTML('💼', 'لا دخل مسجّل')}</div>
-    <h2 class="sec">💡 كل الاقتراحات</h2>${suggestions().map(tipHTML).join('')}
+  const leg = (arr, tot) => `<div class="legend">${arr.map(([k, v]) => `<div class="lg"><i style="background:${cat(k).color}"></i><span class="n">${mini(cat(k).icon, cat(k).color)} ${esc(cat(k).name)}</span><span class="num">${fmt(v)}</span><span style="color:var(--muted);font-size:12px;min-width:38px;text-align:left">${Math.round(v / tot * 100)}%</span></div>`).join('')}</div>`;
+  return summary + `<div class="card"><b>الدخل مقابل المصروف — 6 أشهر حتى ${mLabel(mk(PER.to))}</b><div style="height:230px;margin-top:10px"><canvas id="chBar"></canvas></div></div>
+    <div class="card"><b>توزيع المصروف — ${esc(perLabel())}</b>${expCats.length ? `<div style="height:210px;margin-top:10px"><canvas id="chExp"></canvas></div>${leg(expCats, a.expense)}` : emptyHTML('🍩', 'لا مصروفات مسجّلة')}</div>
+    <div class="card"><b>مصادر الدخل — ${esc(perLabel())}</b>${incCats.length ? `<div style="height:190px;margin-top:10px"><canvas id="chInc"></canvas></div>${leg(incCats, a.income)}` : emptyHTML('💼', 'لا دخل مسجّل')}</div>
+    <h2 class="sec">${hI('lightbulb','#F29B0C')}كل الاقتراحات</h2>${suggestions().map(tipHTML).join('')}
     <div class="note">الاقتراحات قواعد حسابية تُحسب على جهازك من بياناتك فقط؛ هي تقديرات وليست استشارة مالية.</div>`;
 }
 function drawReports() {
   if (!window.Chart) return;
   const dark = matchMedia('(prefers-color-scheme: dark)').matches; const tc = dark ? '#A5A2C6' : '#6B6A86', gc = dark ? '#2E2A52' : '#E3E6F2';
   Chart.defaults.font.family = 'Noto Kufi Arabic'; Chart.defaults.color = tc;
-  const ms = [5, 4, 3, 2, 1, 0].map(i => shiftMonth(VM, -i)); const d = ms.map(monthActual);
+  const ms = [5, 4, 3, 2, 1, 0].map(i => shiftMonth(mk(PER.to), -i)); const d = ms.map(monthActual);
   const bar = $('#chBar');
   if (bar) charts.bar = new Chart(bar, { type: 'bar', data: { labels: ms.map(m => MONTHS[+m.slice(5) - 1]), datasets: [
     { label: 'الدخل', data: d.map(x => x.income), backgroundColor: '#0FB57E', borderRadius: 7 },
     { label: 'المصروف', data: d.map(x => x.expense), backgroundColor: '#F0435F', borderRadius: 7 }] },
     options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', rtl: true } }, scales: { x: { reverse: true, grid: { display: false } }, y: { grid: { color: gc }, ticks: { callback: v => v.toLocaleString('en-US') } } } } });
-  const a = monthActual(VM);
+  const a = rangeActual(PER.from, PER.to);
   const dn = (id, kind) => { const el = $(id); if (!el) return; const e = Object.entries(a.byCat).filter(([k]) => cat(k).kind === kind).sort((x, y) => y[1] - x[1]);
     charts[id] = new Chart(el, { type: 'doughnut', data: { labels: e.map(([k]) => cat(k).name), datasets: [{ data: e.map(x => x[1]), backgroundColor: e.map(([k]) => cat(k).color), borderWidth: 3, borderColor: dark ? '#1A1733' : '#fff' }] },
       options: { maintainAspectRatio: false, cutout: '64%', plugins: { legend: { display: false } } } }); };
@@ -812,9 +907,9 @@ function openSheet(html) {
 }
 function closeSheet() { $('#sheetHost').innerHTML = ''; }
 function catPicker(kind, sel) {
-  return `<div class="catgrid">${live('categories').filter(c => c.kind === kind).map(c => `<button type="button" class="catb ${c.id === sel ? 'on' : ''}" data-cat="${c.id}"><span class="e">${c.icon}</span>${esc(c.name)}</button>`).join('')}
-   <button type="button" class="catb" data-catnew="${kind}" style="border:2px dashed var(--line);background:none"><span class="e">＋</span>فئة جديدة</button>
-   <button type="button" class="catb" data-catmanage="1" style="border:2px dashed var(--line);background:none"><span class="e">✏️</span>تعديل الفئات</button></div>`;
+  return `<div class="catgrid">${live('categories').filter(c => c.kind === kind).map(c => `<button type="button" class="catb ${c.id === sel ? 'on' : ''}" data-cat="${c.id}">${tile(c.icon, c.color, 34)}${esc(c.name)}</button>`).join('')}
+   <button type="button" class="catb" data-catnew="${kind}" style="border:2px dashed var(--line);background:none"><span class="ic" style="color:var(--brand)">${I('circle-plus', 26, 1.8)}</span>فئة جديدة</button>
+   <button type="button" class="catb" data-catmanage="1" style="border:2px dashed var(--line);background:none"><span class="ic" style="color:var(--brand)">${I('pencil', 24, 1.8)}</span>تعديل الفئات</button></div>`;
 }
 function bindCatPicker(onPick) {
   $$('[data-cat]').forEach(b => b.onclick = () => { $$('[data-cat]').forEach(x => x.classList.remove('on')); b.classList.add('on'); onPick(b.dataset.cat); });
@@ -885,19 +980,19 @@ function budForm(b) {
     upsert('budgets', { ...b, catId, limit: lim }); closeSheet(); };
   if ($('#bDel')) $('#bDel').onclick = () => { removeItem('budgets', b.id); closeSheet(); };
 }
-const GOAL_ICONS = ['🎯','✈️','🚗','🏠','💻','📱','🛟','🎓','💍','🕋','🏖️','💰'];
+const GOAL_ICONS = ['target','piggy-bank','shield-check','plane','car','house','laptop','smartphone','graduation-cap','gem','moon-star','tree-palm','luggage','baby','gift','trophy','heart','star'];
 function goalForm(g) {
-  const isNew = !g; g = g ? { ...g } : { id: uid(), name: '', target: '', date: '', icon: '🎯', color: PALETTE[live('goals').length * 3 % 20] };
+  const isNew = !g; g = g ? { ...g } : { id: uid(), name: '', target: '', date: '', icon: 'target', color: PALETTE[live('goals').length * 3 % 20] };
   let icon = g.icon, color = g.color;
   openSheet(`<h3>${isNew ? 'هدف ادخار جديد' : 'تعديل الهدف'}</h3>
     <div class="f"><label>الاسم</label><input id="gName" value="${esc(g.name)}" placeholder="مثل: صندوق الطوارئ"></div>
     <div class="grid2"><div class="f"><label>المبلغ المستهدف</label><input id="gT" inputmode="decimal" dir="ltr" value="${g.target}" placeholder="0.000"></div>
     <div class="f"><label>الموعد (اختياري)</label><input id="gD" type="date" value="${g.date || ''}"></div></div>
-    <div class="f"><label>الأيقونة</label><div class="swatches">${GOAL_ICONS.map(i => `<button type="button" class="catb ${i === icon ? 'on' : ''}" data-gi="${i}" style="width:44px;padding:6px"><span class="e">${i}</span></button>`).join('')}</div></div>
+    <div class="f"><label>الأيقونة</label><div class="iconpick" id="gPick">${GOAL_ICONS.map(i => `<button type="button" class="${iKey(icon) === i ? 'on' : ''}" data-gi="${i}">${tile(i, color, 40)}</button>`).join('')}</div></div>
     <div class="f"><label>اللون</label><div class="swatches">${PALETTE.slice(0, 12).map(c => `<button type="button" class="sw ${c === color ? 'on' : ''}" data-gc="${c}" style="background:${c}"></button>`).join('')}</div></div>
     <div class="btns"><button class="btn" id="gSave">حفظ</button>${!isNew ? '<button class="btn danger" id="gDel">حذف الهدف</button>' : ''}</div>`);
   $$('[data-gi]').forEach(b => b.onclick = () => { $$('[data-gi]').forEach(x => x.classList.remove('on')); b.classList.add('on'); icon = b.dataset.gi; });
-  $$('[data-gc]').forEach(b => b.onclick = () => { $$('[data-gc]').forEach(x => x.classList.remove('on')); b.classList.add('on'); color = b.dataset.gc; });
+  $$('[data-gc]').forEach(b => b.onclick = () => { $$('[data-gc]').forEach(x => x.classList.remove('on')); b.classList.add('on'); color = b.dataset.gc; $$('[data-gi]').forEach(x => x.innerHTML = tile(x.dataset.gi, color, 40)); });
   $('#gSave').onclick = () => { const t = readAmount('#gT'); const name = $('#gName').value.trim(); if (!t || !name) { toast('أدخل الاسم والمبلغ'); return; }
     upsert('goals', { ...g, name, target: t, date: $('#gD').value, icon, color }); closeSheet(); };
   if ($('#gDel')) $('#gDel').onclick = () => { removeItem('goals', g.id); live('goalMoves').filter(m => m.goalId === g.id).forEach(m => { m.deleted = true; m.updatedAt = Date.now(); }); changed(); closeSheet(); };
@@ -916,16 +1011,16 @@ function moveForm(goalId, sign) {
 
 /* ============ SETTINGS ============ */
 function settingsSheet() {
-  openSheet(`<h3>⚙️ الإعدادات</h3>
+  openSheet(`<h3>الإعدادات</h3>
     <div class="card" style="box-shadow:none;background:var(--soft)"><div style="font-size:13px;color:var(--muted)">الحساب</div><b dir="ltr" style="display:block;text-align:right">${esc(USER.email || '')}</b>
-      <div style="font-size:12.5px;color:var(--muted);margin-top:4px">🔒 البيانات مشفّرة على جهازك (AES-256-GCM) قبل أي رفع، والخادم يخزّن نصًا مشفّرًا فقط.</div></div>
+      <div style="font-size:12.5px;color:var(--muted);margin-top:4px">${mini('lock', 'var(--inc)', 13)} البيانات مشفّرة على جهازك (AES-256-GCM) قبل أي رفع، والخادم يخزّن نصًا مشفّرًا فقط.</div></div>
     <div class="btns">
-      ${SB ? '<button class="btn ghost" id="sSync">🔄 مزامنة الآن</button>' : ''}
-      <button class="btn ghost" id="sCats">🗂️ الفئات وأنواع الدخل (إضافة / تسمية / تعديل)</button>
-      <button class="btn ghost" id="sPass">🔑 تغيير كلمة سر التشفير</button>
-      <button class="btn ghost" id="sCsv">📄 تصدير العمليات CSV (غير مشفّر)</button>
-      <button class="btn ghost" id="sJson">💾 نسخة احتياطية مشفّرة</button>
-      <button class="btn ghost" id="sLock">🔒 قفل التطبيق (نسيان المفتاح على هذا الجهاز)</button>
+      ${SB ? '<button class="btn ghost" id="sSync">' + I('refresh-cw', 18) + 'مزامنة الآن</button>' : ''}
+      <button class="btn ghost" id="sCats">${I('folder-cog', 18)}الفئات وأنواع الدخل (إضافة / تسمية / تعديل)</button>
+      <button class="btn ghost" id="sPass">${I('key-round', 18)}تغيير كلمة سر التشفير</button>
+      <button class="btn ghost" id="sCsv">${I('file-down', 18)}تصدير العمليات CSV (غير مشفّر)</button>
+      <button class="btn ghost" id="sJson">${I('shield-check', 18)}نسخة احتياطية مشفّرة</button>
+      <button class="btn ghost" id="sLock">${I('lock', 18)}قفل التطبيق (نسيان المفتاح على هذا الجهاز)</button>
       ${SB ? '<button class="btn danger" id="sOut">تسجيل الخروج</button>' : ''}
     </div>`);
   if ($('#sSync')) $('#sSync').onclick = () => { closeSheet(); pullNow().then(() => pushNow()); };
@@ -942,34 +1037,38 @@ function settingsSheet() {
 }
 function download(name, content, type) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([content], { type })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
 function catsSheet() {
-  const row = c => `<div class="row" data-ec="${c.id}"><div class="ico" style="background:${c.color}22">${c.icon}</div><div class="mid"><div class="t">${esc(c.name)}</div></div><span class="sw" style="background:${c.color};width:18px;height:18px"></span></div>`;
-  openSheet(`<h3>🗂️ الفئات وأنواع الدخل</h3><div class="note">اضغط أي فئة لتغيير اسمها أو رمزها أو لونها. الأسماء كلها قابلة للتعديل.</div>
+  const row = c => `<div class="row" data-ec="${c.id}">${tile(c.icon, c.color)}<div class="mid"><div class="t">${esc(c.name)}</div></div><span class="sw" style="background:${c.color};width:18px;height:18px"></span></div>`;
+  openSheet(`<h3>الفئات وأنواع الدخل</h3><div class="note">اضغط أي فئة لتغيير اسمها أو رمزها أو لونها. الأسماء كلها قابلة للتعديل.</div>
     <h2 class="sec" style="margin-top:0">المصروفات</h2><div class="list">${live('categories').filter(c => c.kind === 'expense').map(row).join('')}</div>
     <h2 class="sec">أنواع الدخل</h2><div class="list">${live('categories').filter(c => c.kind === 'income').map(row).join('')}</div>
     <div class="btns" style="margin-top:14px"><button class="btn" id="cNew">＋ فئة جديدة</button></div>`);
   $$('[data-ec]').forEach(b => b.onclick = () => catForm(state.categories.find(c => c.id === b.dataset.ec)));
   $('#cNew').onclick = () => catForm();
 }
-const CAT_ICONS = ['🏷️','🏠','🛒','☕','⛽','💡','📺','🛍️','🩺','📚','🎁','🎮','✈️','🏦','📦','💼','🧪','🏅','📈','➕','👶','🐾','💇','🧾','📱','🚗','🕌','🤝','💊','🏋️','🎓','🧰'];
+
 function catForm(c, kindPreset) {
-  const isNew = !c; c = c ? { ...c } : { id: 'c_' + uid().slice(0, 8), name: '', icon: '🏷️', kind: kindPreset || 'expense', color: PALETTE[state.categories.length % 20] };
-  let color = c.color, kind = c.kind;
+  const isNew = !c; c = c ? { ...c } : { id: 'c_' + uid().slice(0, 8), name: '', icon: 'tag', kind: kindPreset || 'expense', color: PALETTE[state.categories.length % 20] };
+  let color = c.color, kind = c.kind, icon = iKey(c.icon) || c.icon;
+  const pickHTML = () => ICON_GROUPS.map(([g, list]) => `<div class="grplbl">${g}</div><div class="iconpick">${list.map(i => `<button type="button" class="${icon === i ? 'on' : ''}" data-ci="${i}" aria-label="${i}">${tile(i, color, 40)}</button>`).join('')}</div>`).join('');
   openSheet(`<h3>${isNew ? 'فئة جديدة' : 'تعديل الفئة'}</h3>
     ${isNew ? `<div class="seg"><button class="${kind === 'expense' ? 'on exp' : ''}" data-k="expense">مصروف</button><button class="${kind === 'income' ? 'on inc' : ''}" data-k="income">دخل</button></div>` : ''}
-    <div class="grid2" style="grid-template-columns:80px 1fr"><div class="f"><label>رمز</label><input id="cI" value="${esc(c.icon)}" style="text-align:center;font-size:20px"></div>
-    <div class="f"><label>الاسم</label><input id="cN" value="${esc(c.name)}"></div></div>
-    <div class="f"><label>اختر رمزًا أو اكتب أي رمز</label><div class="swatches">${CAT_ICONS.map(i => `<button type="button" class="catb" data-ci="${i}" style="width:40px;padding:5px"><span class="e">${i}</span></button>`).join('')}</div></div>
+    <div style="display:flex;gap:12px;align-items:flex-end"><div id="cPrev" style="margin-bottom:12px">${tile(icon, color, 52)}</div>
+    <div class="f" style="flex:1"><label>الاسم</label><input id="cN" value="${esc(c.name)}"></div></div>
     <div class="f"><label>اللون</label><div class="swatches">${PALETTE.map(x => `<button type="button" class="sw ${x === color ? 'on' : ''}" data-cc="${x}" style="background:${x}"></button>`).join('')}</div></div>
+    <div class="f"><label>الأيقونة</label><div id="cPick">${pickHTML()}</div>
+    <div class="grid2" style="grid-template-columns:1fr 90px;margin-top:8px"><div style="font-size:12.5px;color:var(--muted);align-self:center">أو اكتب رمزًا تعبيريًا (اختياري)</div><input id="cI" value="${iKey(c.icon) ? '' : esc(c.icon)}" style="text-align:center;font-size:20px;border:1.5px solid var(--line);background:var(--bg);border-radius:14px;padding:8px"></div></div>
     <div class="btns"><button class="btn" id="cS">حفظ</button>${!isNew ? '<button class="btn danger" id="cD">حذف الفئة</button>' : ''}<button class="btn ghost" id="cB">رجوع</button></div>`);
   $$('[data-k]').forEach(b => b.onclick = () => { kind = b.dataset.k; $$('[data-k]').forEach(x => x.className = x.dataset.k === kind ? 'on ' + (kind === 'income' ? 'inc' : 'exp') : ''); });
-  $$('[data-cc]').forEach(b => b.onclick = () => { $$('[data-cc]').forEach(x => x.classList.remove('on')); b.classList.add('on'); color = b.dataset.cc; });
-  $$('[data-ci]').forEach(b => b.onclick = () => { $('#cI').value = b.dataset.ci; });
-  $('#cS').onclick = () => { const name = $('#cN').value.trim(); if (!name) { toast('أدخل الاسم'); return; } upsert('categories', { ...c, name, icon: $('#cI').value.trim() || '🏷️', color, kind }); catsSheet(); };
+  const refresh = () => { $('#cPrev').innerHTML = tile($('#cI').value.trim() || icon, color, 52); };
+  const bindPick = () => $$('[data-ci]').forEach(b => b.onclick = () => { icon = b.dataset.ci; $('#cI').value = ''; $$('[data-ci]').forEach(x => x.classList.toggle('on', x === b)); refresh(); });
+  $$('[data-cc]').forEach(b => b.onclick = () => { $$('[data-cc]').forEach(x => x.classList.remove('on')); b.classList.add('on'); color = b.dataset.cc; $('#cPick').innerHTML = pickHTML(); bindPick(); refresh(); });
+  bindPick(); $('#cI').oninput = refresh;
+  $('#cS').onclick = () => { const name = $('#cN').value.trim(); if (!name) { toast('أدخل الاسم'); return; } upsert('categories', { ...c, name, icon: $('#cI').value.trim() || icon || 'tag', color, kind }); catsSheet(); };
   if ($('#cD')) $('#cD').onclick = () => { if (live('categories').filter(x => x.kind === c.kind).length <= 1) { toast('يجب إبقاء فئة واحدة على الأقل'); return; } removeItem('categories', c.id); catsSheet(); };
   $('#cB').onclick = catsSheet;
 }
 function passSheet() {
-  openSheet(`<h3>🔑 تغيير كلمة سر التشفير</h3>
+  openSheet(`<h3>تغيير كلمة سر التشفير</h3>
     <div class="note warn">ستُعاد تعمية كل البيانات بالكلمة الجديدة، وستطلب الأجهزة الأخرى الكلمة الجديدة عند فتحها.</div>
     <div class="f"><label>الكلمة الحالية</label><input id="cp0" type="password" dir="ltr"></div>
     <div class="f"><label>الكلمة الجديدة (8+)</label><input id="cp1" type="password" dir="ltr"></div>
@@ -993,12 +1092,31 @@ function passSheet() {
 /* ============ APP SHELL ============ */
 function enterApp() {
   $('#authView').classList.add('hidden'); $('#appView').classList.remove('hidden');
-  render();
+  restorePeriod(); render();
 }
+hydrateIcons();
 $$('.tab').forEach(b => b.onclick = () => { VIEW = b.dataset.v; render(); scrollTo(0, 0); });
-$('#mPrev').onclick = () => { VM = shiftMonth(VM, -1); render(); };
-$('#mNext').onclick = () => { VM = shiftMonth(VM, 1); render(); };
-$('#fab').onclick = () => txForm(null, VM !== mk(todayS()) ? { date: VM + '-01' } : null);
+$('#mPrev').onclick = () => { shiftPeriod(-1); render(); };
+$('#mNext').onclick = () => { shiftPeriod(1); render(); };
+$('#mLabel').onclick = periodSheet;
+$('#fab').onclick = () => txForm(null, inPer(todayS()) ? null : { date: PER.from });
+function periodSheet() {
+  const P = [['month', 'هذا الشهر'], ['lastMonth', 'الشهر الماضي'], ['salary', 'من الراتب للراتب'], ['last7', 'آخر 7 أيام'], ['last30', 'آخر 30 يومًا'], ['last90', 'آخر 3 أشهر'], ['next30', 'الـ30 يومًا القادمة'], ['year', 'هذه السنة']];
+  openSheet(`<h3>اختر المدة</h3>
+    <div class="catgrid" style="grid-template-columns:1fr 1fr">${P.map(([k, l]) => `<button type="button" class="catb ${PER.preset === k ? 'on' : ''}" data-pp="${k}" style="padding:12px 6px;font-size:13px">${l}</button>`).join('')}</div>
+    <h2 class="sec">أو حدّد بنفسك</h2>
+    <div class="grid2"><div class="f"><label>من</label><input id="pFrom" type="date" value="${PER.from}"></div>
+    <div class="f"><label>إلى</label><input id="pTo" type="date" value="${PER.to}"></div></div>
+    <div class="err" id="pErr2"></div>
+    <button class="btn" id="pApply">تطبيق المدة</button>
+    <div class="note">تُطبَّق المدة على الرئيسية والعمليات والميزانيات والتقارير. «من الراتب للراتب» يبدأ من آخر راتب مسجّل حتى اليوم السابق لموعد الراتب القادم.</div>`);
+  $$('[data-pp]').forEach(b => b.onclick = () => { setPeriod(b.dataset.pp); closeSheet(); render(); });
+  $('#pApply').onclick = () => { const f = $('#pFrom').value, t = $('#pTo').value;
+    if (!f || !t) { $('#pErr2').textContent = 'حدّد التاريخين'; return; }
+    if (t < f) { $('#pErr2').textContent = 'تاريخ النهاية قبل البداية'; return; }
+    if (dayDiff(f, t) > 3660) { $('#pErr2').textContent = 'المدة طويلة جدًا (10 سنوات كحد أقصى)'; return; }
+    setPeriod('custom', f, t); closeSheet(); render(); };
+}
 $('#btnSettings').onclick = settingsSheet;
 if (!window.isSecureContext || !crypto.subtle) document.body.innerHTML = '<p style="padding:30px;text-align:center">يجب فتح التطبيق عبر https</p>';
 else boot();
