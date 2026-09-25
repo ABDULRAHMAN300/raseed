@@ -46,6 +46,19 @@
 html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Kufi Arabic",system-ui,sans-serif;font-size:15px;line-height:1.6}
 body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
 button,input,select,textarea{font-family:inherit;font-size:15px;color:inherit}
+/* flow tabs */
+.segs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.sg{border:0;background:var(--card);box-shadow:var(--shadow);border-radius:18px;padding:12px;text-align:start;display:flex;flex-direction:column;gap:2px;cursor:pointer;color:var(--text);border:2px solid transparent}
+.sg>span{font-size:13px;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:6px}.sg>b{font-size:17px}.sg small{font-size:11.5px;color:var(--muted)}
+.sg.on.exp{border-color:var(--exp)}.sg.on.exp b{color:var(--exp)}.sg.on.inc{border-color:var(--inc)}.sg.on.inc b{color:var(--inc)}
+.dot2{font-style:normal;background:var(--exp);color:#fff;border-radius:99px;font-size:11px;padding:0 7px;line-height:18px}
+.tchip{border:0;background:var(--card);box-shadow:var(--shadow);border-radius:14px;padding:7px 11px;display:flex;align-items:center;gap:6px;white-space:nowrap;cursor:pointer;font-size:13px;font-weight:600;color:var(--text);flex-shrink:0}
+.tchip b{font-size:12.5px;color:var(--muted)}.tchip.on{background:var(--c);color:#fff}.tchip.on b{color:rgba(255,255,255,.85)}
+.bdg{position:absolute;top:0;left:calc(50% - 26px);font-style:normal;background:var(--exp);color:#fff;font-size:10.5px;font-weight:800;min-width:18px;height:18px;border-radius:99px;display:grid;place-items:center;padding:0 5px;border:2px solid var(--card);z-index:2}
+.cmp{display:grid;grid-template-columns:1.3fr 1fr 1fr .9fr;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.cmp:last-child{border-bottom:0}.cmp.hd{font-size:11.5px;color:var(--muted);font-weight:700;padding-top:0}.cmp>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dl{display:inline-flex;align-items:center;gap:2px;font-size:11.5px;font-weight:800;border-radius:8px;padding:2px 6px;justify-self:start}
+.dl .svgi{display:inline-block}.dl.gd{background:var(--inc-bg);color:var(--inc)}.dl.bd{background:var(--exp-bg);color:var(--exp)}.dl.nt{background:var(--soft);color:var(--muted)}
 /* iPhone: 16px+ on fields stops Safari auto-zoom on focus */
 input,select,textarea{font-size:16px!important;max-width:100%}
 input.amountin{font-size:26px!important}
@@ -129,7 +142,7 @@ h2.sec a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;
 .tag.up{background:var(--up-bg);color:var(--up)}.tag.late{background:var(--exp-bg);color:var(--exp)}.tag.done{background:var(--inc-bg);color:var(--inc)}.tag.muted{background:var(--soft);color:var(--muted)}
 .daylbl{font-size:12.5px;color:var(--muted);font-weight:700;padding:12px 4px 6px}
 .acts{display:flex;gap:6px;margin-top:6px}
-.mini{border:0;border-radius:10px;padding:5px 11px;font-size:12.5px;font-weight:700;cursor:pointer}
+.mini{white-space:nowrap;border:0;border-radius:10px;padding:5px 11px;font-size:12.5px;font-weight:700;cursor:pointer}
 .mini.ok{background:var(--inc-bg);color:var(--inc)}.mini.skip{background:var(--soft);color:var(--muted)}
 
 .tip{display:flex;gap:12px;padding:13px 14px;border-radius:18px;margin-bottom:10px;background:var(--card);box-shadow:var(--shadow);border-inline-start:5px solid var(--info)}
@@ -154,7 +167,7 @@ h2.sec a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;
 
 /* tabbar */
 .tabbar{position:fixed;bottom:0;left:0;right:0;background:var(--card);box-shadow:0 -6px 24px rgba(40,30,110,.1);display:flex;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:20;border-radius:24px 24px 0 0}
-.tab{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;flex:1;padding:4px 0}
+.tab{position:relative;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;flex:1;padding:4px 0}
 .tab .ti{width:44px;height:30px;border-radius:12px;display:grid;place-items:center;transition:.2s}
 .tab.on{color:var(--brand)} .tab.on .ti{background:linear-gradient(135deg,var(--brand),var(--brand3));color:#fff;box-shadow:0 6px 14px rgba(91,61,245,.35)}
 @media (prefers-color-scheme: dark){.tab.on{color:#B7A6FF}}
@@ -251,10 +264,9 @@ canvas{max-width:100%}
   <button class="fab" id="fab" aria-label="إضافة عملية" data-i="plus" data-s="28" style="display:grid;place-items:center"></button>
   <nav class="tabbar">
     <button class="tab on" data-v="home"><span class="ti" data-i="house"></span>الرئيسية</button>
-    <button class="tab" data-v="tx"><span class="ti" data-i="receipt"></span>العمليات</button>
-    <button class="tab" data-v="rec"><span class="ti" data-i="repeat"></span>المتكررة</button>
-    <button class="tab" data-v="plan"><span class="ti" data-i="target"></span>التخطيط</button>
-    <button class="tab" data-v="reports"><span class="ti" data-i="chart-pie"></span>التقارير</button>
+    <button class="tab" data-v="exp"><span class="ti" data-i="receipt"></span><em class="bdg hidden" id="bdgExp"></em>المصروفات</button>
+    <button class="tab" data-v="inc"><span class="ti" data-i="hand-coins"></span><em class="bdg hidden" id="bdgInc"></em>الدخل</button>
+    <button class="tab" data-v="reports"><span class="ti" data-i="chart-pie"></span>التحليلات</button>
   </nav>
 </section>
 
@@ -605,10 +617,13 @@ function shiftPeriod(dir) {
 function restorePeriod() { const s = ls.get('rs_period'); if (!s || !s.from) return; if (s.preset && s.preset !== 'custom') { const r = presetRange(s.preset); if (r) { PER = { preset: s.preset, ...r }; return; } } PER = { preset: 'custom', from: s.from, to: s.to }; }
 const txAll = () => live('tx').filter(t => !t.skipped);
 const isInc = t => t.type === 'income';
+// pending = planned (not yet confirmed) or dated in the future
+const isPending = t => t.planned === true || t.date > todayS();
+const txName = x => x.name || x.note || cat(x.catId).name;
 function monthActual(m) { const r = monthRange(m); return rangeActual(r.from, r.to); }
 function rangeActual(from, to) {
-  const t = todayS(); let income = 0, expense = 0; const byCat = {};
-  for (const x of txAll()) { if (x.date < from || x.date > to || x.date > t) continue;
+  let income = 0, expense = 0; const byCat = {};
+  for (const x of txAll()) { if (x.date < from || x.date > to || isPending(x)) continue;
     if (isInc(x)) income += x.amount; else expense += x.amount;
     byCat[x.catId] = (byCat[x.catId] || 0) + x.amount; }
   return { income: r3(income), expense: r3(expense), net: r3(income - expense), byCat };
@@ -631,29 +646,29 @@ function occurrences(r, from, to) {
   return out;
 }
 function doneSet() { const s = new Set(); for (const t of live('tx')) if (t.recId) s.add(t.recId + '@' + t.recDate); return s; }
-function upcoming(days = 30, fromOverride) {
-  const t = todayS(), to = addDays(t, days), ds = doneSet(), out = [];
-  for (const r of live('rec')) {
-    const from = fromOverride || (r.start > addDays(t, -60) ? r.start : addDays(t, -60));
-    for (const d of occurrences(r, from, to)) if (!ds.has(r.id + '@' + d)) out.push({ kind: 'rec', r, date: d, type: r.type, amount: r.amount, catId: r.catId, name: r.name, overdue: d < t });
-  }
-  for (const x of txAll()) if (x.date > t && x.date <= to) out.push({ kind: 'tx', x, date: x.date, type: x.type, amount: x.amount, catId: x.catId, name: x.note || cat(x.catId).name, overdue: false });
+// everything not yet confirmed between two dates: planned one-offs + recurring dates without a record
+function pendingItems(from, to) {
+  const t = todayS(), ds = doneSet(), out = [];
+  for (const r of live('rec')) { const f = r.start > from ? r.start : from;
+    for (const d of occurrences(r, f, to)) if (!ds.has(r.id + '@' + d)) out.push({ kind: 'rec', r, id: r.id + '@' + d, date: d, type: r.type, amount: r.amount, catId: r.catId, name: r.name, due: d <= t }); }
+  for (const x of txAll()) if (isPending(x) && x.date >= from && x.date <= to) out.push({ kind: 'tx', x, id: x.id, date: x.date, type: x.type, amount: x.amount, catId: x.catId, name: txName(x), due: x.date <= t });
   return out.sort((a, b) => a.date.localeCompare(b.date));
 }
+function upcoming(days = 30) { const t = todayS(); return pendingItems(addDays(t, -120), addDays(t, days)); }
+function dueItems(type) { return upcoming(0).filter(u => u.due && (!type || u.type === type)); }
 function projection(m) { const r = monthRange(m); return projectionRange(r.from, r.to); }
 function projectionRange(from, to) {
-  const a = rangeActual(from, to); const t = todayS();
+  const a = rangeActual(from, to);
   let upI = 0, upE = 0;
-  if (to >= t) {
-    const start = from > t ? from : addDays(t, 1);
-    const ds = doneSet();
-    const recFrom = from > monthRange(mk(t)).from ? from : monthRange(mk(t)).from; // older unpaid items are not projected
-    for (const r of live('rec')) for (const d of occurrences(r, recFrom, to)) {
-      if (ds.has(r.id + '@' + d)) continue;
-      if (r.type === 'income') upI += r.amount; else upE += r.amount; }
-    for (const x of txAll()) if (x.date >= start && x.date <= to) { if (isInc(x)) upI += x.amount; else upE += x.amount; }
-  }
+  for (const u of pendingItems(from, to)) { if (u.type === 'income') upI += u.amount; else upE += u.amount; }
   return { ...a, upI: r3(upI), upE: r3(upE), pIncome: r3(a.income + upI), pExpense: r3(a.expense + upE), pNet: r3(a.income + upI - a.expense - upE) };
+}
+function prevRange() { if (isWholeMonth()) return monthRange(shiftMonth(mk(PER.from), -1)); const n = perDays(); return { from: addDays(PER.from, -n), to: addDays(PER.to, -n) }; }
+function frequentTx() {
+  const from = addDays(todayS(), -180), m = new Map();
+  for (const x of txAll()) { if (x.date < from || isPending(x)) continue;
+    const k = [x.type, x.catId, txName(x), x.amount].join('|'); const e = m.get(k) || { x, n: 0 }; e.n++; if (x.date > e.x.date) e.x = x; m.set(k, e); }
+  return [...m.values()].sort((a, b) => b.n - a.n || b.x.date.localeCompare(a.x.date)).slice(0, 6).map(e => e.x);
 }
 const monthlyEq = r => { const e = Math.max(1, r.every || 1); return r.freq === 'weekly' ? r.amount * 52 / 12 / e : r.freq === 'yearly' ? r.amount / 12 / e : r.amount / e; };
 function goalSaved(g) { return r3(live('goalMoves').filter(x => x.goalId === g.id).reduce((s, x) => s + x.amount, 0)); }
@@ -721,7 +736,7 @@ function suggestions() {
   // 7) upcoming load
   const up14 = upcoming(14).filter(x => x.type === 'expense');
   const upSum = up14.reduce((s, x) => s + x.amount, 0);
-  if (upSum > 0) { const late = up14.filter(x => x.overdue).length; add(late ? 'warn' : 'info', '📅', `${up14.length} مصروف قادم خلال 14 يومًا`, `المجموع ${fmt(upSum)} د.ك${late ? ` — منها ${late} متأخرة لم تُسجَّل بعد` : ''}.`); }
+  if (upSum > 0) { const late = up14.filter(x => x.due).length; add(late ? 'warn' : 'info', '📅', `${up14.length} مصروف قادم خلال 14 يومًا`, `المجموع ${fmt(upSum)} د.ك${late ? ` — منها ${late} متأخرة لم تُسجَّل بعد` : ''}.`); }
   // 8) dining share & top category
   const expAll = prev.reduce((s, x) => s + x.expense, 0) + a.expense;
   if (expAll > 0) {
@@ -736,6 +751,7 @@ function suggestions() {
 
 /* ============ RENDER ============ */
 const charts = {};
+const FLOW = { exp: { seg: 'done', cat: null }, inc: { seg: 'done', cat: null } };
 function killCharts() { for (const k in charts) { try { charts[k].destroy(); } catch {} delete charts[k]; } }
 function render() {
   if (!KEY) return;
@@ -748,90 +764,111 @@ function render() {
   const isPast = PER.to < t, isFut = PER.from > t;
   $('#balLbl').textContent = isFut ? 'الصافي المتوقع للمدة' : isPast ? 'صافي المدة' : 'صافي المدة حتى الآن';
   if (isFut) $('#balVal').textContent = fmt(p.pNet);
-  $('#balSub').innerHTML = !isPast && (p.upI || p.upE) ? `المتوقع نهاية المدة: <span class="num">${fmt(p.pNet)}</span> د.ك` : '';
+  $('#balSub').innerHTML = (p.upI || p.upE) ? `بعد القادم والمتوقع: <span class="num">${fmt(p.pNet)}</span> د.ك` : '';
   $$('.tab').forEach(b => b.classList.toggle('on', b.dataset.v === VIEW));
+  const dE = dueItems('expense').length, dI = dueItems('income').length;
+  $('#bdgExp').textContent = dE; $('#bdgExp').classList.toggle('hidden', !dE);
+  $('#bdgInc').textContent = dI; $('#bdgInc').classList.toggle('hidden', !dI);
   killCharts();
-  const main = $('#main');
-  main.innerHTML = ({ home: vHome, tx: vTx, rec: vRec, plan: vPlan, reports: vReports })[VIEW](p);
+  $('#main').innerHTML = ({ home: vHome, exp: () => vFlow('expense'), inc: () => vFlow('income'), reports: vReports })[VIEW](p);
   bindView();
 }
-function kpis(p) {
-  const rate = p.pIncome > 0 ? Math.max(-99, Math.round((p.pIncome - p.pExpense) / p.pIncome * 100)) : null;
+const rateOf = (inc, exp) => inc > 0 ? Math.max(-99, Math.round((inc - exp) / inc * 100)) : null;
+function savingsCard(p) {
+  const ra = rateOf(p.income, p.expense), rp = rateOf(p.pIncome, p.pExpense);
+  const bar = (r, c) => `<div class="ring" style="height:8px"><i style="width:${Math.max(0, Math.min(100, r || 0))}%;background:${c}"></i></div>`;
+  return `<div class="card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">${hI('percent', '#1C8FE6')}<b>نسبة الادخار</b></div>
+    <div class="grid2" style="gap:14px">
+      <div><div style="font-size:12.5px;color:var(--muted)">الفعلية (ما تم)</div><div style="font-size:22px;font-weight:800;color:var(--info)">${ra === null ? '—' : `<span class="num">${ra}%</span>`}</div>${bar(ra, 'linear-gradient(90deg,var(--info),var(--inc))')}</div>
+      <div><div style="font-size:12.5px;color:var(--muted)">المتوقعة (مع القادم)</div><div style="font-size:22px;font-weight:800;color:var(--brand)">${rp === null ? '—' : `<span class="num">${rp}%</span>`}</div>${bar(rp, 'linear-gradient(90deg,var(--brand),var(--brand3))')}</div>
+    </div></div>`;
+}
+function fourCards(p) {
+  const c = (go, seg, cls, ic, lbl, v, sub) => `<div class="kpi ${cls}" data-go="${go}" data-goseg="${seg}" style="cursor:pointer"><div class="lbl"><span class="chip">${I(ic, 15, 2.3)}</span>${lbl}</div><div class="val">${money(v)}</div>${sub ? `<div style="font-size:11.5px;color:var(--muted)">${sub}</div>` : ''}</div>`;
+  const pe = pendingItems(PER.from, PER.to), nE = pe.filter(u => u.type === 'expense').length, nI = pe.filter(u => u.type === 'income').length;
   return `<div class="kpis">
-   <div class="kpi inc"><div class="lbl"><span class="chip">${I('arrow-down-left', 16, 2.4)}</span>الدخل</div><div class="val">${money(p.income)}</div>${p.upI ? `<div class="s" style="font-size:11.5px;color:var(--muted)">+ <span class="num">${fmt(p.upI)}</span> متوقع</div>` : ''}</div>
-   <div class="kpi exp"><div class="lbl"><span class="chip">${I('arrow-up-right', 16, 2.4)}</span>المصروف</div><div class="val">${money(p.expense)}</div>${p.upE ? `<div class="s" style="font-size:11.5px;color:var(--muted)">+ <span class="num">${fmt(p.upE)}</span> قادم</div>` : ''}</div>
-   <div class="kpi up"><div class="lbl"><span class="chip">${I('hourglass', 15, 2.2)}</span>القادم (30 يومًا)</div><div class="val" style="font-size:16px">${upcoming(30).length} عملية</div></div>
-   <div class="kpi rate"><div class="lbl"><span class="chip">${I('percent', 15, 2.4)}</span>نسبة الادخار المتوقعة</div><div class="val" style="color:var(--info)">${rate === null ? '—' : `<span class="num">${rate}%</span>`}</div>
-     <div class="ring"><i style="width:${Math.max(0, Math.min(100, rate || 0))}%;background:linear-gradient(90deg,var(--info),var(--inc))"></i></div></div>
+    ${c('exp', 'done', 'exp', 'arrow-up-right', 'مصروف تم', p.expense)}
+    ${c('exp', 'pend', 'up', 'hourglass', 'مصروف قادم', p.upE, nE ? nE + ' عملية' : '')}
+    ${c('inc', 'done', 'inc', 'arrow-down-left', 'دخل تم', p.income)}
+    ${c('inc', 'pend', 'rate', 'calendar-range', 'دخل متوقع', p.upI, nI ? nI + ' عملية' : '')}
   </div>`;
 }
-function rowTx(x) {
-  const c = cat(x.catId), fut = x.date > todayS();
+function rowDone(x) {
+  const c = cat(x.catId);
   return `<div class="row" data-edit-tx="${x.id}">${tile(c.icon, c.color)}
-   <div class="mid"><div class="t">${esc(x.note || c.name)}</div><div class="s">${esc(c.name)}${x.recId ? ' · ' + mini('repeat', 'var(--muted)', 12) : ''} ${fut ? '<span class="tag up">قادمة</span>' : ''}</div></div>
+   <div class="mid"><div class="t">${esc(txName(x))}</div><div class="s">${esc(c.name)}${x.recId ? ' · ' + mini('repeat', 'var(--muted)', 12) : ''}</div></div>
    <div class="amt ${isInc(x) ? 'inc' : 'exp'}"><span class="num">${isInc(x) ? '+' : '−'}${fmt(x.amount)}</span></div></div>`;
 }
-function rowUp(u) {
-  const c = cat(u.catId);
-  return `<div class="row" ${u.kind === 'tx' ? `data-edit-tx="${u.x.id}"` : ''}>${tile(c.icon, c.color)}
+function whenTag(u) {
+  const n = dayDiff(todayS(), u.date);
+  if (u.due) return `<span class="tag late">${n === 0 ? 'مستحق اليوم' : 'مستحق منذ ' + (-n) + ' يوم'}</span>`;
+  return `<span class="tag up">${n === 1 ? 'غدًا' : 'بعد ' + n + ' يوم'}</span>`;
+}
+function rowPend(u) {
+  const c = cat(u.catId), inc = u.type === 'income';
+  return `<div class="row" ${u.kind === 'tx' ? `data-edit-tx="${u.x.id}"` : `data-edit-rec="${u.r.id}"`}>${tile(c.icon, c.color)}
    <div class="mid"><div class="t">${esc(u.name)}</div>
-   <div class="s">${dShort(u.date)} ${u.overdue ? '<span class="tag late">متأخرة</span>' : '<span class="tag up">قادمة</span>'}</div>
-   ${u.kind === 'rec' ? `<div class="acts"><button class="mini ok" data-pay="${u.r.id}@${u.date}">✓ ${u.type === 'income' ? 'استلمت' : 'دفعت'}</button><button class="mini skip" data-skip="${u.r.id}@${u.date}">تخطٍّ</button></div>` : ''}</div>
-   <div class="amt ${u.type === 'income' ? 'inc' : 'exp'}"><span class="num">${u.type === 'income' ? '+' : '−'}${fmt(u.amount)}</span></div></div>`;
+   <div class="s">${dShort(u.date)} · ${esc(c.name)}${u.kind === 'rec' ? ' · ' + mini('repeat', 'var(--muted)', 12) : ''} ${whenTag(u)}</div>
+   <div class="acts"><button class="mini ok" data-confirm="${u.id}">${I('list-checks', 14)}${inc ? 'استلمت' : 'دفعت'}</button><button class="mini skip" data-skip="${u.id}">${u.kind === 'rec' ? 'تخطٍّ' : 'إلغاء'}</button></div></div>
+   <div class="amt ${inc ? 'inc' : 'exp'}"><span class="num">${inc ? '+' : '−'}${fmt(u.amount)}</span></div></div>`;
 }
 const LVC = { bad: '#F0435F', warn: '#F29B0C', info: '#1C8FE6', good: '#0FB57E' };
 const tipHTML = s => `<div class="tip ${s.level}">${tile(s.icon, LVC[s.level], 38)}<div><b>${esc(s.title)}</b><p>${esc(s.text)}</p></div></div>`;
 const emptyHTML = (e, t) => `<div class="empty"><div class="e">${iKey(e) ? `<span class="ic">${I(iKey(e), 30, 1.8)}</span>` : e}</div>${t}</div>`;
+function findPending(id) { return upcoming(3660).find(u => u.id === id) || pendingItems('1900-01-01', '2999-12-31').find(u => u.id === id); }
 
 function vHome(p) {
-  const up = upcoming(14).slice(0, 5);
-  const sug = suggestions();
-  const recent = txAll().filter(x => x.date <= todayS()).sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt).slice(0, 5);
-  return kpis(p) +
-   `<h2 class="sec">${hI('lightbulb','#F29B0C')}اقتراحات لك <a data-go="reports">كل التحليل</a></h2>` + sug.slice(0, 3).map(tipHTML).join('') +
-   `<h2 class="sec">${hI('hourglass','#E0457B')}القادم خلال 14 يومًا <a data-go="rec">المتكررة</a></h2>` +
-   (up.length ? `<div class="list">${up.map(rowUp).join('')}</div>` : `<div class="list">${emptyHTML('🗓️', 'لا توجد عمليات قادمة')}</div>`) +
-   `<h2 class="sec">${hI('receipt','#5B3DF5')}آخر العمليات <a data-go="tx">الكل</a></h2>` +
-   (recent.length ? `<div class="list">${recent.map(rowTx).join('')}</div>` : `<div class="list">${emptyHTML('✨', 'اضغط + لإضافة أول عملية')}</div>`);
+  const seen = new Set(), list = [];
+  for (const u of [...dueItems(), ...pendingItems(PER.from, PER.to)]) if (!seen.has(u.id)) { seen.add(u.id); list.push(u); }
+  list.sort((a, b) => (b.due - a.due) || a.date.localeCompare(b.date));
+  return fourCards(p) + savingsCard(p) +
+   `<h2 class="sec">${hI('hourglass', '#E0457B')}أقرب المواعيد</h2>` +
+   (list.length ? `<div class="list">${list.slice(0, 6).map(rowPend).join('')}</div>` : `<div class="list">${emptyHTML('🗓️', 'لا توجد مصروفات قادمة أو دخل متوقع في هذه المدة')}</div>`);
 }
-function vTx() {
-  const t = todayS();
-  let list = live('tx').filter(x => inPer(x.date));
-  if (TXF === 'expense') list = list.filter(x => x.type === 'expense' && !x.skipped);
-  if (TXF === 'income') list = list.filter(x => x.type === 'income' && !x.skipped);
-  if (TXF === 'up') list = list.filter(x => x.date > t);
-  list = list.filter(x => !x.skipped);
-  if (TXQ) { const q = TXQ.toLowerCase(); list = list.filter(x => (x.note || '').toLowerCase().includes(q) || cat(x.catId).name.includes(q)); }
-  list.sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt);
-  const groups = {}; for (const x of list) (groups[x.date] = groups[x.date] || []).push(x);
-  const f = (k, l) => `<button class="chipb ${TXF === k ? 'on' : ''}" data-f="${k}">${l}</button>`;
-  return `<div class="card" style="padding:12px">
-     <div class="searchw">${I('search', 18)}<input class="search" id="txq" placeholder="بحث في الملاحظات أو الفئات" value="${esc(TXQ)}" style="margin:0"></div>
-   </div>
-   <div class="chips">${f('all', 'الكل')}${f('expense', 'المصروفات')}${f('income', 'الدخل')}${f('up', 'القادمة')}</div>` +
-   (list.length ? Object.entries(groups).map(([d, xs]) => {
-     const net = xs.reduce((s, x) => s + (isInc(x) ? x.amount : -x.amount), 0);
-     return `<div class="daylbl" style="display:flex;justify-content:space-between"><span>${dLabel(d)}</span><span class="num">${net >= 0 ? '+' : '−'}${fmt(Math.abs(net))}</span></div><div class="list">${xs.map(rowTx).join('')}</div>`;
-   }).join('') : `<div class="list">${emptyHTML('🔎', 'لا توجد عمليات في هذه المدة')}</div>`);
+
+function vFlow(type) {
+  const key = type === 'income' ? 'inc' : 'exp', F = FLOW[key], inc = type === 'income';
+  const p = projectionRange(PER.from, PER.to);
+  const done = txAll().filter(x => x.type === type && !isPending(x) && inPer(x.date));
+  const pendSet = new Map();
+  for (const u of [...dueItems(type), ...pendingItems(PER.from, PER.to).filter(u => u.type === type)]) pendSet.set(u.id, u);
+  const pend = [...pendSet.values()].sort((a, b) => (b.due - a.due) || a.date.localeCompare(b.date));
+  const nDue = pend.filter(u => u.due).length;
+  const base = F.seg === 'done' ? done : pend;
+  const byCat = {}; for (const x of base) byCat[x.catId] = (byCat[x.catId] || 0) + x.amount;
+  if (F.cat && !byCat[F.cat]) F.cat = null;
+  let list = F.cat ? base.filter(x => x.catId === F.cat) : base;
+  if (TXQ) { const q = TXQ.toLowerCase(); list = list.filter(x => ((F.seg === 'done' ? txName(x) : x.name) || '').toLowerCase().includes(q) || cat(x.catId).name.includes(q)); }
+  const segBtn = (k, lbl, v, n, extra) => `<button class="sg ${F.seg === k ? 'on ' + (inc ? 'inc' : 'exp') : ''}" data-seg="${k}"><span>${lbl}${extra || ''}</span><b>${money(v)}</b><small>${n} عملية</small></button>`;
+  const chips = Object.entries(byCat).sort((a, b) => b[1] - a[1]).map(([k, v]) => { const c = cat(k);
+    return `<button class="tchip ${F.cat === k ? 'on' : ''}" data-fcat="${k}" style="--c:${c.color}">${mini(c.icon, F.cat === k ? '#fff' : c.color, 15)}<span>${esc(c.name)}</span><b class="num">${fmt(v)}</b></button>`; }).join('');
+  let body;
+  if (!list.length) body = `<div class="list">${emptyHTML(F.seg === 'done' ? '🔎' : '✅', F.seg === 'done' ? (inc ? 'لا يوجد دخل مسجّل في هذه المدة' : 'لا توجد مصروفات في هذه المدة') : (inc ? 'لا يوجد دخل متوقع' : 'لا توجد مصروفات قادمة'))}</div>`;
+  else if (F.seg === 'done') {
+    const groups = {}; for (const x of list.sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt)) (groups[x.date] = groups[x.date] || []).push(x);
+    body = Object.entries(groups).map(([d, xs]) => `<div class="daylbl" style="display:flex;justify-content:space-between"><span>${dLabel(d)}</span><span class="num">${fmt(xs.reduce((s, x) => s + x.amount, 0))}</span></div><div class="list">${xs.map(rowDone).join('')}</div>`).join('');
+  } else body = `<div class="list">${list.map(rowPend).join('')}</div>`;
+  return `<div class="segs">${segBtn('done', inc ? 'تم استلامه' : 'تمت', inc ? p.income : p.expense, done.length)}${segBtn('pend', inc ? 'متوقع' : 'قادمة', inc ? p.upI : p.upE, pend.length, nDue ? ` <em class="dot2">${nDue}</em>` : '')}</div>
+    ${chips ? `<div class="chips">${`<button class="tchip ${!F.cat ? 'on' : ''}" data-fcat="" style="--c:var(--brand)"><span>الكل</span></button>`}${chips}</div>` : ''}
+    <div class="searchw" style="margin-bottom:6px">${I('search', 18)}<input class="search" id="txq" placeholder="بحث بالاسم أو النوع" value="${esc(TXQ)}" style="margin:0"></div>
+    ${body}`;
 }
+
 const FREQ = { monthly: 'شهري', weekly: 'أسبوعي', yearly: 'سنوي' };
 function freqText(r) { const e = r.every || 1; return e > 1 ? `كل ${e} ${r.freq === 'weekly' ? 'أسابيع' : r.freq === 'yearly' ? 'سنوات' : 'أشهر'}` : FREQ[r.freq]; }
-function vRec() {
-  const recs = live('rec');
-  const inc = recs.filter(r => r.type === 'income'), exp = recs.filter(r => r.type === 'expense');
-  const mI = inc.filter(r => !r.paused).reduce((s, r) => s + monthlyEq(r), 0), mE = exp.filter(r => !r.paused).reduce((s, r) => s + monthlyEq(r), 0);
+function recSection() {
+  const recs = live('rec'); if (!recs.length) return '';
   const ds = doneSet();
   const row = r => { const c = cat(r.catId); const next = occurrences(r, todayS(), addDays(todayS(), 400)).find(d => !ds.has(r.id + '@' + d));
     return `<div class="row" data-edit-rec="${r.id}">${tile(c.icon, c.color)}
      <div class="mid"><div class="t">${esc(r.name)}</div><div class="s">${freqText(r)} · ${r.paused ? '<span class="tag muted">موقوف</span>' : next ? 'القادم ' + dShort(next) : 'انتهى'}</div></div>
      <div class="amt ${r.type === 'income' ? 'inc' : 'exp'}"><span class="num">${fmt(r.amount)}</span></div></div>`; };
-  const up = upcoming(30);
-  return `<div class="kpis"><div class="kpi inc"><div class="lbl"><span class="chip">${I('arrow-down-left', 16, 2.4)}</span>دخل ثابت شهريًا</div><div class="val">${money(mI)}</div></div>
-    <div class="kpi exp"><div class="lbl"><span class="chip">${I('arrow-up-right', 16, 2.4)}</span>التزامات شهرية</div><div class="val">${money(mE)}</div></div></div>
-    <button class="btn" style="margin-top:14px" id="addRec">＋ إضافة دخل أو مصروف متكرر</button>
-    <h2 class="sec">${hI('calendar-range','#E0457B')}المستحق خلال 30 يومًا</h2>${up.length ? `<div class="list">${up.map(rowUp).join('')}</div>` : `<div class="list">${emptyHTML('✅', 'لا شيء مستحق')}</div>`}
-    <h2 class="sec">${hI('briefcase-business','#0FB57E')}الدخل المتكرر</h2>${inc.length ? `<div class="list">${inc.map(row).join('')}</div>` : `<div class="list">${emptyHTML('💼', 'أضف راتبك هنا ليُحتسب تلقائيًا كل شهر')}</div>`}
-    <h2 class="sec">${hI('receipt','#F0435F')}المصروفات المتكررة</h2>${exp.length ? `<div class="list">${exp.map(row).join('')}</div>` : `<div class="list">${emptyHTML('🏠', 'إيجار، اشتراكات، أقساط…')}</div>`}`;
+  const mI = recs.filter(r => r.type === 'income' && !r.paused).reduce((s, r) => s + monthlyEq(r), 0), mE = recs.filter(r => r.type === 'expense' && !r.paused).reduce((s, r) => s + monthlyEq(r), 0);
+  return `<h2 class="sec">${hI('repeat', '#00A8B5')}العمليات المتكررة</h2>
+    <div class="kpis" style="margin-bottom:10px"><div class="kpi inc"><div class="lbl">دخل ثابت شهريًا</div><div class="val" style="font-size:17px">${money(mI)}</div></div>
+    <div class="kpi exp"><div class="lbl">التزامات شهرية</div><div class="val" style="font-size:17px">${money(mE)}</div></div></div>
+    <div class="list">${recs.sort((a, b) => a.type.localeCompare(b.type)).map(row).join('')}</div>`;
 }
 function vPlan() {
   const a = rangeActual(PER.from, PER.to);
@@ -852,13 +889,35 @@ function vPlan() {
       <div class="bar"><i style="width:${Math.min(100, pct * 100)}%;background:linear-gradient(90deg,${g.color},${g.color}AA)"></i></div>
       <div class="bline"><span>${sv >= g.target ? mini('trophy', '#F29B0C') + ' تحقق الهدف' : mleft ? 'مطلوب شهريًا: ' + fmt((g.target - sv) / mleft) + ' د.ك' : 'متبقٍ ' + fmt(g.target - sv) + ' د.ك'}</span>
       <span><button class="mini ok" data-dep="${g.id}">＋ إيداع</button> <button class="mini skip" data-wd="${g.id}">سحب</button></span></div></div>`; }).join('');
-  return `<h2 class="sec" style="margin-top:4px">${hI('chart-pie','#5B3DF5')}الميزانيات <a id="addBud">＋ ميزانية</a></h2>
+  return `<h2 class="sec">${hI('chart-pie', '#5B3DF5')}الميزانيات <a id="addBud">＋ ميزانية</a></h2>
     ${budgets.length && scale !== 1 ? `<div class="note">الحدود الشهرية مُعدّلة تلقائيًا حسب طول المدة (${perDays()} يومًا).</div>` : ''}
     ${budgets.length ? `<div class="card" style="background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff"><div style="font-size:13px;opacity:.85">إجمالي الميزانيات</div><div style="font-size:20px;font-weight:800">${money(ts)} / ${money(tb)}</div><div class="bar" style="background:rgba(255,255,255,.25)"><i style="width:${tb ? Math.min(100, ts / tb * 100) : 0}%;background:#fff"></i></div></div>` + bHTML : `<div class="list">${emptyHTML('📊', 'حدّد سقفًا شهريًا لكل فئة لتتابع صرفك')}</div>`}
-    <h2 class="sec">${hI('target','#E0457B')}أهداف الادخار <a id="addGoal">＋ هدف</a></h2>
+    <h2 class="sec">${hI('target', '#E0457B')}أهداف الادخار <a id="addGoal">＋ هدف</a></h2>
     ${gHTML || `<div class="list">${emptyHTML('🎯', 'أضف هدفًا (سفر، جهاز، طوارئ…)')}</div>`}`;
 }
-function vReports() {
+function deltaBadge(cur, prev, goodUp) {
+  if (!prev) return cur ? '<span class="dl nt">جديد</span>' : '<span class="dl nt">—</span>';
+  const d = Math.round((cur - prev) / Math.abs(prev) * 100); if (!d) return '<span class="dl nt">0%</span>';
+  const good = goodUp ? d > 0 : d < 0;
+  return `<span class="dl ${good ? 'gd' : 'bd'}">${I(d > 0 ? 'arrow-up-right' : 'arrow-down-left', 12, 2.6)}<span class="num">${Math.abs(d)}%</span></span>`;
+}
+function compareCard() {
+  const cur = rangeActual(PER.from, PER.to), pr = prevRange(), prev = rangeActual(pr.from, pr.to);
+  const rC = rateOf(cur.income, cur.expense), rP = rateOf(prev.income, prev.expense);
+  const f = pr.from, tt = pr.to;
+  const lbl = f.slice(8) === '01' && tt === monthRange(mk(f)).to ? mLabel(mk(f)) : dShort(f) + ' – ' + dShort(tt);
+  const row = (n, c, p, goodUp) => `<div class="cmp"><span>${n}</span><span class="num">${fmt(c)}</span><span class="num" style="color:var(--muted)">${fmt(p)}</span>${deltaBadge(c, p, goodUp)}</div>`;
+  const cats = new Set([...Object.keys(cur.byCat), ...Object.keys(prev.byCat)].filter(k => cat(k).kind === 'expense'));
+  const ch = [...cats].map(k => ({ k, c: cur.byCat[k] || 0, p: prev.byCat[k] || 0 })).filter(x => Math.abs(x.c - x.p) > 0.0005).sort((a, b) => Math.abs(b.c - b.p) - Math.abs(a.c - a.p)).slice(0, 5);
+  return `<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">${hI('trending-up', '#8B3DF5')}<b>مقارنة بالمدة السابقة</b></div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px">الحالية مقابل: ${esc(lbl)}</div>
+    <div class="cmp hd"><span></span><span>الحالية</span><span>السابقة</span><span>التغيّر</span></div>
+    ${row('الدخل', cur.income, prev.income, true)}${row('المصروف', cur.expense, prev.expense, false)}${row('الصافي', cur.net, prev.net, true)}
+    <div class="cmp"><span>نسبة الادخار</span><span class="num">${rC === null ? '—' : rC + '%'}</span><span class="num" style="color:var(--muted)">${rP === null ? '—' : rP + '%'}</span><span class="dl nt">${rC !== null && rP !== null ? (rC - rP > 0 ? '+' : '') + (rC - rP) + ' نقطة' : '—'}</span></div>
+    ${ch.length ? `<div style="font-size:13px;font-weight:700;margin:12px 0 4px">أكبر التغيّرات في المصروف</div>${ch.map(x => `<div class="cmp">${`<span>${mini(cat(x.k).icon, cat(x.k).color)} ${esc(cat(x.k).name)}</span>`}<span class="num">${fmt(x.c)}</span><span class="num" style="color:var(--muted)">${fmt(x.p)}</span>${deltaBadge(x.c, x.p, false)}</div>`).join('')}` : ''}
+  </div>`;
+}
+function vReports(p) {
   const a = rangeActual(PER.from, PER.to);
   const elapsed = Math.max(1, dayDiff(PER.from, PER.to < todayS() ? PER.to : todayS()) + 1);
   const summary = PER.from > todayS() ? '' : `<div class="kpis" style="margin-bottom:14px">
@@ -867,11 +926,12 @@ function vReports() {
   const expCats = Object.entries(a.byCat).filter(([k]) => cat(k).kind === 'expense').sort((x, y) => y[1] - x[1]);
   const incCats = Object.entries(a.byCat).filter(([k]) => cat(k).kind === 'income').sort((x, y) => y[1] - x[1]);
   const leg = (arr, tot) => `<div class="legend">${arr.map(([k, v]) => `<div class="lg"><i style="background:${cat(k).color}"></i><span class="n">${mini(cat(k).icon, cat(k).color)} ${esc(cat(k).name)}</span><span class="num">${fmt(v)}</span><span style="color:var(--muted);font-size:12px;min-width:38px;text-align:left">${Math.round(v / tot * 100)}%</span></div>`).join('')}</div>`;
-  return summary + `<div class="card"><b>الدخل مقابل المصروف — 6 أشهر حتى ${mLabel(mk(PER.to))}</b><div style="height:230px;margin-top:10px"><canvas id="chBar"></canvas></div></div>
-    <div class="card"><b>توزيع المصروف — ${esc(perLabel())}</b>${expCats.length ? `<div style="height:210px;margin-top:10px"><canvas id="chExp"></canvas></div>${leg(expCats, a.expense)}` : emptyHTML('🍩', 'لا مصروفات مسجّلة')}</div>
-    <div class="card"><b>مصادر الدخل — ${esc(perLabel())}</b>${incCats.length ? `<div style="height:190px;margin-top:10px"><canvas id="chInc"></canvas></div>${leg(incCats, a.income)}` : emptyHTML('💼', 'لا دخل مسجّل')}</div>
-    <h2 class="sec">${hI('lightbulb','#F29B0C')}كل الاقتراحات</h2>${suggestions().map(tipHTML).join('')}
-    <div class="note">الاقتراحات قواعد حسابية تُحسب على جهازك من بياناتك فقط؛ هي تقديرات وليست استشارة مالية.</div>`;
+  return savingsCard(p) + compareCard() + summary + `<div class="card"><b>الدخل مقابل المصروف — 6 أشهر حتى ${mLabel(mk(PER.to))}</b><div style="height:230px;margin-top:10px"><canvas id="chBar"></canvas></div></div>
+    <div class="card"><b>توزيع المصروف حسب النوع</b>${expCats.length ? `<div style="height:210px;margin-top:10px"><canvas id="chExp"></canvas></div>${leg(expCats, a.expense)}` : emptyHTML('🍩', 'لا مصروفات مسجّلة')}</div>
+    <div class="card"><b>الدخل حسب النوع</b>${incCats.length ? `<div style="height:190px;margin-top:10px"><canvas id="chInc"></canvas></div>${leg(incCats, a.income)}` : emptyHTML('💼', 'لا دخل مسجّل')}</div>
+    <h2 class="sec">${hI('lightbulb', '#F29B0C')}اقتراحات لتحسين الدخل والمصروف</h2>${suggestions().map(tipHTML).join('')}
+    <div class="note">الاقتراحات قواعد حسابية تُحسب على جهازك من بياناتك فقط؛ هي تقديرات وليست استشارة مالية.</div>
+    ${vPlan()}${recSection()}`;
 }
 function drawReports() {
   if (!window.Chart) return;
@@ -890,23 +950,30 @@ function drawReports() {
   dn('#chExp', 'expense'); dn('#chInc', 'income');
 }
 function bindView() {
-  $$('[data-go]').forEach(b => b.onclick = () => { VIEW = b.dataset.go; render(); scrollTo(0, 0); });
+  $$('[data-go]').forEach(b => b.onclick = () => { VIEW = b.dataset.go; if (b.dataset.goseg && FLOW[VIEW]) { FLOW[VIEW].seg = b.dataset.goseg; FLOW[VIEW].cat = null; } render(); scrollTo(0, 0); });
+  $$('[data-seg]').forEach(b => b.onclick = () => { const F = FLOW[VIEW]; F.seg = b.dataset.seg; F.cat = null; render(); });
+  $$('[data-fcat]').forEach(b => b.onclick = () => { FLOW[VIEW].cat = b.dataset.fcat || null; render(); });
   $$('[data-edit-tx]').forEach(b => b.onclick = e => { if (e.target.closest('.mini')) return; txForm(state.tx.find(x => x.id === b.dataset.editTx)); });
-  $$('[data-edit-rec]').forEach(b => b.onclick = () => recForm(state.rec.find(x => x.id === b.dataset.editRec)));
+  $$('[data-edit-rec]').forEach(b => b.onclick = e => { if (e.target.closest('.mini')) return; recForm(state.rec.find(x => x.id === b.dataset.editRec)); });
   $$('[data-edit-bud]').forEach(b => b.onclick = () => budForm(state.budgets.find(x => x.id === b.dataset.editBud)));
   $$('[data-edit-goal]').forEach(b => b.onclick = () => goalForm(state.goals.find(x => x.id === b.dataset.editGoal)));
-  $$('[data-pay]').forEach(b => b.onclick = e => { e.stopPropagation(); const [id, d] = b.dataset.pay.split('@'); const r = state.rec.find(x => x.id === id);
-    txForm(null, { type: r.type, amount: r.amount, catId: r.catId, note: r.name, date: d <= todayS() ? d : todayS(), recId: r.id, recDate: d }); });
-  $$('[data-skip]').forEach(b => b.onclick = e => { e.stopPropagation(); const [id, d] = b.dataset.skip.split('@'); const r = state.rec.find(x => x.id === id);
-    upsert('tx', { id: uid(), type: r.type, amount: 0, catId: r.catId, date: d, recId: id, recDate: d, skipped: true, note: 'تخطٍّ: ' + r.name }); toast('تم التخطي'); });
+  $$('[data-confirm]').forEach(b => b.onclick = e => { e.stopPropagation(); const u = findPending(b.dataset.confirm); if (u) confirmForm(u); });
+  $$('[data-skip]').forEach(b => b.onclick = e => { e.stopPropagation(); const u = findPending(b.dataset.skip); if (!u) return;
+    if (u.kind === 'rec') { const id = uid(); upsert('tx', { id, type: u.type, amount: 0, catId: u.catId, date: u.date, recId: u.r.id, recDate: u.date, skipped: true, name: 'تخطٍّ: ' + u.name }); toastAction('تم تخطي هذا الموعد', 'تراجع', () => removeItem('tx', id)); }
+    else { removeItem('tx', u.x.id); toastAction('تم الإلغاء', 'تراجع', () => { const o = state.tx.find(x => x.id === u.x.id); o.deleted = false; upsert('tx', o); }); } });
   $$('[data-dep]').forEach(b => b.onclick = () => moveForm(b.dataset.dep, 1));
   $$('[data-wd]').forEach(b => b.onclick = () => moveForm(b.dataset.wd, -1));
-  $$('[data-f]').forEach(b => b.onclick = () => { TXF = b.dataset.f; render(); });
   const q = $('#txq'); if (q) { q.oninput = () => { TXQ = q.value; clearTimeout(q._t); q._t = setTimeout(() => { render(); const n = $('#txq'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 350); }; }
-  if ($('#addRec')) $('#addRec').onclick = () => recForm();
   if ($('#addBud')) $('#addBud').onclick = () => budForm();
   if ($('#addGoal')) $('#addGoal').onclick = () => goalForm();
   if (VIEW === 'reports') drawReports();
+}
+function toastAction(msg, label, fn) {
+  $$('.toast').forEach(t => t.remove());
+  const t = document.createElement('div'); t.className = 'toast'; t.style.display = 'flex'; t.style.alignItems = 'center'; t.style.gap = '12px';
+  t.innerHTML = `<span>${esc(msg)}</span><button style="border:0;background:rgba(255,255,255,.18);color:#fff;border-radius:10px;padding:5px 12px;font-weight:700">${esc(label)}</button>`;
+  t.querySelector('button').onclick = () => { fn(); t.remove(); };
+  document.body.appendChild(t); setTimeout(() => t.remove(), 4500);
 }
 
 /* ============ SHEETS / FORMS ============ */
@@ -917,8 +984,8 @@ function openSheet(html) {
 function closeSheet() { $('#sheetHost').innerHTML = ''; }
 function catPicker(kind, sel) {
   return `<div class="catgrid">${live('categories').filter(c => c.kind === kind).map(c => `<button type="button" class="catb ${c.id === sel ? 'on' : ''}" data-cat="${c.id}">${tile(c.icon, c.color, 34)}${esc(c.name)}</button>`).join('')}
-   <button type="button" class="catb" data-catnew="${kind}" style="border:2px dashed var(--line);background:none"><span class="ic" style="color:var(--brand)">${I('circle-plus', 26, 1.8)}</span>فئة جديدة</button>
-   <button type="button" class="catb" data-catmanage="1" style="border:2px dashed var(--line);background:none"><span class="ic" style="color:var(--brand)">${I('pencil', 24, 1.8)}</span>تعديل الفئات</button></div>`;
+   <button type="button" class="catb" data-catnew="${kind}" style="border:2px dashed var(--line);background:none"><span class="ic" style="color:var(--brand)">${I('circle-plus', 26, 1.8)}</span>نوع جديد</button>
+   <button type="button" class="catb" data-catmanage="1" style="border:2px dashed var(--line);background:none"><span class="ic" style="color:var(--brand)">${I('pencil', 24, 1.8)}</span>تعديل الأنواع</button></div>`;
 }
 function bindCatPicker(onPick) {
   $$('[data-cat]').forEach(b => b.onclick = () => { $$('[data-cat]').forEach(x => x.classList.remove('on')); b.classList.add('on'); onPick(b.dataset.cat); });
@@ -928,50 +995,90 @@ function bindCatPicker(onPick) {
 function readAmount(id) { const v = normNum($(id).value); return isFinite(v) && v > 0 ? r3(v) : null; }
 
 function txForm(x, preset) {
-  const isNew = !x; x = x ? { ...x } : { id: uid(), type: 'expense', amount: '', catId: null, date: todayS(), note: '', ...(preset || {}) };
+  const isNew = !x;
+  x = x ? { ...x, name: x.name || x.note || '' } : { id: uid(), type: 'expense', amount: '', catId: null, date: todayS(), name: '', ...(preset || {}) };
   let type = x.type, catId = x.catId || (type === 'income' ? 'c_salary' : 'c_food');
+  let status = isNew ? (x.date > todayS() ? 'pend' : 'done') : (isPending(x) ? 'pend' : 'done');
+  let repeat = false, freq = 'monthly';
+  const linked = x.recId && state.rec.find(r => r.id === x.recId);
   const draw = () => {
-    openSheet(`<h3>${isNew ? 'عملية جديدة' : 'تعديل العملية'}</h3>
+    const quick = isNew && !preset?.noQuick ? frequentTx().filter(q => q.type === type) : [];
+    openSheet(`<h3>${isNew ? (type === 'income' ? 'دخل جديد' : 'مصروف جديد') : 'تعديل العملية'}</h3>
       <div class="seg"><button class="${type === 'expense' ? 'on exp' : ''}" data-t="expense">مصروف</button><button class="${type === 'income' ? 'on inc' : ''}" data-t="income">دخل</button></div>
+      ${quick.length ? `<div class="grplbl" style="margin-top:0">${I('zap', 13)} إضافة سريعة بتاريخ اليوم</div><div class="chips" style="padding-bottom:12px">${quick.map(q => { const c = cat(q.catId); return `<button class="tchip" data-quick="${q.id}" style="--c:${c.color}">${mini(c.icon, c.color, 15)}<span>${esc(txName(q))}</span><b class="num">${fmt(q.amount)}</b></button>`; }).join('')}</div>` : ''}
       <div class="f"><input id="fAmt" class="amountin" inputmode="decimal" placeholder="0.000" value="${x.amount === '' ? '' : x.amount}"></div>
-      <div class="f"><label>${type === 'income' ? 'نوع الدخل' : 'الفئة'}</label>${catPicker(type, catId)}</div>
-      <div class="grid2"><div class="f"><label>التاريخ</label><input id="fDate" type="date" value="${x.date}"></div>
-      <div class="f"><label>الحالة</label><input disabled value="${x.date > todayS() ? 'قادمة' : 'تمت'}" id="fState"></div></div>
-      <div class="f"><label>ملاحظة</label><input id="fNote" value="${esc(x.note)}" placeholder="اختياري"></div>
+      <div class="f"><label>اسم العملية</label><input id="fName" value="${esc(x.name)}" placeholder="${type === 'income' ? 'مثل: راتب أكتوبر، حصة أحمد' : 'مثل: إيجار أكتوبر، تعبئة وقود'}"></div>
+      <div class="f"><label>${type === 'income' ? 'نوع الدخل' : 'نوع المصروف'}</label>${catPicker(type, catId)}</div>
+      <div class="f"><label>الحالة</label><div class="seg" style="margin:0"><button class="${status === 'done' ? 'on n' : ''}" data-st="done">${type === 'income' ? 'تم الاستلام' : 'تمت'}</button><button class="${status === 'pend' ? 'on n' : ''}" data-st="pend">${type === 'income' ? 'متوقع' : 'قادمة'}</button></div></div>
+      <div class="f"><label>التاريخ</label><input id="fDate" type="date" value="${x.date}"></div>
+      ${isNew ? `<label class="chk"><input type="checkbox" id="fRep" ${repeat ? 'checked' : ''}> تتكرر</label>
+      <div id="repBox" class="${repeat ? '' : 'hidden'}"><div class="grid2"><div class="f"><label>كل</label><select id="fFreq">${Object.entries(FREQ).map(([k, v]) => `<option value="${k}" ${freq === k ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+      <div class="f"><label>تنتهي (اختياري)</label><input id="fEnd" type="date"></div></div>
+      <div class="note">المواعيد التالية تظهر تلقائيًا في «${type === 'income' ? 'متوقع' : 'قادمة'}»، وتؤكدها بزر «${type === 'income' ? 'تم الاستلام' : 'تم الدفع'}» عند حلولها.</div></div>` : ''}
+      ${linked ? `<div class="note">${mini('repeat', 'var(--muted)', 13)} جزء من «${esc(linked.name)}» المتكرر — <a href="#" id="fRecEdit" style="color:var(--brand);font-weight:700">تعديل التكرار</a></div>` : ''}
       <div class="btns"><button class="btn" id="fSave">حفظ</button>${!isNew ? '<button class="btn danger" id="fDel">حذف</button>' : ''}</div>`);
-    $$('[data-t]').forEach(b => b.onclick = () => { x.amount = $('#fAmt').value; x.date = $('#fDate').value; x.note = $('#fNote').value; type = b.dataset.t; catId = type === 'income' ? 'c_salary' : 'c_food'; draw(); });
+    const keep = () => { x.amount = $('#fAmt').value; x.date = $('#fDate').value; x.name = $('#fName').value; if ($('#fRep')) { repeat = $('#fRep').checked; freq = $('#fFreq').value; } };
+    $$('[data-t]').forEach(b => b.onclick = () => { keep(); type = b.dataset.t; catId = type === 'income' ? 'c_salary' : 'c_food'; draw(); });
+    $$('[data-st]').forEach(b => b.onclick = () => { keep(); status = b.dataset.st; if (status === 'done' && x.date > todayS()) x.date = todayS(); draw(); });
+    $$('[data-quick]').forEach(b => b.onclick = () => { const q = state.tx.find(t => t.id === b.dataset.quick); const id = uid();
+      upsert('tx', { id, type: q.type, amount: q.amount, catId: q.catId, name: txName(q), date: todayS(), planned: false }); closeSheet();
+      toastAction('أُضيف: ' + txName(q) + ' ' + fmt(q.amount), 'تراجع', () => removeItem('tx', id)); });
     bindCatPicker(c => catId = c);
-    $('#fDate').onchange = () => $('#fState').value = $('#fDate').value > todayS() ? 'قادمة' : 'تمت';
-    $('#fSave').onclick = () => { const amt = readAmount('#fAmt'); if (!amt) { toast('أدخل مبلغًا صحيحًا'); return; } if (!$('#fDate').value) { toast('اختر التاريخ'); return; }
-      upsert('tx', { ...x, type, amount: amt, catId, date: $('#fDate').value, note: $('#fNote').value.trim() }); closeSheet(); toast('تم الحفظ'); };
-    if ($('#fDel')) $('#fDel').onclick = () => { removeItem('tx', x.id); closeSheet(); toast('تم الحذف'); };
-    if (isNew) setTimeout(() => $('#fAmt').focus(), 250);
+    if ($('#fRep')) $('#fRep').onchange = () => $('#repBox').classList.toggle('hidden', !$('#fRep').checked);
+    if ($('#fRecEdit')) $('#fRecEdit').onclick = e => { e.preventDefault(); recForm(linked); };
+    $('#fSave').onclick = () => {
+      const amt = readAmount('#fAmt'); if (!amt) { toast('أدخل مبلغًا صحيحًا'); return; }
+      const date = $('#fDate').value; if (!date) { toast('اختر التاريخ'); return; }
+      const name = $('#fName').value.trim();
+      if (status === 'done' && date > todayS()) { toast('العملية المنفّذة لا تكون بتاريخ مستقبلي — اختر «قادمة»'); return; }
+      if (isNew && $('#fRep') && $('#fRep').checked) {
+        const r = { id: uid(), type, name: name || cat(catId).name, amount: amt, catId, freq: $('#fFreq').value, every: 1, start: date, end: $('#fEnd').value || '', paused: false };
+        upsert('rec', r);
+        if (status === 'done') upsert('tx', { id: uid(), type, amount: amt, catId, name: r.name, date, recId: r.id, recDate: date, planned: false });
+      } else upsert('tx', { ...x, type, amount: amt, catId, name, date, planned: status === 'pend' });
+      closeSheet(); toast('تم الحفظ');
+    };
+    if ($('#fDel')) $('#fDel').onclick = () => { removeItem('tx', x.id); closeSheet(); toastAction('تم الحذف', 'تراجع', () => { const o = state.tx.find(t => t.id === x.id); o.deleted = false; upsert('tx', o); }); };
+    if (isNew) setTimeout(() => $('#fAmt') && $('#fAmt').focus(), 250);
   };
   draw();
 }
+function confirmForm(u) {
+  const inc = u.type === 'income', c = cat(u.catId);
+  const d0 = u.date <= todayS() ? u.date : todayS();
+  openSheet(`<h3>${inc ? 'تأكيد استلام' : 'تأكيد دفع'}</h3>
+    <div class="goalhead" style="margin-bottom:12px">${tile(c.icon, c.color, 46)}<div><b>${esc(u.name)}</b><div style="font-size:12.5px;color:var(--muted)">${esc(c.name)} · الموعد ${dShort(u.date)}</div></div></div>
+    <div class="f"><label>المبلغ الفعلي</label><input id="cA" class="amountin" inputmode="decimal" value="${u.amount}"></div>
+    <div class="f"><label>تاريخ ${inc ? 'الاستلام' : 'الدفع'}</label><input id="cD" type="date" value="${d0}"></div>
+    <div class="btns"><button class="btn" id="cOk">${I('list-checks', 18)}تأكيد</button>${u.kind === 'rec' ? '<button class="btn ghost" id="cRec">' + I('repeat', 18) + 'تعديل العملية المتكررة</button>' : ''}</div>`);
+  $('#cOk').onclick = () => { const a = readAmount('#cA'); if (!a) { toast('أدخل المبلغ'); return; } const d = $('#cD').value || d0;
+    if (d > todayS()) { toast('تاريخ التأكيد لا يكون في المستقبل'); return; }
+    if (u.kind === 'rec') upsert('tx', { id: uid(), type: u.type, amount: a, catId: u.catId, name: u.name, date: d, recId: u.r.id, recDate: u.date, planned: false });
+    else upsert('tx', { ...u.x, amount: a, date: d, planned: false });
+    closeSheet(); toast(inc ? 'تم تسجيل الاستلام' : 'تم تسجيل الدفع'); };
+  if ($('#cRec')) $('#cRec').onclick = () => recForm(u.r);
+}
 function recForm(r) {
-  const isNew = !r; r = r ? { ...r } : { id: uid(), type: 'expense', name: '', amount: '', catId: 'c_housing', freq: 'monthly', every: 1, start: todayS(), end: '', paused: false };
-  let type = r.type, catId = r.catId;
+  if (!r) return;
+  r = { ...r }; let type = r.type, catId = r.catId;
   const draw = () => {
-    openSheet(`<h3>${isNew ? 'عنصر متكرر جديد' : 'تعديل المتكرر'}</h3>
-      <div class="seg"><button class="${type === 'expense' ? 'on exp' : ''}" data-t="expense">مصروف</button><button class="${type === 'income' ? 'on inc' : ''}" data-t="income">دخل</button></div>
-      <div class="grid2"><div class="f"><label>الاسم</label><input id="rName" value="${esc(r.name)}" placeholder="${type === 'income' ? 'الراتب' : 'الإيجار'}"></div>
+    openSheet(`<h3>تعديل العملية المتكررة</h3>
+      <div class="grid2"><div class="f"><label>الاسم</label><input id="rName" value="${esc(r.name)}"></div>
       <div class="f"><label>المبلغ</label><input id="rAmt" inputmode="decimal" dir="ltr" value="${r.amount}" placeholder="0.000"></div></div>
-      <div class="f"><label>الفئة</label>${catPicker(type, catId)}</div>
+      <div class="f"><label>${type === 'income' ? 'نوع الدخل' : 'نوع المصروف'}</label>${catPicker(type, catId)}</div>
       <div class="grid2"><div class="f"><label>التكرار</label><select id="rFreq">${Object.entries(FREQ).map(([k, v]) => `<option value="${k}" ${r.freq === k ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
       <div class="f"><label>كل (عدد)</label><input id="rEvery" type="number" min="1" value="${r.every || 1}"></div></div>
       <div class="grid2"><div class="f"><label>أول موعد</label><input id="rStart" type="date" value="${r.start}"></div>
       <div class="f"><label>ينتهي (اختياري)</label><input id="rEnd" type="date" value="${r.end || ''}"></div></div>
       <label class="chk"><input type="checkbox" id="rPause" ${r.paused ? 'checked' : ''}> إيقاف مؤقت</label>
-      <div class="note">المواعيد تظهر كـ«قادمة»، وعند الضغط على «دفعت/استلمت» تُسجَّل كعملية تمت.</div>
-      <div class="btns"><button class="btn" id="rSave">حفظ</button>${!isNew ? '<button class="btn danger" id="rDel">حذف</button>' : ''}</div>`);
-    $$('[data-t]').forEach(b => b.onclick = () => { r.name = $('#rName').value; r.amount = $('#rAmt').value; type = b.dataset.t; catId = type === 'income' ? 'c_salary' : 'c_housing'; draw(); });
+      <div class="note">تعديل المبلغ يطبّق على المواعيد القادمة فقط؛ العمليات المؤكدة تبقى كما هي.</div>
+      <div class="btns"><button class="btn" id="rSave">حفظ</button><button class="btn danger" id="rDel">إيقاف التكرار نهائيًا</button></div>`);
     bindCatPicker(c => catId = c);
     $('#rSave').onclick = () => { const amt = readAmount('#rAmt'); const name = $('#rName').value.trim() || cat(catId).name;
       if (!amt) { toast('أدخل مبلغًا صحيحًا'); return; } if (!$('#rStart').value) { toast('حدد أول موعد'); return; }
       upsert('rec', { ...r, type, name, amount: amt, catId, freq: $('#rFreq').value, every: Math.max(1, parseInt($('#rEvery').value) || 1), start: $('#rStart').value, end: $('#rEnd').value, paused: $('#rPause').checked });
       closeSheet(); toast('تم الحفظ'); };
-    if ($('#rDel')) $('#rDel').onclick = () => { removeItem('rec', r.id); closeSheet(); toast('تم الحذف (العمليات المسجّلة تبقى)'); };
+    $('#rDel').onclick = () => { removeItem('rec', r.id); closeSheet(); toast('أُوقف التكرار (العمليات المؤكدة تبقى)'); };
   };
   draw();
 }
@@ -1099,7 +1206,7 @@ function passSheet() {
 }
 
 /* ============ AUTO UPDATE ============ */
-const APP_VERSION = '2026.09.25-4';
+const APP_VERSION = '2026.09.25-5';
 let updChecking = false;
 async function checkUpdate() {
   if (updChecking || location.protocol !== 'https:') return; updChecking = true;
@@ -1129,7 +1236,7 @@ $$('.tab').forEach(b => b.onclick = () => { VIEW = b.dataset.v; render(); scroll
 $('#mPrev').onclick = () => { shiftPeriod(-1); render(); };
 $('#mNext').onclick = () => { shiftPeriod(1); render(); };
 $('#mLabel').onclick = periodSheet;
-$('#fab').onclick = () => txForm(null, inPer(todayS()) ? null : { date: PER.from });
+$('#fab').onclick = () => { const pr = { type: VIEW === 'inc' ? 'income' : 'expense' }; if (!inPer(todayS())) pr.date = PER.from; if (VIEW !== 'home' && FLOW[VIEW] && FLOW[VIEW].seg === 'pend') { pr.date = pr.date && pr.date > todayS() ? pr.date : addDays(todayS(), 1); } txForm(null, pr); };
 function periodSheet() {
   const P = [['month', 'هذا الشهر'], ['lastMonth', 'الشهر الماضي'], ['salary', 'من الراتب للراتب'], ['last7', 'آخر 7 أيام'], ['last30', 'آخر 30 يومًا'], ['last90', 'آخر 3 أشهر'], ['next30', 'الـ30 يومًا القادمة'], ['year', 'هذه السنة']];
   openSheet(`<h3>اختر المدة</h3>
