@@ -527,8 +527,17 @@ window.addEventListener('online', () => pullNow());
 /* ============ AUTH & UNLOCK ============ */
 async function boot() {
   if (HAS_CLOUD) {
-    SB = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY, { auth: { persistSession: true, storageKey: 'nf_auth' } });
+    const recovering = /type=recovery/.test(location.hash + location.search);
+    SB = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY, { auth: { persistSession: true, storageKey: 'nf_auth', flowType: 'implicit', detectSessionInUrl: true } });
+    let shown = false;
+    SB.auth.onAuthStateChange((ev, session) => { if (ev === 'PASSWORD_RECOVERY' && session && !shown) { shown = true; USER = session.user; showNewAccountPassword(); } });
     const { data } = await SB.auth.getSession();
+    if (recovering && data && data.session) { if (!shown) { shown = true; USER = data.session.user; showNewAccountPassword(); } return; }
+    if (shown) return;
+    window.addEventListener('hashchange', () => {
+      if (!/type=recovery/.test(location.hash)) return;
+      SB.auth.getSession().then(({ data }) => { if (data && data.session) { USER = data.session.user; showNewAccountPassword(); } });
+    });
     if (data && data.session) { USER = data.session.user; return afterLogin(); }
     return showLogin();
   }
@@ -545,9 +554,11 @@ function showLogin(mode = 'in') {
      <div class="f"><label>كلمة مرور الحساب</label><input id="aPass" type="password" autocomplete="${mode === 'in' ? 'current-password' : 'new-password'}" dir="ltr"></div>
      <div class="err" id="aErr"></div>
      <div class="btns"><button class="btn" id="aGo">${mode === 'in' ? 'دخول' : 'إنشاء حساب'}</button>
-     <button class="btn ghost" id="aSwitch">${mode === 'in' ? 'ليس لديك حساب؟ أنشئ حسابًا' : 'لديك حساب؟ سجّل الدخول'}</button></div>
+     <button class="btn ghost" id="aSwitch">${mode === 'in' ? 'ليس لديك حساب؟ أنشئ حسابًا' : 'لديك حساب؟ سجّل الدخول'}</button>
+     ${mode === 'in' ? '<button class="btn ghost" id="aForgot">' + I('key-round', 18) + 'نسيت كلمة مرور الحساب؟</button>' : ''}</div>
      <div class="note">يمكنك استخدام نفس حساب تطبيق «مهام التقويم التربوي».</div>`);
   $('#aSwitch').onclick = () => showLogin(mode === 'in' ? 'up' : 'in');
+  if ($('#aForgot')) $('#aForgot').onclick = () => showForgot($('#aEmail').value.trim());
   $('#aGo').onclick = async () => {
     const email = $('#aEmail').value.trim(), password = $('#aPass').value;
     $('#aErr').textContent = '';
@@ -558,6 +569,45 @@ function showLogin(mode = 'in') {
     if (r.error) { $('#aErr').textContent = r.error.message.includes('Invalid') ? 'البريد أو كلمة المرور غير صحيحة' : r.error.message; return; }
     if (!r.data.session) { $('#aErr').textContent = 'تم إنشاء الحساب — أكّد بريدك ثم سجّل الدخول'; return; }
     USER = r.data.session.user; afterLogin();
+  };
+}
+function showForgot(email0) {
+  showAuth('إعادة تعيين كلمة مرور الحساب',
+    `<div class="note">سنرسل رابطًا إلى إيميلك. افتحه <b>على نفس الجهاز</b>، وسيفتح التطبيق لتختار كلمة مرور جديدة للحساب.<br>كلمة سر التشفير لا تتغيّر بهذا، ولا تفقد بياناتك.</div>
+     <div class="f"><label>البريد الإلكتروني</label><input id="fgE" type="email" autocomplete="email" dir="ltr" value="${esc(email0 || '')}"></div>
+     <div class="err" id="fgErr"></div>
+     <div class="btns"><button class="btn" id="fgGo">إرسال الرابط</button><button class="btn ghost" id="fgBack">رجوع</button></div>`);
+  $('#fgBack').onclick = () => showLogin('in');
+  $('#fgGo').onclick = async () => {
+    const email = $('#fgE').value.trim(); const er = $('#fgErr'); er.textContent = '';
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { er.textContent = 'أدخل بريدًا صحيحًا'; return; }
+    $('#fgGo').disabled = true;
+    const { error } = await SB.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+    $('#fgGo').disabled = false;
+    if (error) { er.textContent = /rate|seconds|limit/i.test(error.message) ? 'طلبات كثيرة — انتظر قليلًا ثم حاول مرة أخرى' : error.message; return; }
+    showAuth('تحقق من بريدك', `<div class="note">${mini('list-checks', 'var(--inc)', 14)} إن كان البريد مسجّلًا فقد أرسلنا رابط إعادة التعيين إلى <b dir="ltr">${esc(email)}</b>. افتح الرابط من هذا الجهاز. قد يصل خلال دقائق، وتحقّق من مجلد الرسائل غير المرغوبة.</div>
+      <div class="btns"><button class="btn ghost" id="fgDone">رجوع لتسجيل الدخول</button></div>`);
+    $('#fgDone').onclick = () => showLogin('in');
+  };
+}
+function showNewAccountPassword(inApp) {
+  const html = `<div class="f"><label>كلمة مرور الحساب الجديدة (8+)</label><input id="npA" type="password" autocomplete="new-password" dir="ltr"></div>
+     <div class="f"><label>تأكيدها</label><input id="npB" type="password" autocomplete="new-password" dir="ltr"></div>
+     <div class="note">هذه كلمة مرور الحساب (الدخول بالإيميل)، وليست كلمة سر التشفير.</div>
+     <div class="err" id="npE"></div><div class="btns"><button class="btn" id="npGo">حفظ</button>${inApp ? '<button class="btn ghost" id="npNo">إلغاء</button>' : ''}</div>`;
+  if (inApp) openSheet(`<h3>تغيير كلمة مرور الحساب</h3>` + html); else showAuth('اختر كلمة مرور جديدة لحسابك', html);
+  if ($('#npNo')) $('#npNo').onclick = closeSheet;
+  $('#npGo').onclick = async () => {
+    const a = $('#npA').value, e = $('#npE'); e.textContent = '';
+    if (a.length < 8) { e.textContent = '8 أحرف على الأقل'; return; }
+    if (a !== $('#npB').value) { e.textContent = 'التأكيد غير مطابق'; return; }
+    $('#npGo').disabled = true;
+    const { error } = await SB.auth.updateUser({ password: a });
+    $('#npGo').disabled = false;
+    if (error) { e.textContent = /different|same/i.test(error.message) ? 'اختر كلمة مختلفة عن السابقة' : error.message; return; }
+    try { history.replaceState(null, '', location.pathname); } catch {}
+    toast('تم تغيير كلمة مرور الحساب');
+    if (inApp) closeSheet(); else afterLogin();
   };
 }
 async function afterLogin() {
@@ -1286,6 +1336,7 @@ function settingsSheet() {
       ${SB ? '<button class="btn ghost" id="sHist">' + I('calendar-range', 18) + 'سجل النسخ على الخادم (استعادة)</button>' : ''}
       <button class="btn ghost" id="sRec">${I('key-round', 18)}مفتاح استرداد جديد</button>
       <button class="btn ghost" id="sPass">${I('lock', 18)}تغيير كلمة سر التشفير</button>
+      ${SB ? '<button class="btn ghost" id="sAcc">' + I('key-round', 18) + 'تغيير كلمة مرور الحساب</button>' : ''}
     </div>
     <div class="grplbl">البيانات</div>
     <div class="btns">
@@ -1306,6 +1357,7 @@ function settingsSheet() {
   $('#sPdf').onclick = () => { closeSheet(); openReport(); };
   $('#sCats').onclick = catsSheet;
   $('#sPass').onclick = passSheet;
+  if ($('#sAcc')) $('#sAcc').onclick = () => showNewAccountPassword(true);
   $('#sCsv').onclick = () => {
     const rows = [['التاريخ', 'النوع', 'الصنف', 'اسم العملية', 'المبلغ', 'الحالة']];
     for (const x of txAll().sort((a, b) => a.date.localeCompare(b.date))) rows.push([x.date, isInc(x) ? 'دخل' : 'مصروف', cat(x.catId).name, txName(x), fmt(x.amount), isPending(x) ? (isInc(x) ? 'متوقع' : 'قادمة') : 'تمت']);
@@ -1499,7 +1551,7 @@ function openReport() {
 function f0(s) { const [y, m, d] = s.split('-'); return `${+d}/${+m}/${y}`; }
 
 /* ============ AUTO UPDATE ============ */
-const APP_VERSION = '2026.09.26-1';
+const APP_VERSION = '2026.09.26-2';
 let updChecking = false;
 async function checkUpdate() {
   if (updChecking || location.protocol !== 'https:') return; updChecking = true;
