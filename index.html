@@ -312,6 +312,13 @@ canvas{max-width:100%}
 </section>
 
 <div id="sheetHost"></div>
+<div id="bioLock" class="hidden" style="position:fixed;inset:0;z-index:90;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center">
+  <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#5B3DF5,#C998B2);display:flex;align-items:center;justify-content:center;color:#fff" id="bioIco" data-i="lock" data-s="30"></div>
+  <b style="font-size:16px">التطبيق مقفل</b>
+  <div style="font-size:13px;color:var(--muted);max-width:280px">افتحه ببصمتك أو Face ID للمتابعة</div>
+  <button class="btn" id="bioTry" style="max-width:220px">فتح</button>
+  <button class="btn ghost" id="bioSkip" style="max-width:220px">تسجيل الخروج بدلًا</button>
+</div>
 
 <script>
 /* ============ CONFIG ============ */
@@ -366,6 +373,41 @@ const ls = {
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
   del(k) { try { localStorage.removeItem(k); } catch {} }
 };
+
+/* ============ BIOMETRIC APP LOCK (WebAuthn, local device gate only) ============ */
+const BIO_KEY = 'rs_bio_cred';
+let BIO_OK = false;
+async function bioSupported() { try { return !!(window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); } catch { return false; } }
+async function bioEnroll() {
+  const cred = await navigator.credentials.create({ publicKey: {
+    challenge: crypto.getRandomValues(new Uint8Array(32)), rp: { name: 'رصيد' },
+    user: { id: crypto.getRandomValues(new Uint8Array(16)), name: (USER && USER.email) || 'راصد', displayName: 'رصيد' },
+    pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+    authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' }, timeout: 60000
+  } });
+  if (!cred) throw new Error('cancelled');
+  ls.set(BIO_KEY, b64(cred.rawId)); BIO_OK = true;
+}
+async function bioVerify() {
+  const idb64 = ls.get(BIO_KEY); if (!idb64) return true;
+  try {
+    const a = await navigator.credentials.get({ publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)), allowCredentials: [{ id: unb64(idb64), type: 'public-key' }],
+      userVerification: 'required', timeout: 60000
+    } });
+    BIO_OK = !!a; return BIO_OK;
+  } catch { return false; }
+}
+function bioDisable() { ls.del(BIO_KEY); BIO_OK = false; }
+async function gateBio(then) {
+  if (!ls.get(BIO_KEY) || BIO_OK) { then(); return; }
+  $('#bioLock').classList.remove('hidden'); hydrateIcons($('#bioLock'));
+  const tryNow = async () => { $('#bioTry').disabled = true; const ok = await bioVerify(); $('#bioTry').disabled = false;
+    if (ok) { $('#bioLock').classList.add('hidden'); then(); } else toast('تعذّر التحقق، حاول مرة أخرى'); };
+  $('#bioTry').onclick = tryNow;
+  $('#bioSkip').onclick = () => confirmSheet('تسجيل الخروج؟', 'تُحذف النسخة المحلية من هذا الجهاز فقط.', 'تسجيل الخروج', () => { $('#bioLock').classList.add('hidden'); logout(); });
+  tryNow();
+}
 
 /* ============ CRYPTO (AES-256-GCM, PBKDF2) ============ */
 const te = new TextEncoder(), td = new TextDecoder();
@@ -797,6 +839,24 @@ function shiftPeriod(dir) {
 }
 function restorePeriod() { const s = ls.get('rs_period'); if (!s || !s.from) return; if (s.preset && s.preset !== 'custom') { const r = presetRange(s.preset); if (r) { PER = { preset: s.preset, ...r }; return; } } PER = { preset: 'custom', from: s.from, to: s.to }; }
 const txAll = () => live('tx').filter(t => !t.skipped);
+function estimateRunway() {
+  const all = txAll().filter(x => !isPending(x));
+  if (!all.length) return null;
+  const netAll = all.reduce((s, x) => s + (isInc(x) ? x.amount : -x.amount), 0);
+  const r = rangeActual(addDays(todayS(), -29), todayS());
+  return { netAll, avgDaily: (r.income - r.expense) / 30 };
+}
+function runwayCard() {
+  const r = estimateRunway(); if (!r) return '';
+  let body;
+  if (r.netAll <= 0) body = `<div style="font-size:14.5px;color:var(--exp);font-weight:700">صافي أموالك المسجّلة حتى الآن صفر أو أقل.</div>`;
+  else if (r.avgDaily >= 0) body = `<div style="font-size:14.5px;color:var(--inc);font-weight:700">اتجاهك الحالي إيجابي — لا يوجد استنزاف متوقع (متوسط آخر 30 يومًا).</div>`;
+  else { const days = Math.max(0, Math.floor(r.netAll / Math.abs(r.avgDaily)));
+    body = `<div class="val" style="font-size:22px;font-weight:800">${days}<span style="font-size:13px;font-weight:600;color:var(--muted)"> يومًا</span></div>
+      <div style="font-size:12.5px;color:var(--muted);margin-top:2px">تقدير تقريبي حتى ينفد صافي أموالك المسجّلة إن استمر معدل الصرف الحالي (متوسط آخر 30 يومًا).</div>`; }
+  return `<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">${hI('hourglass', '#C998B2')}<b>تقدير الاستمرارية</b></div>${body}
+    <div class="note">تقدير حسابي مبني فقط على عملياتك المسجّلة في التطبيق (وليس رصيدك المصرفي الفعلي)، وليس نصيحة مالية.</div></div>`;
+}
 const isInc = t => t.type === 'income';
 // pending = planned (not yet confirmed) or dated in the future
 const isPending = t => t.planned === true || t.date > todayS();
@@ -1127,7 +1187,7 @@ function vReports(p) {
   const expCats = Object.entries(a.byCat).filter(([k]) => cat(k).kind === 'expense').sort((x, y) => y[1] - x[1]);
   const incCats = Object.entries(a.byCat).filter(([k]) => cat(k).kind === 'income').sort((x, y) => y[1] - x[1]);
   const leg = (arr, tot) => `<div class="legend">${arr.map(([k, v]) => `<div class="lg"><i style="background:${cat(k).color}"></i><span class="n">${mini(cat(k).icon, cat(k).color)} ${esc(cat(k).name)}</span><span class="num">${fmt(v)}</span><span style="color:var(--muted);font-size:12px;min-width:38px;text-align:left">${Math.round(v / tot * 100)}%</span></div>`).join('')}</div>`;
-  return savingsCard(p) + compareCard() + summary + `<div class="card"><b>الدخل مقابل المصروف — 6 أشهر حتى ${mLabel(mk(PER.to))}</b><div style="height:230px;margin-top:10px"><canvas id="chBar"></canvas></div></div>
+  return savingsCard(p) + compareCard() + runwayCard() + summary + `<div class="card"><b>الدخل مقابل المصروف — 12 شهرًا حتى ${mLabel(mk(PER.to))}</b><div style="height:230px;margin-top:10px"><canvas id="chBar"></canvas></div></div>
     <div class="card"><b>توزيع المصروف حسب النوع</b>${expCats.length ? `<div style="height:210px;margin-top:10px"><canvas id="chExp"></canvas></div>${leg(expCats, a.expense)}` : emptyHTML('🍩', 'لا مصروفات مسجّلة')}</div>
     <div class="card"><b>الدخل حسب النوع</b>${incCats.length ? `<div style="height:190px;margin-top:10px"><canvas id="chInc"></canvas></div>${leg(incCats, a.income)}` : emptyHTML('💼', 'لا دخل مسجّل')}</div>
     <h2 class="sec">${hI('lightbulb', '#F29B0C')}اقتراحات لتحسين الدخل والمصروف</h2>${suggestions().map(tipHTML).join('')}
@@ -1138,7 +1198,7 @@ function drawReports() {
   if (!window.Chart) return;
   const dark = matchMedia('(prefers-color-scheme: dark)').matches; const tc = dark ? '#A5A2C6' : '#6B6A86', gc = dark ? '#2E2A52' : '#E3E6F2';
   Chart.defaults.font.family = 'Noto Kufi Arabic'; Chart.defaults.color = tc;
-  const ms = [5, 4, 3, 2, 1, 0].map(i => shiftMonth(mk(PER.to), -i)); const d = ms.map(monthActual);
+  const ms = Array.from({ length: 12 }, (_, i) => 11 - i).map(i => shiftMonth(mk(PER.to), -i)); const d = ms.map(monthActual);
   const bar = $('#chBar');
   if (bar) charts.bar = new Chart(bar, { type: 'bar', data: { labels: ms.map(m => MONTHS[+m.slice(5) - 1]), datasets: [
     { label: 'الدخل', data: d.map(x => x.income), backgroundColor: '#0FB57E', borderRadius: 7 },
@@ -1200,7 +1260,7 @@ function txForm(x, preset) {
   x = x ? { ...x, name: x.name || x.note || '' } : { id: uid(), type: 'expense', amount: '', catId: null, date: todayS(), name: '', ...(preset || {}) };
   let type = x.type, catId = x.catId || (type === 'income' ? 'c_salary' : 'c_food');
   let status = isNew ? (x.date > todayS() ? 'pend' : 'done') : (isPending(x) ? 'pend' : 'done');
-  let repeat = false, freq = 'monthly';
+  let repeat = false, freq = 'monthly', catTouched = !isNew || !!x.catId;
   const linked = x.recId && state.rec.find(r => r.id === x.recId);
   const draw = () => {
     const quick = isNew && !preset?.noQuick ? frequentTx().filter(q => q.type === type) : [];
@@ -1219,12 +1279,19 @@ function txForm(x, preset) {
       ${linked ? `<div class="note">${mini('repeat', 'var(--muted)', 13)} جزء من «${esc(linked.name)}» المتكرر — <a href="#" id="fRecEdit" style="color:var(--brand);font-weight:700">تعديل التكرار</a></div>` : ''}
       <div class="btns"><button class="btn" id="fSave">حفظ</button>${!isNew ? '<button class="btn danger" id="fDel">حذف</button>' : ''}</div>`);
     const keep = () => { x.amount = $('#fAmt').value; x.date = $('#fDate').value; x.name = $('#fName').value; if ($('#fRep')) { repeat = $('#fRep').checked; freq = $('#fFreq').value; } };
-    $$('[data-t]').forEach(b => b.onclick = () => { keep(); type = b.dataset.t; catId = type === 'income' ? 'c_salary' : 'c_food'; draw(); });
+    $$('[data-t]').forEach(b => b.onclick = () => { keep(); type = b.dataset.t; catId = type === 'income' ? 'c_salary' : 'c_food'; catTouched = false; draw(); });
     $$('[data-st]').forEach(b => b.onclick = () => { keep(); status = b.dataset.st; if (status === 'done' && x.date > todayS()) x.date = todayS(); draw(); });
     $$('[data-quick]').forEach(b => b.onclick = () => { const q = state.tx.find(t => t.id === b.dataset.quick); const id = uid();
       upsert('tx', { id, type: q.type, amount: q.amount, catId: q.catId, name: txName(q), date: todayS(), planned: false }); closeSheet();
       toastAction('أُضيف: ' + txName(q) + ' ' + fmt(q.amount), 'تراجع', () => removeItem('tx', id)); });
-    bindCatPicker(c => catId = c);
+    bindCatPicker(c => { catTouched = true; catId = c; });
+    if ($('#fName') && isNew) $('#fName').oninput = () => {
+      if (catTouched) return;
+      const k = $('#fName').value.trim().toLowerCase(); if (!k) return;
+      let guess = null;
+      for (const t of txAll()) if (t.type === type && txName(t).trim().toLowerCase() === k) { guess = t.catId; break; }
+      if (guess && guess !== catId) { catId = guess; $$('[data-cat]').forEach(b => b.classList.toggle('on', b.dataset.cat === guess)); }
+    };
     if ($('#fRep')) $('#fRep').onchange = () => $('#repBox').classList.toggle('hidden', !$('#fRep').checked);
     if ($('#fRecEdit')) $('#fRecEdit').onclick = e => { e.preventDefault(); recForm(linked); };
     $('#fSave').onclick = () => {
@@ -1348,9 +1415,17 @@ function settingsSheet() {
     </div>
     <div class="grplbl">الجهاز</div>
     <div class="btns">
+      <button class="btn ghost" id="sBio">${I('lock', 18)}${ls.get(BIO_KEY) ? 'إلغاء قفل البصمة/Face ID' : 'تفعيل قفل ببصمة/Face ID لهذا الجهاز'}</button>
       <button class="btn ghost" id="sLock">${I('lock', 18)}قفل التطبيق (نسيان المفتاح على هذا الجهاز)</button>
       ${SB ? '<button class="btn danger" id="sOut">تسجيل الخروج</button>' : ''}
-    </div>`);
+    </div>
+    <div class="note">قفل البصمة/Face ID طبقة إضافية على هذا الجهاز فقط، ولا يغيّر تشفير بياناتك أو كلمة سره.</div>`);
+  $('#sBio').onclick = async () => {
+    if (ls.get(BIO_KEY)) { confirmSheet('إلغاء قفل البصمة؟', 'سيفتح التطبيق بعدها بدون طلب بصمة/Face ID.', 'إلغاء', bioDisable); return; }
+    if (!await bioSupported()) { toast('البصمة/Face ID غير متاحة على هذا الجهاز أو المتصفح'); return; }
+    try { await bioEnroll(); closeSheet(); toast('تم تفعيل القفل — سيُطلب عند فتح التطبيق على هذا الجهاز'); }
+    catch { toast('تم الإلغاء'); }
+  };
   if ($('#sSync')) $('#sSync').onclick = () => { closeSheet(); pullNow().then(() => pushNow()); };
   if ($('#sHist')) $('#sHist').onclick = historySheet;
   $('#sRec').onclick = recoverySheet;
@@ -1551,7 +1626,7 @@ function openReport() {
 function f0(s) { const [y, m, d] = s.split('-'); return `${+d}/${+m}/${y}`; }
 
 /* ============ AUTO UPDATE ============ */
-const APP_VERSION = '2026.09.26-2';
+const APP_VERSION = '2026.09.27-1';
 let updChecking = false;
 async function checkUpdate() {
   if (updChecking || location.protocol !== 'https:') return; updChecking = true;
@@ -1575,6 +1650,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 function enterApp() {
   $('#authView').classList.add('hidden'); $('#appView').classList.remove('hidden');
   restorePeriod(); render();
+  gateBio(() => {});
 }
 hydrateIcons(); applyPrivacy(); checkUpdate();
 $('#btnEye').onclick = togglePrivacy;
