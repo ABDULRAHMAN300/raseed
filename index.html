@@ -807,9 +807,20 @@ function perLabel() {
   return fs + ' – ' + t.getDate() + ' ' + MONTHS[t.getMonth()] + ' ' + t.getFullYear();
 }
 function lastSalaryDate() { const t = todayS(); const xs = txAll().filter(x => x.catId === 'c_salary' && x.date <= t).map(x => x.date).sort(); return xs.length ? xs[xs.length - 1] : null; }
+/* ---- salary cycle: a "financial month" that starts on the pay day (settings.payDay) ---- */
+const payDay = () => +((state.settings || {}).payDay) || 0;
+const payDate = (m, pd) => m + '-' + pad(Math.min(pd, daysInMonth(m)));
+function cycleRange(offset = 0) {
+  const pd = payDay(); if (!pd) return null;
+  const t = todayS(); let m = mk(t); if (t < payDate(m, pd)) m = shiftMonth(m, -1);
+  m = shiftMonth(m, offset);
+  return { from: payDate(m, pd), to: addDays(payDate(shiftMonth(m, 1), pd), -1) };
+}
+const inCycle = () => !!(PER.cyc || PER.preset === 'cycle');
 function presetRange(k) {
   const t = todayS(), m = mk(t);
   switch (k) {
+    case 'cycle': { const r = cycleRange(0); return r ? { ...r, off: 0 } : null; }
     case 'month': return monthRange(m);
     case 'lastMonth': return monthRange(shiftMonth(m, -1));
     case 'last7': return { from: addDays(t, -6), to: t };
@@ -832,12 +843,22 @@ function setPeriod(preset, from, to) {
   ls.set('rs_period', PER);
 }
 function shiftPeriod(dir) {
+  if (inCycle()) {
+    const off = (PER.off || 0) + dir, r = cycleRange(off);
+    if (r) { PER = { preset: off === 0 ? 'cycle' : 'custom', cyc: true, off, ...r }; ls.set('rs_period', PER); return; }
+  }
   if (isWholeMonth()) { const m = shiftMonth(mk(PER.from), dir); PER = { preset: 'custom', ...monthRange(m) }; }
   else { const n = perDays(); PER = { preset: 'custom', from: addDays(PER.from, dir * n), to: addDays(PER.to, dir * n) }; }
   if (isWholeMonth() && mk(PER.from) === mk(todayS())) PER.preset = 'month';
   ls.set('rs_period', PER);
 }
-function restorePeriod() { const s = ls.get('rs_period'); if (!s || !s.from) return; if (s.preset && s.preset !== 'custom') { const r = presetRange(s.preset); if (r) { PER = { preset: s.preset, ...r }; return; } } PER = { preset: 'custom', from: s.from, to: s.to }; }
+function restorePeriod() {
+  const s = ls.get('rs_period');
+  if (!s || !s.from) { const r = presetRange('cycle'); if (r) PER = { preset: 'cycle', ...r }; return; } // first run: default to the salary cycle when a pay day is set
+  if (s.preset && s.preset !== 'custom') { const r = presetRange(s.preset); if (r) { PER = { preset: s.preset, ...r }; return; } }
+  PER = { preset: 'custom', from: s.from, to: s.to };
+  if (s.cyc && cycleRange(s.off || 0)) { PER.cyc = true; PER.off = s.off || 0; }
+}
 const txAll = () => live('tx').filter(t => !t.skipped);
 function estimateRunway() {
   const all = txAll().filter(x => !isPending(x));
@@ -1059,11 +1080,21 @@ const tipHTML = s => `<div class="tip ${s.level}">${tile(s.icon, LVC[s.level], 3
 const emptyHTML = (e, t) => `<div class="empty"><div class="e">${iKey(e) ? `<span class="ic">${I(iKey(e), 30, 1.8)}</span>` : e}</div>${t}</div>`;
 function findPending(id) { return upcoming(3660).find(u => u.id === id) || pendingItems('1900-01-01', '2999-12-31').find(u => u.id === id); }
 
+function cycleCard(p) {
+  if (!payDay() || !inCycle() || !inPer(todayS())) return '';
+  const left = dayDiff(todayS(), PER.to) + 1, avail = p.pNet;
+  const body = avail > 0
+    ? `<div style="font-size:22px;font-weight:800;color:var(--inc)"><span class="num">${fmt(avail / left)}</span><span style="font-size:13px;font-weight:600;color:var(--muted)"> د.ك يوميًا</span></div>
+       <div style="font-size:12.5px;color:var(--muted)">الصافي المتوقع لنهاية الدورة <span class="num">${fmt(avail)}</span> د.ك موزّعًا على ${left} ${left === 1 ? 'يوم متبقٍ' : 'يومًا متبقيًا'}.</div>`
+    : `<div style="font-size:14.5px;font-weight:700;color:var(--exp)">الصافي المتوقع لنهاية الدورة سالب (<span class="num">${fmt(avail)}</span> د.ك) — راجع القادم من المصروفات.</div>`;
+  return `<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">${hI('calendar-range', '#5B3DF5')}<b>المتبقي في دورة الراتب</b></div>${body}
+    <div class="note">تقدير داخل هذه الدورة فقط (يشمل القادم والمتوقع)، ولا يشمل أموالًا مرحّلة من دورات سابقة.</div></div>`;
+}
 function vHome(p) {
   const seen = new Set(), list = [];
   for (const u of [...dueItems(), ...pendingItems(PER.from, PER.to)]) if (!seen.has(u.id)) { seen.add(u.id); list.push(u); }
   list.sort((a, b) => (b.due - a.due) || a.date.localeCompare(b.date));
-  return fourCards(p) + savingsCard(p) +
+  return backupBanner() + cycleCard(p) + fourCards(p) + savingsCard(p) +
    `<h2 class="sec">${hI('hourglass', '#E0457B')}أقرب المواعيد</h2>` +
    (list.length ? `<div class="list">${list.slice(0, 6).map(rowPend).join('')}</div>` : `<div class="list">${emptyHTML('🗓️', 'لا توجد مصروفات قادمة أو دخل متوقع في هذه المدة')}</div>`);
 }
@@ -1131,6 +1162,64 @@ function recSection() {
     <div class="kpi exp"><div class="lbl">التزامات شهرية</div><div class="val" style="font-size:17px">${money(mE)}</div></div></div>
     <div class="list">${recs.sort((a, b) => a.type.localeCompare(b.type)).map(row).join('')}</div>`;
 }
+/* ---- suggested budgets (3-month average) ---- */
+function budgetSuggestions() {
+  const t = mk(todayS()), data = [1, 2, 3].map(i => monthActual(shiftMonth(t, -i))).filter(a => a.expense > 0), n = data.length;
+  if (!n) return { n: 0, rows: [] };
+  const sum = {};
+  for (const a of data) for (const [k, v] of Object.entries(a.byCat)) if (cat(k).kind === 'expense') sum[k] = (sum[k] || 0) + v;
+  const used = new Set(live('budgets').map(b => b.catId));
+  const rows = Object.entries(sum).filter(([k, v]) => !used.has(k) && !cat(k).deleted && v / n >= 1).map(([k, v]) => { const avg = v / n, step = avg >= 50 ? 5 : avg >= 10 ? 1 : 0.5; return { catId: k, avg, sug: Math.ceil(avg / step) * step }; }).sort((a, b) => b.avg - a.avg);
+  return { n, rows };
+}
+function suggestBudgetSheet() {
+  const { n, rows } = budgetSuggestions();
+  if (!rows.length) { openSheet(`<h3>ميزانية مقترحة</h3><div class="note">${n ? 'كل أنواع مصروفاتك لها ميزانية بالفعل.' : 'لا توجد بيانات كافية: يلزم مصروفات مسجّلة في شهر كامل سابق على الأقل.'}</div>`); return; }
+  openSheet(`<h3>ميزانية مقترحة</h3>
+    <div class="note">مبنية على متوسط ${n} ${n === 1 ? 'شهر' : 'أشهر'} ميلادية مكتملة سابقة، مقرّبة للأعلى (الأنواع التي متوسطها أقل من 1 د.ك مستبعدة). اقتراح حسابي فقط — عدّل الأرقام كما تشاء.</div>
+    <div class="list">${rows.map((r, i) => { const c = cat(r.catId); return `<div class="row" style="cursor:default;gap:8px">${tile(c.icon, c.color, 38)}<div class="mid"><div class="t">${esc(c.name)}</div><div class="s">المتوسط ${fmt(r.avg)} د.ك</div></div>
+      <div class="f" style="margin:0;width:92px"><input id="sb${i}" inputmode="decimal" dir="ltr" value="${r.sug}" style="text-align:center;padding:9px 6px"></div><label class="chk" style="margin:0"><input type="checkbox" id="sc${i}" checked></label></div>`; }).join('')}</div>
+    <button class="btn" id="sbGo" style="margin-top:12px">إنشاء الميزانيات المحددة</button>`);
+  $('#sbGo').onclick = () => {
+    let k = 0;
+    rows.forEach((r, i) => { if (!$('#sc' + i).checked) return; const v = readAmount('#sb' + i); if (!v) return; upsert('budgets', { id: uid(), catId: r.catId, limit: v }); k++; });
+    closeSheet(); toast(k ? 'تم إنشاء ' + k + ' ميزانية' : 'لم يُحدَّد شيء');
+  };
+}
+/* ---- forgotten monthly subscriptions / repeating expenses ---- */
+function detectSubs() {
+  const t = todayS(), from = addDays(t, -200), recNames = new Set(live('rec').map(r => (r.name || '').trim().toLowerCase())), g = {};
+  for (const x of txAll()) {
+    if (isInc(x) || isPending(x) || x.recId || x.date < from) continue;
+    const k = txName(x).trim().toLowerCase(); if (!k || recNames.has(k)) continue;
+    (g[k] = g[k] || { name: txName(x).trim(), catId: x.catId, items: [] }).items.push(x);
+  }
+  const out = [];
+  for (const o of Object.values(g)) {
+    const months = [...new Set(o.items.map(x => mk(x.date)))];
+    if (months.length < 3 || o.items.length > months.length * 1.34) continue;
+    const amts = o.items.map(x => x.amount).sort((a, b) => a - b), med = amts[Math.floor(amts.length / 2)];
+    if (o.items.filter(x => Math.abs(x.amount - med) <= med * 0.1 + 0.0005).length < o.items.length * 0.8) continue;
+    const last = o.items.map(x => x.date).sort().pop();
+    if (last < addDays(t, -45)) continue;
+    out.push({ name: o.name, catId: o.items[o.items.length - 1].catId, amount: med, months: months.length, last });
+  }
+  return out.sort((a, b) => b.amount - a.amount);
+}
+function subsCard() {
+  const s = detectSubs(); if (!s.length) return '';
+  const tm = s.reduce((a, x) => a + x.amount, 0);
+  return `<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">${hI('repeat', '#8B3DF5')}<b>مصروفات تتكرر شهريًا ولم تُجدوَل</b></div>
+    <div style="font-size:12.5px;color:var(--muted);margin-bottom:8px">رُصدت من تشابه الاسم والمبلغ عبر 3 أشهر فأكثر؛ مجموعها ≈ <span class="num">${fmt(tm)}</span> د.ك شهريًا، أي <span class="num">${fmt(tm * 12)}</span> سنويًا.</div>
+    ${s.map((x, i) => { const c = cat(x.catId); return `<div class="row" style="cursor:default;gap:8px">${tile(c.icon, c.color, 38)}<div class="mid"><div class="t">${esc(x.name)}</div><div class="s">${x.months} أشهر · آخرها ${dShort(x.last)}</div></div>
+      <div class="amt exp"><span class="num">${fmt(x.amount)}</span></div><button class="mini ok" data-mksub="${i}">جدولة</button></div>`; }).join('')}
+    <div class="note">«جدولة» تحوّلها إلى عملية متكررة شهريًا فتظهر في «قادمة» ولا تُنسى. تقدير مبني على بياناتك المسجّلة فقط.</div></div>`;
+}
+function subToRec(i) {
+  const x = detectSubs()[i]; if (!x) return;
+  upsert('rec', { id: uid(), type: 'expense', name: x.name, amount: r3(x.amount), catId: x.catId, freq: 'monthly', every: 1, start: payDate(shiftMonth(mk(x.last), 1), +x.last.slice(8)), end: '', paused: false });
+  toast('تمت الجدولة: ' + x.name);
+}
 function vPlan() {
   const a = rangeActual(PER.from, PER.to);
   const scale = isWholeMonth() ? 1 : perDays() / 30.4375;
@@ -1150,7 +1239,7 @@ function vPlan() {
       <div class="bar"><i style="width:${Math.min(100, pct * 100)}%;background:linear-gradient(90deg,${g.color},${g.color}AA)"></i></div>
       <div class="bline"><span>${sv >= g.target ? mini('trophy', '#F29B0C') + ' تحقق الهدف' : mleft ? 'مطلوب شهريًا: ' + fmt((g.target - sv) / mleft) + ' د.ك' : 'متبقٍ ' + fmt(g.target - sv) + ' د.ك'}</span>
       <span><button class="mini ok" data-dep="${g.id}">＋ إيداع</button> <button class="mini skip" data-wd="${g.id}">سحب</button></span></div></div>`; }).join('');
-  return `<h2 class="sec">${hI('chart-pie', '#5B3DF5')}الميزانيات <a id="addBud">＋ ميزانية</a></h2>
+  return `<h2 class="sec">${hI('chart-pie', '#5B3DF5')}الميزانيات <a id="sugBud">اقتراح</a> <a id="addBud">＋ ميزانية</a></h2>
     ${budgets.length && scale !== 1 ? `<div class="note">الحدود الشهرية مُعدّلة تلقائيًا حسب طول المدة (${perDays()} يومًا).</div>` : ''}
     ${budgets.length ? `<div class="card" style="background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff"><div style="font-size:13px;opacity:.85">إجمالي الميزانيات</div><div style="font-size:20px;font-weight:800">${money(ts)} / ${money(tb)}</div><div class="bar" style="background:rgba(255,255,255,.25)"><i style="width:${tb ? Math.min(100, ts / tb * 100) : 0}%;background:#fff"></i></div></div>` + bHTML : `<div class="list">${emptyHTML('📊', 'حدّد سقفًا شهريًا لكل فئة لتتابع صرفك')}</div>`}
     <h2 class="sec">${hI('target', '#E0457B')}أهداف الادخار <a id="addGoal">＋ هدف</a></h2>
@@ -1187,7 +1276,7 @@ function vReports(p) {
   const expCats = Object.entries(a.byCat).filter(([k]) => cat(k).kind === 'expense').sort((x, y) => y[1] - x[1]);
   const incCats = Object.entries(a.byCat).filter(([k]) => cat(k).kind === 'income').sort((x, y) => y[1] - x[1]);
   const leg = (arr, tot) => `<div class="legend">${arr.map(([k, v]) => `<div class="lg"><i style="background:${cat(k).color}"></i><span class="n">${mini(cat(k).icon, cat(k).color)} ${esc(cat(k).name)}</span><span class="num">${fmt(v)}</span><span style="color:var(--muted);font-size:12px;min-width:38px;text-align:left">${Math.round(v / tot * 100)}%</span></div>`).join('')}</div>`;
-  return savingsCard(p) + compareCard() + runwayCard() + summary + `<div class="card"><b>الدخل مقابل المصروف — 12 شهرًا حتى ${mLabel(mk(PER.to))}</b><div style="height:230px;margin-top:10px"><canvas id="chBar"></canvas></div></div>
+  return savingsCard(p) + compareCard() + runwayCard() + subsCard() + summary + `<div class="card"><b>الدخل مقابل المصروف — 12 شهرًا حتى ${mLabel(mk(PER.to))}</b><div style="height:230px;margin-top:10px"><canvas id="chBar"></canvas></div></div>
     <div class="card"><b>توزيع المصروف حسب النوع</b>${expCats.length ? `<div style="height:210px;margin-top:10px"><canvas id="chExp"></canvas></div>${leg(expCats, a.expense)}` : emptyHTML('🍩', 'لا مصروفات مسجّلة')}</div>
     <div class="card"><b>الدخل حسب النوع</b>${incCats.length ? `<div style="height:190px;margin-top:10px"><canvas id="chInc"></canvas></div>${leg(incCats, a.income)}` : emptyHTML('💼', 'لا دخل مسجّل')}</div>
     <h2 class="sec">${hI('lightbulb', '#F29B0C')}اقتراحات لتحسين الدخل والمصروف</h2>${suggestions().map(tipHTML).join('')}
@@ -1225,7 +1314,11 @@ function bindView() {
   $$('[data-dep]').forEach(b => b.onclick = () => moveForm(b.dataset.dep, 1));
   $$('[data-wd]').forEach(b => b.onclick = () => moveForm(b.dataset.wd, -1));
   const q = $('#txq'); if (q) { q.oninput = () => { TXQ = q.value; clearTimeout(q._t); q._t = setTimeout(() => { render(); const n = $('#txq'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 350); }; }
+  if ($('#bkNow')) $('#bkNow').onclick = downloadBackup;
+  if ($('#bkLater')) $('#bkLater').onclick = () => { ls.set('rs_bk_snooze', Date.now() + 3 * 864e5); render(); };
   if ($('#addBud')) $('#addBud').onclick = () => budForm();
+  if ($('#sugBud')) $('#sugBud').onclick = suggestBudgetSheet;
+  $$('[data-mksub]').forEach(b => b.onclick = () => subToRec(+b.dataset.mksub));
   if ($('#addGoal')) $('#addGoal').onclick = () => goalForm();
   if (VIEW === 'reports') drawReports();
 }
@@ -1394,6 +1487,31 @@ function moveForm(goalId, sign) {
 }
 
 /* ============ SETTINGS ============ */
+/* ---- encrypted backup + weekly reminder ---- */
+const BK_DAYS = 7;
+async function downloadBackup() {
+  const p = await encryptObj(KEY, state);
+  download('raseed-backup-' + todayS() + '.json', JSON.stringify({ app: 'raseed', ...KI, ...p }), 'application/json');
+  ls.set('rs_lastbackup', Date.now()); toast('تم التنزيل — احفظ الملف خارج الجهاز (الملفات/iCloud)'); render();
+}
+function backupBanner() {
+  if (!KEY || !live('tx').length) return '';
+  const last = ls.get('rs_lastbackup') || 0, now = Date.now();
+  if (now < (ls.get('rs_bk_snooze') || 0) || (last && now - last < BK_DAYS * 864e5)) return '';
+  const msg = last ? 'آخر نسخة احتياطية قبل ' + Math.floor((now - last) / 864e5) + ' يومًا' : 'لم تنزّل نسخة احتياطية بعد';
+  return `<div class="tip warn">${tile('shield-check', LVC.warn, 38)}<div><b>${msg}</b><p>نسخة مشفّرة على جهازك تحميك حتى لو تعطّل الخادم أو الحساب. تُفتح بكلمة سر التشفير أو مفتاح الاسترداد.</p>
+    <div class="acts"><button class="mini ok" id="bkNow">تنزيل الآن</button><button class="mini skip" id="bkLater">لاحقًا</button></div></div></div>`;
+}
+function paySheet() {
+  openSheet(`<h3>يوم صرف الراتب</h3>
+    <div class="note">يجعل «دورة الراتب» المدة الافتراضية: من يوم الراتب حتى اليوم السابق للراتب التالي، مع بطاقة تعرض المتبقي يوميًا. إن كان الشهر أقصر من اليوم المحدد يُستخدم آخر يوم فيه.</div>
+    <div class="f"><label>اليوم من الشهر (1 – 31)</label><input id="pdIn" type="number" inputmode="numeric" min="1" max="31" value="${payDay() || ''}" placeholder="مثل 25"></div>
+    <div class="err" id="pdE"></div>
+    <div class="btns"><button class="btn" id="pdSave">حفظ</button>${payDay() ? '<button class="btn ghost" id="pdOff">إيقاف (استخدام الشهر الميلادي)</button>' : ''}</div>`);
+  const apply = n => { state.settings = { ...(state.settings || {}), payDay: n, updatedAt: Date.now() }; closeSheet(); setPeriod(n ? 'cycle' : 'month'); changed(); toast(n ? 'تم ضبط دورة الراتب' : 'عاد العرض للشهر الميلادي'); };
+  $('#pdSave').onclick = () => { const n = parseInt($('#pdIn').value, 10); if (!(n >= 1 && n <= 31)) { $('#pdE').textContent = 'أدخل يومًا بين 1 و31'; return; } apply(n); };
+  if ($('#pdOff')) $('#pdOff').onclick = () => apply(0);
+}
 function settingsSheet() {
   openSheet(`<h3>الإعدادات</h3>
     <div class="card" style="box-shadow:none;background:var(--soft)"><div style="font-size:13px;color:var(--muted)">الحساب</div><b dir="ltr" style="display:block;text-align:right">${esc(USER.email || '')}</b>
@@ -1407,11 +1525,13 @@ function settingsSheet() {
     </div>
     <div class="grplbl">البيانات</div>
     <div class="btns">
+      <button class="btn ghost" id="sPay">${I('calendar-range', 18)}يوم الراتب (دورة مالية)${payDay() ? ' — ' + payDay() : ''}</button>
+      <button class="btn ghost" id="sQuick">${I('zap', 18)}الإضافة السريعة</button>
       <button class="btn ghost" id="sPdf">${I('file-down', 18)}تقرير المدة (PDF / طباعة)</button>
       ${SB ? '<button class="btn ghost" id="sSync">' + I('refresh-cw', 18) + 'مزامنة الآن</button>' : ''}
       <button class="btn ghost" id="sCats">${I('folder-cog', 18)}الأنواع (إضافة / تسمية / تعديل)</button>
       <button class="btn ghost" id="sCsv">${I('file-down', 18)}تصدير العمليات CSV (غير مشفّر)</button>
-      <button class="btn ghost" id="sJson">${I('shield-check', 18)}تنزيل نسخة احتياطية مشفّرة</button>
+      <button class="btn ghost" id="sJson">${I('shield-check', 18)}تنزيل نسخة احتياطية مشفّرة${ls.get('rs_lastbackup') ? ' (آخر: ' + f0(ymd(new Date(ls.get('rs_lastbackup')))) + ')' : ''}</button>
     </div>
     <div class="grplbl">الجهاز</div>
     <div class="btns">
@@ -1438,7 +1558,9 @@ function settingsSheet() {
     for (const x of txAll().sort((a, b) => a.date.localeCompare(b.date))) rows.push([x.date, isInc(x) ? 'دخل' : 'مصروف', cat(x.catId).name, txName(x), fmt(x.amount), isPending(x) ? (isInc(x) ? 'متوقع' : 'قادمة') : 'تمت']);
     download('raseed-' + todayS() + '.csv', '﻿' + rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n'), 'text/csv');
   };
-  $('#sJson').onclick = async () => { const p = await encryptObj(KEY, state); download('raseed-backup-' + todayS() + '.json', JSON.stringify({ app: 'raseed', ...KI, ...p }), 'application/json'); toast('تُفتح بكلمة سر التشفير أو مفتاح الاسترداد'); };
+  $('#sJson').onclick = downloadBackup;
+  $('#sPay').onclick = paySheet;
+  $('#sQuick').onclick = quickAddSheet;
   $('#sLock').onclick = () => confirmSheet('قفل التطبيق على هذا الجهاز؟', 'سيطلب كلمة سر التشفير عند الفتح القادم. بياناتك لا تُحذف.', 'قفل', () => lockApp(true));
   if ($('#sOut')) $('#sOut').onclick = () => confirmSheet('تسجيل الخروج؟', 'تُحذف النسخة المحلية من هذا الجهاز فقط، وتبقى بياناتك المشفّرة على الخادم وتعود عند تسجيل الدخول.', 'تسجيل الخروج', logout);
 }
@@ -1626,7 +1748,7 @@ function openReport() {
 function f0(s) { const [y, m, d] = s.split('-'); return `${+d}/${+m}/${y}`; }
 
 /* ============ AUTO UPDATE ============ */
-const APP_VERSION = '2026.09.27-1';
+const APP_VERSION = '2026.10.19-1';
 let updChecking = false;
 async function checkUpdate() {
   if (updChecking || location.protocol !== 'https:') return; updChecking = true;
@@ -1647,10 +1769,35 @@ async function checkUpdate() {
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkUpdate(); });
 
 /* ============ APP SHELL ============ */
+/* ---- quick add: ?add=expense|income&amount=..&name=.. , or auto-open the add form (setting) ---- */
+let DL_DONE = false;
+function handleDeepLink() {
+  if (DL_DONE) return; DL_DONE = true;
+  const q = new URLSearchParams(location.search), t = q.get('add');
+  if (t === 'expense' || t === 'income') {
+    const pr = { type: t }, a = normNum(q.get('amount') || '');
+    if (isFinite(a) && a > 0) pr.amount = r3(a);
+    if (q.get('name')) pr.name = q.get('name').slice(0, 80);
+    try { history.replaceState(null, '', location.pathname); } catch {}
+    txForm(null, pr); return;
+  }
+  if (ls.get('rs_openadd')) txForm(null, { type: 'expense' });
+}
+function quickAddSheet() {
+  const base = location.origin + location.pathname;
+  openSheet(`<h3>الإضافة السريعة</h3>
+    <label class="chk"><input type="checkbox" id="qaOpen" ${ls.get('rs_openadd') ? 'checked' : ''}> افتح نموذج «مصروف جديد» تلقائيًا عند فتح التطبيق</label>
+    <div class="note">مناسب لو أغلب فتحك للتطبيق لتسجيل مصروف. يظهر النموذج بعد القفل مباشرة وجاهزًا على خانة المبلغ؛ أغلقه إن فتحت لغير ذلك.</div>
+    <div class="grplbl">رابط جاهز (للاختصارات)</div>
+    <div class="note" dir="ltr" style="text-align:left;word-break:break-all;user-select:all">${esc(base)}?add=expense</div>
+    <div class="note">للدخل استبدل <b dir="ltr">expense</b> بـ <b dir="ltr">income</b>، ولتعبئة المبلغ والاسم أضف <b dir="ltr">&amp;amount=2.5&amp;name=Coffee</b>. في تطبيق «اختصارات» أضف إجراء «فتح عناوين URL» بهذا الرابط.<br><b>تنبيه صريح:</b> على iPhone يفتح هذا الرابط في سفاري، وتخزين سفاري منفصل عن التطبيق المثبّت على الشاشة الرئيسية، فسيطلب كلمة سر التشفير هناك. للسرعة اليومية استخدم الخيار الأول داخل التطبيق المثبّت.</div>
+    <button class="btn" id="qaSave">حفظ</button>`);
+  $('#qaSave').onclick = () => { if ($('#qaOpen').checked) ls.set('rs_openadd', true); else ls.del('rs_openadd'); closeSheet(); toast('تم الحفظ'); };
+}
 function enterApp() {
   $('#authView').classList.add('hidden'); $('#appView').classList.remove('hidden');
   restorePeriod(); render();
-  gateBio(() => {});
+  gateBio(handleDeepLink);
 }
 hydrateIcons(); applyPrivacy(); checkUpdate();
 $('#btnEye').onclick = togglePrivacy;
@@ -1660,7 +1807,7 @@ $('#mNext').onclick = () => { shiftPeriod(1); render(); };
 $('#mLabel').onclick = periodSheet;
 $('#fab').onclick = () => { const pr = { type: VIEW === 'inc' ? 'income' : 'expense' }; if (!inPer(todayS())) pr.date = PER.from; if (VIEW !== 'home' && FLOW[VIEW] && FLOW[VIEW].seg === 'pend') { pr.date = pr.date && pr.date > todayS() ? pr.date : addDays(todayS(), 1); } txForm(null, pr); };
 function periodSheet() {
-  const P = [['month', 'هذا الشهر'], ['lastMonth', 'الشهر الماضي'], ['salary', 'من الراتب للراتب'], ['last7', 'آخر 7 أيام'], ['last30', 'آخر 30 يومًا'], ['last90', 'آخر 3 أشهر'], ['next30', 'الـ30 يومًا القادمة'], ['year', 'هذه السنة']];
+  const P = [...(payDay() ? [['cycle', 'دورة الراتب الحالية']] : []), ['month', 'هذا الشهر'], ['lastMonth', 'الشهر الماضي'], ['salary', 'من الراتب للراتب'], ['last7', 'آخر 7 أيام'], ['last30', 'آخر 30 يومًا'], ['last90', 'آخر 3 أشهر'], ['next30', 'الـ30 يومًا القادمة'], ['year', 'هذه السنة']];
   openSheet(`<h3>اختر المدة</h3>
     <div class="catgrid" style="grid-template-columns:1fr 1fr">${P.map(([k, l]) => `<button type="button" class="catb ${PER.preset === k ? 'on' : ''}" data-pp="${k}" style="padding:12px 6px;font-size:13px">${l}</button>`).join('')}</div>
     <h2 class="sec">أو حدّد بنفسك</h2>
