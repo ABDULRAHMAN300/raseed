@@ -323,8 +323,8 @@ canvas{max-width:100%}
 <script>
 /* ============ CONFIG ============ */
 const CONFIG = {
-  SUPABASE_URL: 'https://dwsyctxhfbuzpcjilmwq.supabase.co',
-  SUPABASE_KEY: 'sb_publishable_xDrnFMfYxuqI008QnSZ8yA_JoKKMqzg'
+  SUPABASE_URL: 'https://zbrmewvlcycfaemkmgwy.supabase.co',
+  SUPABASE_KEY: 'sb_publishable_Xp7l8OIxq9SvffVtLfoZ4w_uOPM7fnj'
 };
 const HAS_CLOUD = CONFIG.SUPABASE_URL.startsWith('https://') && !!window.supabase;
 
@@ -570,7 +570,7 @@ window.addEventListener('online', () => pullNow());
 async function boot() {
   if (HAS_CLOUD) {
     const recovering = /type=recovery/.test(location.hash + location.search);
-    SB = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY, { auth: { persistSession: true, storageKey: 'nf_auth', flowType: 'implicit', detectSessionInUrl: true } });
+    SB = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY, { auth: { persistSession: true, storageKey: 'rs_auth', flowType: 'implicit', detectSessionInUrl: true } });
     let shown = false;
     SB.auth.onAuthStateChange((ev, session) => { if (ev === 'PASSWORD_RECOVERY' && session && !shown) { shown = true; USER = session.user; showNewAccountPassword(); } });
     const { data } = await SB.auth.getSession();
@@ -598,7 +598,7 @@ function showLogin(mode = 'in') {
      <div class="btns"><button class="btn" id="aGo">${mode === 'in' ? 'دخول' : 'إنشاء حساب'}</button>
      <button class="btn ghost" id="aSwitch">${mode === 'in' ? 'ليس لديك حساب؟ أنشئ حسابًا' : 'لديك حساب؟ سجّل الدخول'}</button>
      ${mode === 'in' ? '<button class="btn ghost" id="aForgot">' + I('key-round', 18) + 'نسيت كلمة مرور الحساب؟</button>' : ''}</div>
-     <div class="note">يمكنك استخدام نفس حساب تطبيق «مهام التقويم التربوي».</div>`);
+     <div class="note">الحساب خاص بتطبيق «رصيد». بعد إنشائه ستُرفع بياناتك المحفوظة على هذا الجهاز تلقائيًا (مشفّرة).</div>`);
   $('#aSwitch').onclick = () => showLogin(mode === 'in' ? 'up' : 'in');
   if ($('#aForgot')) $('#aForgot').onclick = () => showForgot($('#aEmail').value.trim());
   $('#aGo').onclick = async () => {
@@ -652,12 +652,24 @@ function showNewAccountPassword(inApp) {
     if (inApp) closeSheet(); else afterLogin();
   };
 }
+// local data left on this device by an earlier account (e.g. after moving to a new server)
+function orphanCache() {
+  let best = null;
+  try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i);
+    if (!k || !k.startsWith('nf_cache_') || k === cacheKey()) continue;
+    const c = ls.get(k); if (c && c.data && c.iv && c.salt && (!best || c.data.length > best.c.data.length)) best = { k, c }; } } catch {}
+  return best;
+}
+let MIGRATE = null;
 async function afterLogin() {
-  const cache = ls.get(cacheKey());
+  let cache = ls.get(cacheKey());
   let remote = null;
   try { remote = await fetchRemote(); } catch (e) { remote = undefined; } // undefined = offline
+  MIGRATE = null;
+  if (!cache && remote === null) { const o = orphanCache(); if (o) { MIGRATE = o; cache = { ...o.c, version: 0 }; } }
   const info = keyInfo(remote) || keyInfo(cache);
-  const rem = await idbGet('key_' + USER.id);
+  let rem = await idbGet('key_' + USER.id);
+  if (!rem && MIGRATE) rem = await idbGet('key_' + MIGRATE.k.slice(9));
   if (rem && info) {
     const match = info.kid ? rem.kid === info.kid : (!rem.kid && rem.salt === info.salt);
     if (match && await unlockWith(rem.key, info, remote, cache, { legacyPassKey: info.kid ? null : rem.key, remember: true })) return;
@@ -707,16 +719,21 @@ function showPass(mode, info, remote, cache) {
   const create = mode === 'create';
   showAuth(create ? 'أنشئ كلمة سر التشفير' : 'أدخل كلمة سر التشفير لفتح بياناتك',
     `${create ? `<div class="note warn">${mini('lock', 'currentColor', 13)} هذه الكلمة تشفّر بياناتك على جهازك قبل رفعها، ولا تُرسل لأي خادم. بعد الإنشاء ستحصل على <b>مفتاح استرداد</b> احفظه؛ هو الطريق الوحيد إن نسيت الكلمة. اجعلها مختلفة عن كلمة مرور الحساب.</div>` : ''}
+     ${!create && MIGRATE ? `<div class="note">${mini('shield-check', 'var(--inc)', 13)} وجدنا بيانات محفوظة على هذا الجهاز من حسابك السابق. أدخل <b>كلمة سر التشفير القديمة</b> (أو استخدم مفتاح الاسترداد) لنقلها إلى حسابك الجديد.</div>` : ''}
      <div class="f"><label>كلمة سر التشفير</label><input id="pP1" type="password" autocomplete="new-password" dir="ltr"></div>
      ${create ? `<div class="f"><label>تأكيدها</label><input id="pP2" type="password" autocomplete="new-password" dir="ltr"></div>` : ''}
      <label class="chk"><input type="checkbox" id="pRem" checked> تذكّر على هذا الجهاز</label>
      <div class="err" id="pErr"></div>
      <div class="btns"><button class="btn" id="pGo">${create ? 'إنشاء وبدء الاستخدام' : 'فتح'}</button>
      ${!create && info && info.wrap_r ? '<button class="btn ghost" id="pRec">' + I('key-round', 18) + 'نسيت الكلمة؟ استخدم مفتاح الاسترداد</button>' : ''}
+     ${create ? '<button class="btn ghost" id="pImp">' + I('file-down', 18) + 'لديّ ملف نسخة احتياطية — استعادة منه</button>' : ''}
+     ${!create && MIGRATE ? '<button class="btn ghost" id="pFresh">البدء من جديد بدون هذه البيانات</button>' : ''}
      ${SB ? '<button class="btn ghost" id="pOut">تسجيل الخروج</button>' : ''}</div>
      <div class="lock">${I('lock', 13)} تشفير AES-256 من طرف الجهاز</div>`);
   if ($('#pOut')) $('#pOut').onclick = logout;
   if ($('#pRec')) $('#pRec').onclick = () => showRecover(info, remote, cache);
+  if ($('#pImp')) $('#pImp').onclick = () => pickBackup(b => showImportAuth(b));
+  if ($('#pFresh')) $('#pFresh').onclick = () => { MIGRATE = null; showPass('create', null, remote, null); };
   $('#pGo').onclick = async () => {
     const p1 = $('#pP1').value; $('#pErr').textContent = '';
     if (create) {
@@ -744,6 +761,56 @@ function showPass(mode, info, remote, cache) {
       }
     } catch (e) { console.warn(e); done(); $('#pErr').textContent = 'حدث خطأ، حاول مرة أخرى'; }
   };
+}
+/* ---- restore from an encrypted backup file ---- */
+function pickBackup(cb) {
+  const i = document.createElement('input'); i.type = 'file'; i.accept = '.json,application/json'; i.style.display = 'none';
+  i.onchange = async () => { const f = i.files && i.files[0]; i.remove(); if (!f) return;
+    let b = null; try { b = JSON.parse(await f.text()); } catch {}
+    if (!b || !b.iv || !b.data || !b.salt) { toast('هذا ليس ملف نسخة احتياطية من «رصيد»'); return; }
+    cb(b); };
+  document.body.appendChild(i); i.click();
+}
+// returns { key, legacy } or null — accepts the encryption passphrase or the recovery key
+async function backupKey(b, secret) {
+  if (b.kid && b.wrap_p) {
+    try { const k = await importDK(await unwrapRaw(await deriveKey(secret, b.salt), b.wrap_p)); await decryptObj(k, b.iv, b.data); return { key: k }; } catch {}
+    if (b.wrap_r) try { const k = await importDK(await unwrapRaw(await recKeyFrom(secret), b.wrap_r)); await decryptObj(k, b.iv, b.data); return { key: k }; } catch {}
+    return null;
+  }
+  try { const k = await deriveKey(secret, b.salt); await decryptObj(k, b.iv, b.data); return { key: k, legacy: true }; } catch { return null; }
+}
+function showImportAuth(b) {
+  showAuth('استعادة من ملف نسخة احتياطية',
+    `<div class="note">أدخل <b>كلمة سر التشفير</b> التي كانت مستخدمة وقت إنشاء النسخة، أو <b>مفتاح الاسترداد</b>. الفك يتم على جهازك فقط.</div>
+     <div class="f"><label>كلمة سر التشفير أو مفتاح الاسترداد</label><input id="ibS" type="password" autocomplete="off" dir="ltr"></div>
+     <div class="err" id="ibE"></div>
+     <div class="btns"><button class="btn" id="ibGo">فتح واستعادة</button><button class="btn ghost" id="ibBack">رجوع</button></div>`);
+  $('#ibBack').onclick = () => afterLogin();
+  $('#ibGo').onclick = async () => {
+    const e = $('#ibE'); e.textContent = ''; $('#ibGo').disabled = true;
+    const r = await backupKey(b, $('#ibS').value);
+    if (!r) { $('#ibGo').disabled = false; e.textContent = 'الكلمة أو المفتاح غير صحيح'; return; }
+    const info = keyInfo(b), cache = { ...info, iv: b.iv, data: b.data, version: 0 };
+    const ok = await unlockWith(r.key, info, null, cache, { remember: true, legacyPassKey: r.legacy ? r.key : null });
+    if (!ok) { $('#ibGo').disabled = false; e.textContent = 'تعذّر فتح الملف'; return; }
+    toast('تمت الاستعادة من الملف');
+  };
+}
+function importBackupSheet() {
+  pickBackup(b => {
+    openSheet(`<h3>دمج نسخة احتياطية</h3><div class="note">تُدمج عمليات الملف مع بياناتك الحالية (لا يُحذف شيء). أدخل كلمة سر التشفير وقت إنشاء النسخة أو مفتاح الاسترداد.</div>
+      <div class="f"><input id="imS" type="password" autocomplete="off" dir="ltr"></div><div class="err" id="imE"></div>
+      <div class="btns"><button class="btn" id="imGo">فتح ودمج</button></div>`);
+    $('#imGo').onclick = async () => {
+      $('#imE').textContent = ''; const r = await backupKey(b, $('#imS').value);
+      if (!r) { $('#imE').textContent = 'الكلمة أو المفتاح غير صحيح'; return; }
+      const d = await decryptObj(r.key, b.iv, b.data), before = countItems(state);
+      state = merge(state, d); for (const c of COLS) state[c] = state[c] || [];
+      closeSheet(); changed(); const after = countItems(state);
+      toast('تم الدمج: ' + (after.tx - before.tx) + ' عملية جديدة');
+    };
+  });
 }
 function showRecover(info, remote, cache) {
   showAuth('افتح بياناتك بمفتاح الاسترداد وأنشئ كلمة سر جديدة',
@@ -1531,6 +1598,7 @@ function settingsSheet() {
       ${SB ? '<button class="btn ghost" id="sSync">' + I('refresh-cw', 18) + 'مزامنة الآن</button>' : ''}
       <button class="btn ghost" id="sCats">${I('folder-cog', 18)}الأنواع (إضافة / تسمية / تعديل)</button>
       <button class="btn ghost" id="sCsv">${I('file-down', 18)}تصدير العمليات CSV (غير مشفّر)</button>
+      <button class="btn ghost" id="sImp">${I('file-down', 18)}استعادة/دمج من ملف نسخة احتياطية</button>
       <button class="btn ghost" id="sJson">${I('shield-check', 18)}تنزيل نسخة احتياطية مشفّرة${ls.get('rs_lastbackup') ? ' (آخر: ' + f0(ymd(new Date(ls.get('rs_lastbackup')))) + ')' : ''}</button>
     </div>
     <div class="grplbl">الجهاز</div>
@@ -1559,6 +1627,7 @@ function settingsSheet() {
     download('raseed-' + todayS() + '.csv', '﻿' + rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n'), 'text/csv');
   };
   $('#sJson').onclick = downloadBackup;
+  $('#sImp').onclick = importBackupSheet;
   $('#sPay').onclick = paySheet;
   $('#sQuick').onclick = quickAddSheet;
   $('#sLock').onclick = () => confirmSheet('قفل التطبيق على هذا الجهاز؟', 'سيطلب كلمة سر التشفير عند الفتح القادم. بياناتك لا تُحذف.', 'قفل', () => lockApp(true));
@@ -1748,7 +1817,7 @@ function openReport() {
 function f0(s) { const [y, m, d] = s.split('-'); return `${+d}/${+m}/${y}`; }
 
 /* ============ AUTO UPDATE ============ */
-const APP_VERSION = '2026.10.19-1';
+const APP_VERSION = '2026.10.28-1';
 let updChecking = false;
 async function checkUpdate() {
   if (updChecking || location.protocol !== 'https:') return; updChecking = true;
